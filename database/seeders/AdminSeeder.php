@@ -19,6 +19,6 @@ class AdminSeeder extends Seeder
         ], [
             'name' => 'Super Admin',
             'password' => 'Megnweg123789!'
-        ])->assignRole(Role::where('name', RoleEnum::SUPER_ADMIN)->first());;
+        ])->assignRole(Role::where('name', RoleEnum::SUPER_ADMIN)->first());
     }
 }

@@ -39,7 +39,7 @@ return new class extends Migration
             $table->foreignIdFor(LeadSource::class)->nullable();
             $table->foreignIdFor(BenefitType::class)->nullable();
             $table->text('comments')->nullable();
-            $table->foreignIdFor(User::class)->nullable();
+            $table->foreignIdFor(User::class, 'created_by_id');
             $table->timestamps();
         });
     }

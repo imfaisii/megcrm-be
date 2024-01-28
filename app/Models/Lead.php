@@ -3,11 +3,12 @@
 namespace App\Models;
 
 use App\Actions\Common\BaseModel;
+use App\Traits\Common\HasRecordCreator;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Lead extends BaseModel
 {
-    use HasFactory;
+    use HasFactory, HasRecordCreator;
 
     protected $fillable = [
         'title',
@@ -29,7 +30,7 @@ class Lead extends BaseModel
         'lead_source_id',
         'benefit_type_id',
         'comments',
-        'user_id'
+        'created_by_id'
     ];
 
     public function jobType()
