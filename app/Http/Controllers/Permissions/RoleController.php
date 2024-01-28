@@ -11,8 +11,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Permissions\StoreRoleRequest;
 use App\Http\Requests\Permissions\UpdateRoleRequest;
 use Illuminate\Http\Resources\Json\JsonResource;
-use Spatie\Permission\Contracts\Role;
-use Spatie\Permission\Models\Role as ModelsRole;
+use Spatie\Permission\Models\Role;
 
 use function App\Helpers\null_resource;
 
@@ -27,18 +26,18 @@ class RoleController extends Controller
     public function store(StoreRoleRequest $request, StoreRoleAction $action): JsonResource
     {
         $role = $action->create($request->validated());
-        return $action->individualResource($role);
+        return $action->individualResource($role->load('permissions'));
     }
 
     public function update(Role $role, UpdateRoleAction $action, UpdateRoleRequest $request): JsonResource
     {
         $role = $action->update($role, $request->validated());
-        return $action->individualResource($role);
+        return $action->individualResource($role->load('permissions'));
     }
 
     public function destroy($id, DeleteRoleAction $action)
     {
-        $role = ModelsRole::where('id', $id)->first();
+        $role = Role::where('id', $id)->first();
 
         if ($role) {
             if ($role->name !== RoleEnum::SUPER_ADMIN) {

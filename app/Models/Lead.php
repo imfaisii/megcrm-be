@@ -20,8 +20,6 @@ class Lead extends BaseModel
         'dob',
         'post_code',
         'address',
-        'address_latitude',
-        'address_longitude',
         'is_marked_as_job',
         'job_type_id',
         'fuel_type_id',

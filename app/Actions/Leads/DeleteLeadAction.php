@@ -3,10 +3,9 @@
 namespace App\Actions\Leads;
 
 use App\Actions\Common\AbstractDeleteAction;
-use App\Models\User;
-use Lorisleiva\Actions\Concerns\AsAction;
+use App\Models\Lead;
 
 class DeleteLeadAction extends AbstractDeleteAction
 {
-    protected string $modelClass = User::class;
+    protected string $modelClass = Lead::class;
 }

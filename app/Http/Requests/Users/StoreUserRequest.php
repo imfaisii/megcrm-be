@@ -15,7 +15,6 @@ class StoreUserRequest extends BaseFormRequest
             'email' => ['required', 'string', 'email', 'max:255', 'unique:' . User::class],
             'password' => ['required', 'confirmed', Password::defaults()],
             'roles' => ['array'],
-            'status' => ['nullable', 'in:active,inactive'],
             'is_active' => ['boolean']
         ];
     }

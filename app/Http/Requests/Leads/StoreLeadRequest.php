@@ -2,27 +2,33 @@
 
 namespace App\Http\Requests\Leads;
 
-use Illuminate\Foundation\Http\FormRequest;
+use App\Actions\Common\BaseFormRequest;
 
-class StoreLeadRequest extends FormRequest
+class StoreLeadRequest extends BaseFormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
-    public function authorize(): bool
-    {
-        return false;
-    }
-
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
-     */
     public function rules(): array
     {
         return [
-            //
+            'title' => ['required', 'string'],
+            'first_name' => ['required', 'string'],
+            'middle_name' => ['nullable', 'string'],
+            'last_name' => ['required', 'string'],
+            'email' => ['required', 'email'],
+            'phone_no' => ['required', 'numeric'],
+            'dob' => ['required', 'string'],
+            'address' => ['required', 'string'],
+            'post_code' => ['required', 'string'],
+            'measures' => ['array'],
+            'has_second_receipent' => ['required', 'boolean'],
+            'second_receipent' => ['required', 'array'],
+            'is_marked_as_job' => ['required', 'boolean'],
+            'job_type_id' => ['nullable', 'exists:job_types,id'],
+            'fuel_type_id' => ['nullable', 'exists:fuel_types,id'],
+            'surveyor_id' => ['nullable', 'exists:surveyors,id'],
+            'lead_generator_id' => ['nullable', 'exists:lead_generators,id'],
+            'lead_source_id' => ['nullable', 'exists:lead_sources,id'],
+            'benefit_type_id' => ['nullable', 'exists:benefit_types,id'],
+            'comments' => ['nullable']
         ];
     }
 }

@@ -7,8 +7,10 @@ use App\Actions\Users\DeleteUserAction;
 use App\Actions\Users\FindUserAction;
 use App\Actions\Users\ListUserAction;
 use App\Actions\Users\StoreUserAction;
+use App\Actions\Users\UpdateUserAction;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Users\StoreUserRequest;
+use App\Http\Requests\Users\UpdateUserRequest;
 use App\Models\User;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Http\Resources\Json\ResourceCollection;
@@ -33,6 +35,12 @@ class UserController extends Controller
     {
         $action->enableQueryBuilder();
         return $action->individualResource($action->findOrFail($id));
+    }
+
+    public function update(User $user, UpdateUserRequest $request,  UpdateUserAction $action): BaseJsonResource
+    {
+        $action->enableQueryBuilder();
+        return $action->individualResource($action->update($user, $request->validated()));
     }
 
     public function destroy(User $user, DeleteUserAction $action): BaseJsonResource

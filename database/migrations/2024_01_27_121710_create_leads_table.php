@@ -29,8 +29,6 @@ return new class extends Migration
             $table->string('dob');
             $table->string('post_code');
             $table->text('address');
-            $table->string('address_latitude');
-            $table->string('address_longitude');
             $table->boolean('is_marked_as_job')->default(false);
             $table->foreignIdFor(JobType::class)->nullable();
             $table->foreignIdFor(FuelType::class)->nullable();

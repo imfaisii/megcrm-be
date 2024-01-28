@@ -3,16 +3,13 @@
 namespace App\Actions\Permissions;
 
 use App\Actions\Common\AbstractUpdateAction;
-use App\Actions\Common\BaseModel;
 use App\Models\ExtendedRole;
-use Spatie\Permission\Models\Permission;
-use Spatie\Permission\Models\Role;
 
 class UpdateRoleAction extends AbstractUpdateAction
 {
     protected string $modelClass = ExtendedRole::class;
 
-    public function update(BaseModel|Role|Permission $role, array $data): BaseModel|Role|Permission
+    public function update(mixed $role, array $data): mixed
     {
         $role->syncPermissions([]);
         $role->update($data);
