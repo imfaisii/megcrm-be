@@ -17,7 +17,10 @@ class RoleSeeder extends Seeder
         $roles = RoleEnum::getValues();
 
         foreach ($roles as $key => $role) {
-            Role::firstOrCreate(['name' => $role]);
+            Role::firstOrCreate([
+                'name' => $role,
+                'guard_name' => 'sanctum'
+            ]);
         }
     }
 }

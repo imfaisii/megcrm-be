@@ -20,24 +20,28 @@ use Illuminate\Support\Facades\Route;
 
 require __DIR__ . '/auth.php';
 
-Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
-    return $request->user();
-});
 
-Route::group(['as' => 'permissions.'], function () {
+Route::group(['middleware' => 'auth:sanctum'], function () {
+    Route::get('/user', function (Request $request) {
+        return [
+            'data' => [
+                'user' => $request->user()
+            ]
+        ];
+    });
+
+    Route::get('/get-permissions', function () {
+        return response()->json([
+            'data' => json_decode(auth()->user()->jsPermissions())
+        ]);
+    });
+
     Route::apiResource('/permissions', PermissionController::class);
-});
 
-Route::group(['as' => 'roles.'], function () {
     Route::apiResource('/roles', RoleController::class);
-});
 
-Route::group(['as' => 'users.'], function () {
     Route::apiResource('/users', UserController::class);
-});
 
-Route::group(['as' => 'leads.'], function () {
     Route::apiResource('/leads', LeadController::class);
-
-    Route::get('/lead-extras', [LeadController::class, 'getExtras'])->name('extras');
+    Route::get('/lead-extras', [LeadController::class, 'getExtras'])->name('leads.extras');
 });

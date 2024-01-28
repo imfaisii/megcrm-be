@@ -31,6 +31,13 @@ class Lead extends BaseModel
         'created_by_id'
     ];
 
+    protected $appends = ['full_name'];
+
+    protected function getFullNameAttribute()
+    {
+        return $this->first_name . ' ' . $this->middle_name . ' ' . $this->last_name;
+    }
+
     public function jobType()
     {
         return $this->belongsTo(JobType::class);

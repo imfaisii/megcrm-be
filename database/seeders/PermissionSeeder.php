@@ -21,13 +21,14 @@ class PermissionSeeder extends Seeder
         $permissionsByRoutes = get_permissions_by_routes();
 
         foreach ($permissionsByRoutes as $module => $subModules) {
-            Permission::firstOrCreate(['name' => $module, 'is_module' => true]);
+            Permission::firstOrCreate(['name' => $module, 'is_module' => true, 'guard_name' => 'sanctum']);
 
             foreach ($subModules as $key => $subModule) {
                 Permission::firstOrCreate([
                     'name' => "{$module}.{$subModule['name']}",
                     'parent_module_name' => $module,
-                    'method' => $subModule['method']
+                    'method' => $subModule['method'],
+                    'guard_name' => 'sanctum'
                 ]);
             }
         }

@@ -11,6 +11,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Permissions\StoreRoleRequest;
 use App\Http\Requests\Permissions\UpdateRoleRequest;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
 
 use function App\Helpers\null_resource;
@@ -35,18 +36,13 @@ class RoleController extends Controller
         return $action->individualResource($role->load('permissions'));
     }
 
-    public function destroy($id, DeleteRoleAction $action)
+    public function destroy(Role $role)
     {
-        $role = Role::where('id', $id)->first();
-
-        if ($role) {
-            if ($role->name !== RoleEnum::SUPER_ADMIN) {
-                $action->delete($role);
-            }
-
-            return null_resource();
+        if ($role->name === RoleEnum::SUPER_ADMIN) {
+            return $this->error('Cannot delete super admin.');
         }
 
-        return $this->error('No role exists with this id');
+        DB::table('roles')->where('id', $role->id)->delete();
+        return null_resource();
     }
 }

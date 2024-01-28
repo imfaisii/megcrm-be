@@ -3,15 +3,12 @@
 namespace App\Actions\Common;
 
 use App\Traits\Common\NewQueryTrait;
-use Spatie\Permission\Models\Permission;
-use Spatie\Permission\Models\Role;
 
 abstract class AbstractDeleteAction
 {
     use NewQueryTrait;
 
     /**
-     * @param BaseModel $model
      * @return bool|null
      */
     public function delete($model): ?bool
