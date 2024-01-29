@@ -7,6 +7,7 @@ use App\Actions\Leads\ListLeadAction;
 use App\Actions\Leads\StoreLeadAction;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Leads\StoreLeadRequest;
+use App\Http\Requests\Leads\UpdateLeadStatusRequest;
 use App\Models\BenefitType;
 use App\Models\FuelType;
 use App\Models\JobType;
@@ -63,5 +64,11 @@ class LeadController extends Controller
         ];
 
         return $this->success(data: $data);
+    }
+
+    public function updateStatus(Lead $lead, UpdateLeadStatusRequest $request)
+    {
+        $lead->setStatus($request->status, $request->comments);
+        return null_resource();
     }
 }

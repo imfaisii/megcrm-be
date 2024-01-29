@@ -3,12 +3,15 @@
 namespace App\Models;
 
 use App\Actions\Common\BaseModel;
+use App\Filters\Leads\FilterByStatus;
 use App\Traits\Common\HasRecordCreator;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Imfaisii\ModelStatus\HasStatuses;
+use Spatie\QueryBuilder\AllowedFilter;
 
 class Lead extends BaseModel
 {
-    use HasFactory, HasRecordCreator;
+    use HasFactory, HasRecordCreator, HasStatuses;
 
     protected $fillable = [
         'title',
@@ -31,11 +34,27 @@ class Lead extends BaseModel
         'created_by_id'
     ];
 
-    protected $appends = ['full_name'];
+    protected $appends = ['full_name', 'status_details'];
 
     protected function getFullNameAttribute()
     {
         return $this->first_name . ' ' . $this->middle_name . ' ' . $this->last_name;
+    }
+
+    protected function getStatusDetailsAttribute()
+    {
+        $data = $this->latestStatus();
+
+        $data['user'] = User::find($data['user_id']);
+
+        return $data;
+    }
+
+    protected function getExtraFilters(): array
+    {
+        return [
+            AllowedFilter::custom('statuses', new FilterByStatus()),
+        ];
     }
 
     public function jobType()

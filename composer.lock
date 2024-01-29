@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7519e0834419c388c0ecc4850c8f0f65",
+    "content-hash": "1dea3540233e689f74c4e25e0baccf8c",
     "packages": [
         {
             "name": "ahmedsaoud31/laravel-permission-to-vuejs",
@@ -1321,6 +1321,72 @@
                 }
             ],
             "time": "2023-12-03T19:50:20+00:00"
+        },
+        {
+            "name": "imfaisii/laravel-model-status",
+            "version": "v1.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/imfaisii/laravel-model-status-n.git",
+                "reference": "c1d47f138660eb784b55191f87c3b0788ae785ae"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/imfaisii/laravel-model-status-n/zipball/c1d47f138660eb784b55191f87c3b0788ae785ae",
+                "reference": "c1d47f138660eb784b55191f87c3b0788ae785ae",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/support": "^8.71|^9.0|^10.0",
+                "php": "^8.0|^8.1"
+            },
+            "require-dev": {
+                "orchestra/testbench": "^6.6|^7.0|^8.0",
+                "pestphp/pest": "^1.22",
+                "phpunit/phpunit": "^9.5"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Imfaisii\\ModelStatus\\ModelStatusServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Imfaisii\\ModelStatus\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Thomas Verhelst",
+                    "email": "tvke91@gmail.com",
+                    "homepage": "https://spatie.be",
+                    "role": "Developer"
+                },
+                {
+                    "name": "Freek Van der Herten",
+                    "email": "freek@spatie.be",
+                    "homepage": "https://spatie.be",
+                    "role": "Developer"
+                }
+            ],
+            "description": "A package to enable assigning statuses to Eloquent Models",
+            "homepage": "https://github.com/imfaisii/laravel-model-status",
+            "keywords": [
+                "imfaisii",
+                "laravel-status"
+            ],
+            "support": {
+                "issues": "https://github.com/imfaisii/laravel-model-status-n/issues",
+                "source": "https://github.com/imfaisii/laravel-model-status-n/tree/v1.3"
+            },
+            "time": "2023-07-25T16:52:07+00:00"
         },
         {
             "name": "laminas/laminas-code",

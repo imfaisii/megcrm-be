@@ -44,4 +44,5 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
 
     Route::apiResource('/leads', LeadController::class);
     Route::get('/lead-extras', [LeadController::class, 'getExtras'])->name('leads.extras');
+    Route::post('/lead-status/{lead}', [LeadController::class, 'updateStatus'])->name('leads.set-status');
 });
