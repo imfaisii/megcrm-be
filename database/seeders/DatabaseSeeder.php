@@ -15,6 +15,8 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        $local = app()->environment('local');
+
         $this->call([
             JobTypeSeeder::class,
             FuelTypeSeeder::class,
@@ -31,10 +33,11 @@ class DatabaseSeeder extends Seeder
             LeadStatusSeeder::class
         ]);
 
-        if (app()->environment('local')) {
+        if ($local) {
             // factories
             User::factory()->count(20)->create();
-            Lead::factory()->count(20)->create();
         }
+
+        Lead::factory()->count($local ? 20 : 5)->create();
     }
 }
