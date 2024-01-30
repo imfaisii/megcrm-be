@@ -18,7 +18,8 @@ class AdminSeeder extends Seeder
             'email' => app()->environment('local') ? 'cfaysal099@gmail.com' : 'megcrm24@gmail.com'
         ], [
             'name' => 'Super Admin',
-            'password' => 'Megnweg123789!'
+            'password' => 'Megnweg123789!',
+            'created_by_id' => 1
         ])->assignRole(Role::where('name', RoleEnum::SUPER_ADMIN)->first());
     }
 }

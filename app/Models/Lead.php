@@ -34,7 +34,23 @@ class Lead extends BaseModel
         'created_by_id'
     ];
 
-    protected $appends = ['full_name', 'status_details'];
+    protected $appends = ['full_name', 'status_details', 'allowed_for_filters'];
+
+    protected array $allowedIncludes = [
+        'leadGenerator'
+    ];
+
+    protected function getAllowedForFiltersAttribute()
+    {
+        return [];
+        return $this->whereIn('name', [
+            'Raw Lead',
+            'Ready for survey',
+            'Surveyed',
+            'Booked for Datamatch',
+            'Installed'
+        ])->pluck('name');
+    }
 
     protected function getFullNameAttribute()
     {
@@ -46,6 +62,7 @@ class Lead extends BaseModel
         $data = $this->latestStatus();
 
         $data['user'] = User::find($data['user_id']);
+        $data['lead_status'] = LeadStatus::where('name', $data['name'])->first();
 
         return $data;
     }

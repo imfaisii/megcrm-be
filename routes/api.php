@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Leads\LeadController;
+use App\Http\Controllers\Leads\StatusController;
 use App\Http\Controllers\Permissions\PermissionController;
 use App\Http\Controllers\Permissions\RoleController;
 use App\Http\Controllers\Users\UserController;
@@ -37,12 +38,11 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     });
 
     Route::apiResource('/permissions', PermissionController::class);
-
     Route::apiResource('/roles', RoleController::class);
-
     Route::apiResource('/users', UserController::class);
-
     Route::apiResource('/leads', LeadController::class);
+    Route::apiResource('/lead-statuses', StatusController::class);
+
     Route::get('/lead-extras', [LeadController::class, 'getExtras'])->name('leads.extras');
-    Route::post('/lead-status/{lead}', [LeadController::class, 'updateStatus'])->name('leads.set-status');
+    Route::post('/lead-status/{lead}', [LeadController::class, 'updateStatus'])->name('leads.set-lead-status');
 });

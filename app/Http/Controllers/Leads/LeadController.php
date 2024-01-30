@@ -14,6 +14,7 @@ use App\Models\JobType;
 use App\Models\Lead;
 use App\Models\LeadGenerator;
 use App\Models\LeadSource;
+use App\Models\LeadStatus;
 use App\Models\Measure;
 use App\Models\Surveyor;
 use Illuminate\Http\Request;
@@ -61,6 +62,8 @@ class LeadController extends Controller
             'benefit_types' => BenefitType::all(),
             'lead_generators' => LeadGenerator::all(),
             'lead_sources' => LeadSource::all(),
+            'lead_statuses' => LeadStatus::all(),
+            'lead_table_filters' => LeadStatus::take(6)->get()
         ];
 
         return $this->success(data: $data);

@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
+use App\Models\Lead;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 
@@ -24,7 +25,16 @@ class DatabaseSeeder extends Seeder
             SurveyorSeeder::class,
             RoleSeeder::class,
             PermissionSeeder::class,
-            AdminSeeder::class
+            AdminSeeder::class,
+
+            //! Always after adminseeder
+            LeadStatusSeeder::class
         ]);
+
+        if (app()->environment('local')) {
+            // factories
+            User::factory()->count(20)->create();
+            Lead::factory()->count(20)->create();
+        }
     }
 }

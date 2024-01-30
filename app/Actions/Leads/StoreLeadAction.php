@@ -3,8 +3,8 @@
 namespace App\Actions\Leads;
 
 use App\Actions\Common\AbstractCreateAction;
-use App\Enums\Leads\StatusEnum;
 use App\Models\Lead;
+use App\Models\LeadStatus;
 use Illuminate\Support\Arr;
 
 class StoreLeadAction extends AbstractCreateAction
@@ -26,7 +26,7 @@ class StoreLeadAction extends AbstractCreateAction
             $lead->secondReceipent()->firstOrCreate($data['second_receipent']);
         }
 
-        $lead->setStatus(StatusEnum::ACTIVE, 'Created');
+        $lead->setStatus(LeadStatus::first()->name, 'Created');
 
         return $lead;
     }

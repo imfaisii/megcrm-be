@@ -33,7 +33,7 @@ abstract class AbstractListAction
      */
     public function paginate(): Paginator
     {
-        return $this->getQuery()->paginate(request()->get('per_page', $this->defaultPagination));
+        return $this->getQuery()->latest()->paginate(request()->get('per_page', $this->defaultPagination));
     }
 
     /**
