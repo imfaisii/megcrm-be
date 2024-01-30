@@ -11,9 +11,9 @@ class LeadStatusSeeder extends Seeder
     protected $entries = [
         'Raw Lead',
         'Ready for Survey',
-        'Surveyed',
-        'Ready for Installation',
+        'Survey Done',
         'Waiting for Datamatch',
+        'Ready for Installation',
         'Installed',
         'All Leads',
         'Survey Booked',
