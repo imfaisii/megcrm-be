@@ -3,9 +3,9 @@
 namespace App\Actions\Leads;
 
 use App\Actions\Common\AbstractFindAction;
-use App\Models\User;
+use App\Models\Lead;
 
 class FindLeadAction extends AbstractFindAction
 {
-    protected string $modelClass = User::class;
+    protected string $modelClass = Lead::class;
 }

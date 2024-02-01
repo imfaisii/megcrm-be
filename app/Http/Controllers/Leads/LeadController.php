@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Leads;
 
 use App\Actions\Leads\DeleteLeadAction;
+use App\Actions\Leads\FindLeadAction;
 use App\Actions\Leads\ListLeadAction;
 use App\Actions\Leads\StoreLeadAction;
 use App\Http\Controllers\Controller;
@@ -36,9 +37,10 @@ class LeadController extends Controller
         return null_resource();
     }
 
-    public function show(string $id)
+    public function show(int $lead, FindLeadAction $action)
     {
-        //
+        $action->enableQueryBuilder();
+        return $action->individualResource($action->findOrFail($lead));
     }
 
     public function update(Request $request, string $id)

@@ -129,7 +129,7 @@ function get_permissions_as_modules_array(mixed $permissions): array
 
             return [
                 'id' => $permission['id'],
-                'name' => match($name) {
+                'name' => match ($name) {
                     'Index' => 'Can view all records',
                     'Destroy' => 'Can delete records',
                     'Show' => 'Can view single record',
@@ -149,4 +149,19 @@ function get_permissions_as_modules_array(mixed $permissions): array
     }
 
     return $finalPermissions;
+}
+
+function shouldAppend(string $append): bool
+{
+    $appends = [];
+
+    if (request()->has('append')) {
+        $appends = explode(",", request()->get('append'));
+    }
+
+    if (!in_array($append, $appends)) {
+        return false;
+    }
+
+    return true;
 }

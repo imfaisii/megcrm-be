@@ -18,7 +18,9 @@ class BenefitTypeSeeder extends Seeder
         "Universal Credit",
         "Pension Credit Savings Credit",
         "Child Benefit",
-        "Housing Benefit"
+        "Housing Benefit",
+        "Eco Flex",
+        "No Benefit"
     ];
 
     /**
