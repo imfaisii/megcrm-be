@@ -15,12 +15,11 @@ use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Support\Str;
 use Illuminate\Support\Arr;
 use LaravelAndVueJS\Traits\LaravelPermissionToVueJS;
-
-use function App\Helpers\get_permissions_as_modules_array;
+use Spatie\Activitylog\Traits\CausesActivity;
 
 class User extends BaseModel implements AuthenticatableContract
 {
-    use HasApiTokens, HasFactory, Authenticatable, Notifiable, HasRoles, LaravelPermissionToVueJS;
+    use HasApiTokens, HasFactory, Authenticatable, Notifiable, HasRoles, LaravelPermissionToVueJS, CausesActivity;
 
     protected $guard_name = 'sanctum';
 
@@ -58,17 +57,6 @@ class User extends BaseModel implements AuthenticatableContract
     {
         return Str::ucfirst(Str::replace("_", " ", Arr::first($this->getRoleNames())));
     }
-
-    // public function getPermissions()
-    // {
-    //     $permissions = $this->getAllPermissions();
-
-
-    //     return [
-    //         'roles' => $this->getRoleNames(),
-    //         'permissions' => get_permissions_as_modules_array($permissions),
-    //     ];
-    // }
 
     public function scopeActive(Builder $builder)
     {

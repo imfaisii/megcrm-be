@@ -7,6 +7,7 @@ use App\Filters\Leads\FilterByStatus;
 use App\Traits\Common\HasRecordCreator;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Imfaisii\ModelStatus\HasStatuses;
+use Spatie\Activitylog\Models\Activity;
 use Spatie\QueryBuilder\AllowedFilter;
 
 use function App\Helpers\shouldAppend;
@@ -36,32 +37,11 @@ class Lead extends BaseModel
         'created_by_id'
     ];
 
-    protected $appends = ['full_name', 'status_details', 'allowed_for_filters', 'auditing'];
+    protected $appends = ['full_name', 'status_details'];
 
     protected array $allowedIncludes = [
         'leadGenerator',
     ];
-
-    protected function getAuditingAttribute()
-    {
-        if (!shouldAppend('auditing')) {
-            return [];
-        }
-
-        return [];
-    }
-
-    protected function getAllowedForFiltersAttribute()
-    {
-        return [];
-        return $this->whereIn('name', [
-            'Raw Lead',
-            'Ready for survey',
-            'Surveyed',
-            'Booked for Datamatch',
-            'Installed'
-        ])->pluck('name');
-    }
 
     protected function getFullNameAttribute()
     {

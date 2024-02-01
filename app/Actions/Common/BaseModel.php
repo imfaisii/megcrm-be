@@ -3,12 +3,15 @@
 namespace App\Actions\Common;
 
 use App\Actions\Common\BaseQueryBuilderConfig;
+use App\Traits\Common\HasLogsAppend;
 use \Illuminate\Support\Str;
 use Illuminate\Container\Container;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use DateTimeInterface;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\DeletedModels\Models\Concerns\KeepsDeletedModels;
 use Throwable;
 
@@ -20,7 +23,7 @@ use function App\Helpers\get_all_includes_in_camel_case;
  */
 abstract class BaseModel extends Model
 {
-    use BaseQueryBuilderConfig, KeepsDeletedModels;
+    use BaseQueryBuilderConfig, KeepsDeletedModels, LogsActivity, HasLogsAppend;
 
     /**
      * @var string
@@ -190,5 +193,14 @@ abstract class BaseModel extends Model
     public function shouldBeSearchable(): bool
     {
         return false;
+    }
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->setDescriptionForEvent(fn (string $eventName) => "This {$this->model} has been {$eventName}")
+            ->logOnly(['*'])
+            ->logOnlyDirty()
+            ->dontSubmitEmptyLogs();
     }
 }

@@ -104,6 +104,11 @@ function is_include_present(string $include): bool
     return in_array(Str::snake($include), get_all_includes());
 }
 
+function is_append_present(string $append): bool
+{
+    return in_array(Str::snake($append), get_all_appends());
+}
+
 function get_permissions_as_modules_array(mixed $permissions): array
 {
     $finalPermissions = [];
