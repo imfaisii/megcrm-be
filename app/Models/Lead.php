@@ -8,14 +8,12 @@ use App\Traits\Common\HasRecordCreator;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Imfaisii\ModelStatus\HasStatuses;
 use Spatie\QueryBuilder\AllowedFilter;
-use OwenIt\Auditing\Contracts\Auditable;
-use OwenIt\Auditing\Auditable as AuditableTrait;
 
 use function App\Helpers\shouldAppend;
 
-class Lead extends BaseModel implements Auditable
+class Lead extends BaseModel
 {
-    use HasFactory, HasRecordCreator, HasStatuses, AuditableTrait;
+    use HasFactory, HasRecordCreator, HasStatuses;
 
     protected $fillable = [
         'title',
@@ -50,10 +48,7 @@ class Lead extends BaseModel implements Auditable
             return [];
         }
 
-        return $this->audits()
-            ->where('event', '!=', 'created')
-            ->with('user')
-            ->get();
+        return [];
     }
 
     protected function getAllowedForFiltersAttribute()
