@@ -19,7 +19,6 @@ trait HasLogsAppend
 
     public function getLogsAttribute()
     {
-        return Activity::with('causer')
-            ->get();
+        return Activity::all();
     }
 }
