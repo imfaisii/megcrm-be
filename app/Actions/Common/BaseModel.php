@@ -198,7 +198,7 @@ abstract class BaseModel extends Model
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-            ->setDescriptionForEvent(fn (string $eventName) => "This {$this->model} has been {$eventName}")
+            ->setDescriptionForEvent(fn (string $eventName) => "This record has been {$eventName}")
             ->logOnly(['*'])
             ->logOnlyDirty()
             ->dontSubmitEmptyLogs();
