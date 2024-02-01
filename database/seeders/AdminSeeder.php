@@ -2,9 +2,10 @@
 
 namespace Database\Seeders;
 
+use App\Enums\Permissions\RoleEnum;
 use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Spatie\Permission\Models\Role;
 
 class AdminSeeder extends Seeder
 {
@@ -14,10 +15,11 @@ class AdminSeeder extends Seeder
     public function run(): void
     {
         User::firstOrCreate([
-            'email' => 'megcrm24@gmail.com'
+            'email' => app()->environment('local') ? 'cfaysal099@gmail.com' : 'megcrm24@gmail.com'
         ], [
             'name' => 'Super Admin',
-            'password' => 'Megnweg123789!'
-        ]);
+            'password' => 'Megnweg123789!',
+            'created_by_id' => 1
+        ])->assignRole(Role::where('name', RoleEnum::SUPER_ADMIN)->first());
     }
 }
