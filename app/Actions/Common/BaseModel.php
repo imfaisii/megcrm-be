@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use DateTimeInterface;
+use Spatie\DeletedModels\Models\Concerns\KeepsDeletedModels;
 use Throwable;
 
 use function App\Helpers\get_all_appends;
@@ -19,7 +20,7 @@ use function App\Helpers\get_all_includes_in_camel_case;
  */
 abstract class BaseModel extends Model
 {
-    use BaseQueryBuilderConfig;
+    use BaseQueryBuilderConfig, KeepsDeletedModels;
 
     /**
      * @var string
