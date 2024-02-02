@@ -3,6 +3,7 @@
 namespace App\Actions\Common;
 
 use App\Actions\Common\BaseQueryBuilderConfig;
+use App\Models\User;
 use App\Traits\Common\HasLogsAppend;
 use \Illuminate\Support\Str;
 use Illuminate\Container\Container;
@@ -11,6 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use DateTimeInterface;
 use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Models\Activity;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\DeletedModels\Models\Concerns\KeepsDeletedModels;
 use Throwable;
@@ -202,5 +204,13 @@ abstract class BaseModel extends Model
             ->logOnly(['*'])
             ->logOnlyDirty()
             ->dontSubmitEmptyLogs();
+    }
+
+    public function tapActivity(Activity $activity, string $eventName)
+    {
+        if (!auth()->check()) {
+            $activity->causer_id = 1;
+            $activity->causer_type = User::class;
+        }
     }
 }

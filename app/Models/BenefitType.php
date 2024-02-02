@@ -2,14 +2,20 @@
 
 namespace App\Models;
 
+use App\Actions\Common\BaseModel;
+use App\Traits\Common\HasRecordCreator;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 
-class BenefitType extends Model
+class BenefitType extends BaseModel
 {
-    use HasFactory;
+    use HasFactory, HasRecordCreator;
 
     protected $fillable = [
-        'name'
+        'name',
+        'created_by_id'
+    ];
+
+    protected array $allowedIncludes = [
+        'createdBy'
     ];
 }

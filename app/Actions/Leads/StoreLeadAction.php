@@ -28,6 +28,9 @@ class StoreLeadAction extends AbstractCreateAction
 
         $lead->setStatus(LeadStatus::first()->name, 'Created');
 
+        // creating additional empty record for lead
+        $lead->leadCustomerAdditionalDetail()->create();
+
         return $lead;
     }
 }

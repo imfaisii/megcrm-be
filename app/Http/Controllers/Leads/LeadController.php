@@ -6,8 +6,10 @@ use App\Actions\Leads\DeleteLeadAction;
 use App\Actions\Leads\FindLeadAction;
 use App\Actions\Leads\ListLeadAction;
 use App\Actions\Leads\StoreLeadAction;
+use App\Actions\Leads\UpdateLeadAction;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Leads\StoreLeadRequest;
+use App\Http\Requests\Leads\UpdateLeadRequest;
 use App\Http\Requests\Leads\UpdateLeadStatusRequest;
 use App\Models\BenefitType;
 use App\Models\FuelType;
@@ -43,9 +45,10 @@ class LeadController extends Controller
         return $action->individualResource($action->findOrFail($lead));
     }
 
-    public function update(Request $request, string $id)
+    public function update(Lead $lead, UpdateLeadRequest $request, UpdateLeadAction $action)
     {
-        //
+        $action->enableQueryBuilder();
+        return $action->individualResource($action->update($lead, $request->validated()));
     }
 
     public function destroy(Lead $lead, DeleteLeadAction $action)

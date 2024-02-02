@@ -10,7 +10,6 @@ use Imfaisii\ModelStatus\HasStatuses;
 use Spatie\Activitylog\Models\Activity;
 use Spatie\QueryBuilder\AllowedFilter;
 
-use function App\Helpers\shouldAppend;
 
 class Lead extends BaseModel
 {
@@ -40,7 +39,10 @@ class Lead extends BaseModel
     protected $appends = ['full_name', 'status_details'];
 
     protected array $allowedIncludes = [
+        'leadStatus',
         'leadGenerator',
+        'statuses',
+        'leadCustomerAdditionalDetail'
     ];
 
     protected function getFullNameAttribute()
@@ -48,14 +50,18 @@ class Lead extends BaseModel
         return $this->first_name . ' ' . $this->middle_name . ' ' . $this->last_name;
     }
 
+    protected function getStatusesAttribute()
+    {
+        return $this->statuses();
+    }
+
     protected function getStatusDetailsAttribute()
     {
-        $data = $this->latestStatus();
+        $latest = $this->latestStatus();
 
-        $data['user'] = User::find($data['user_id']);
-        $data['lead_status'] = LeadStatus::where('name', $data['name'])->first();
+        $latest['lead_status_model'] = LeadStatus::where('name', $latest->name)->first();
 
-        return $data;
+        return $latest;
     }
 
     protected function getExtraFilters(): array
@@ -108,5 +114,10 @@ class Lead extends BaseModel
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function leadCustomerAdditionalDetail()
+    {
+        return $this->hasOne(LeadCustomerAdditionalDetail::class);
     }
 }

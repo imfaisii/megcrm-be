@@ -1,9 +1,16 @@
 <?php
 
+use App\Http\Controllers\BenefitTypeController;
+use App\Http\Controllers\FuelTypeController;
+use App\Http\Controllers\JobTypeController;
+use App\Http\Controllers\LeadGeneratorController;
 use App\Http\Controllers\Leads\LeadController;
 use App\Http\Controllers\Leads\StatusController;
+use App\Http\Controllers\LeadSourceController;
+use App\Http\Controllers\MeasureController;
 use App\Http\Controllers\Permissions\PermissionController;
 use App\Http\Controllers\Permissions\RoleController;
+use App\Http\Controllers\SurveyorController;
 use App\Http\Controllers\Users\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -42,6 +49,15 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::apiResource('/users', UserController::class);
     Route::apiResource('/leads', LeadController::class);
     Route::apiResource('/lead-statuses', StatusController::class);
+
+    Route::apiResource('/lead-generators', LeadGeneratorController::class);
+    Route::apiResource('/lead-sources', LeadSourceController::class);
+    Route::apiResource('/surveyors', SurveyorController::class);
+    Route::apiResource('/job-types', JobTypeController::class);
+    Route::apiResource('/benefit-types', BenefitTypeController::class);
+    Route::apiResource('/fuel-types', FuelTypeController::class);
+    Route::apiResource('/measures', MeasureController::class);
+
 
     Route::get('/lead-extras', [LeadController::class, 'getExtras'])->name('leads.extras');
     Route::post('/lead-status/{lead}', [LeadController::class, 'updateStatus'])->name('leads.set-lead-status');

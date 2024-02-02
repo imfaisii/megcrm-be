@@ -2,14 +2,19 @@
 
 namespace App\Models;
 
+use App\Actions\Common\BaseModel;
+use App\Traits\Common\HasRecordCreator;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 
-class LeadGenerator extends Model
+class LeadGenerator extends BaseModel
 {
-    use HasFactory;
+    use HasFactory, HasRecordCreator;
 
     protected $fillable = [
         'name'
+    ];
+
+    protected array $allowedIncludes = [
+        'createdBy'
     ];
 }

@@ -20,7 +20,7 @@ class LeadFactory extends Factory
     public function definition(): array
     {
         return [
-            'title' => fake()->title,
+            'title' => fake()->randomElement(['Mr', 'Mrs', 'Ms']),
             'first_name' => fake()->firstName,
             'middle_name' => fake()->lastName,
             'last_name' => fake()->lastName,
@@ -30,6 +30,8 @@ class LeadFactory extends Factory
             'post_code' => fake()->postcode,
             'address' => fake()->address,
             'is_marked_as_job' => fake()->boolean, // Generates a random true or false
+            'surveyor_id' => 1,
+            'lead_generator_id' => 1,
             'created_by_id' => 1,
         ];
     }
@@ -41,6 +43,7 @@ class LeadFactory extends Factory
             Auth::loginUsingId(1);
 
             $lead->setStatus(LeadStatus::inRandomOrder()->first()->name, 'Factory Seeded');
+            $lead->leadCustomerAdditionalDetail()->create();
         });
     }
 }

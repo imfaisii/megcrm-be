@@ -10,8 +10,9 @@ trait HasLogsAppend
 {
     public static function bootHasLogsAppend()
     {
+        //! TABLE IS REQUIRED TO AVOID GETTING RECURSIVE LOGS
         static::retrieved(function ($model) {
-            if (is_append_present('logs')) {
+            if (is_append_present("{$model->getTable()}_logs")) {
                 $model->append('logs');
             }
         });
@@ -19,6 +20,16 @@ trait HasLogsAppend
 
     public function getLogsAttribute()
     {
-        return Activity::all();
+        $modelInstance = $this->getModel();
+
+        return Activity::where([
+            'subject_type' => get_class($modelInstance),
+            'subject_id' => $this->id
+        ])
+            ->latest()
+            ->with(['causer' => function ($query) {
+                $query->select('id', 'name', 'created_at', 'updated_at');
+            }])
+            ->get();
     }
 }
