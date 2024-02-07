@@ -2,7 +2,6 @@
 
 namespace App\Filters\Users;
 
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Spatie\QueryBuilder\Filters\Filter;
 
