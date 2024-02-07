@@ -13,6 +13,7 @@ use App\Http\Controllers\Permissions\PermissionController;
 use App\Http\Controllers\Permissions\RoleController;
 use App\Http\Controllers\SurveyorController;
 use App\Http\Controllers\Users\UserController;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -63,4 +64,28 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
 
     Route::get('/lead-extras', [LeadController::class, 'getExtras'])->name('leads.extras');
     Route::post('/lead-status/{lead}', [LeadController::class, 'updateStatus'])->name('leads.set-lead-status');
+});
+
+Route::get('/calendar/events', function () {
+    $data = [
+        'id' => 1,
+        'title' => 'Test Event',
+        'start' => Carbon::now(),
+        'end' => Carbon::now()->addHour(),
+        'extendedProps' => [
+            'calendar' => 'Holiday',
+            'guests' => [],
+            'location' => 'Dunkinfield',
+            'description' => 'Some description'
+        ],
+        'allDay' => false
+    ];
+
+    $calendars = request()->get('calendars', '');
+
+    $array = explode(",", $calendars);
+
+    return response()->json([
+        'data' => in_array('Holiday', $array) ? [$data] : []
+    ]);
 });
