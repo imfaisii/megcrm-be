@@ -5,6 +5,7 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
 use App\Actions\Common\BaseModel;
+use App\Filters\Users\FilterByRole;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -16,6 +17,7 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Arr;
 use LaravelAndVueJS\Traits\LaravelPermissionToVueJS;
 use Spatie\Activitylog\Traits\CausesActivity;
+use Spatie\QueryBuilder\AllowedFilter;
 
 class User extends BaseModel implements AuthenticatableContract
 {
@@ -44,9 +46,19 @@ class User extends BaseModel implements AuthenticatableContract
 
     protected array $allowedAppends = [];
 
-    protected array $allowedIncludes = [];
+    protected array $allowedIncludes = [
+        'createdBy',
+        'leadGeneratorAssignments'
+    ];
 
     protected $appends = ['rights', 'top_role'];
+
+    protected function getExtraFilters(): array
+    {
+        return [
+            AllowedFilter::custom('roles_except', new FilterByRole()),
+        ];
+    }
 
     public function getRightsAttribute()
     {
@@ -76,5 +88,12 @@ class User extends BaseModel implements AuthenticatableContract
     public function createdBy()
     {
         return $this->belongsTo(User::class, 'created_by_id');
+    }
+
+    public function leadGeneratorAssignments()
+    {
+        return $this->belongsToMany(LeadGenerator::class, LeadGeneratorAssignment::class)
+            ->withPivot('created_by_id')
+            ->withTimestamps();
     }
 }

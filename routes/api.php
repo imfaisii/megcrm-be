@@ -3,6 +3,7 @@
 use App\Http\Controllers\BenefitTypeController;
 use App\Http\Controllers\FuelTypeController;
 use App\Http\Controllers\JobTypeController;
+use App\Http\Controllers\LeadGeneratorAssignmentController;
 use App\Http\Controllers\LeadGeneratorController;
 use App\Http\Controllers\Leads\LeadController;
 use App\Http\Controllers\Leads\StatusController;
@@ -49,6 +50,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::apiResource('/users', UserController::class);
     Route::apiResource('/leads', LeadController::class);
     Route::apiResource('/lead-statuses', StatusController::class);
+    Route::apiResource('/lead-generator-assignments', LeadGeneratorAssignmentController::class);
 
     Route::apiResource('/lead-generators', LeadGeneratorController::class);
     Route::apiResource('/lead-sources', LeadSourceController::class);

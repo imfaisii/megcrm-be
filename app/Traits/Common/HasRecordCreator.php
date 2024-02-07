@@ -16,6 +16,12 @@ trait HasRecordCreator
                 $model->setAttribute('created_by_id', Auth::user()->id);
             }
         });
+
+        static::updating(function (Model $model) {
+            if (!Auth::guest()) {
+                $model->setAttribute('created_by_id', Auth::user()->id);
+            }
+        });
     }
 
     /**
