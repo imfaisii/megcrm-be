@@ -120,4 +120,11 @@ class Lead extends BaseModel
     {
         return $this->hasOne(LeadCustomerAdditionalDetail::class);
     }
+
+    public function benefits()
+    {
+        return $this->belongsToMany(BenefitType::class, LeadHasBenefit::class)
+            ->withPivot('created_by_id')
+            ->withTimestamps();
+    }
 }

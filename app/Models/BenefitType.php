@@ -18,4 +18,11 @@ class BenefitType extends BaseModel
     protected array $allowedIncludes = [
         'createdBy'
     ];
+
+    public function leads()
+    {
+        return $this->belongsToMany(Lead::class, LeadHasBenefit::class)
+            ->withPivot('created_by_id')
+            ->withTimestamps();
+    }
 }

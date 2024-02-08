@@ -61,6 +61,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::apiResource('/fuel-types', FuelTypeController::class);
     Route::apiResource('/measures', MeasureController::class);
 
+    Route::post('/leads/upload', [LeadController::class, 'handleFileUpload'])->name('leads.file-upload');
 
     Route::get('/lead-extras', [LeadController::class, 'getExtras'])->name('leads.extras');
     Route::post('/lead-status/{lead}', [LeadController::class, 'updateStatus'])->name('leads.set-lead-status');
