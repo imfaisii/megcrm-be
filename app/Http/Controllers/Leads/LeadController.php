@@ -103,8 +103,9 @@ class LeadController extends Controller
             $headings = (new HeadingRowImport())->toArray($request->file('file'))[0][0];
 
             if (count($headings) < 8) {
-                return 'error length';
+                return $this->error('File has invalid header.');
             }
+
             for ($i = 0; $i < 9; $i++) {
                 if ($headings[$i] !== $exampleHeader[$i]) {
                     $matched = false;
@@ -112,7 +113,7 @@ class LeadController extends Controller
             }
 
             if (!$matched) {
-                return 'header not matched';
+                return $this->error('File has invalid header.');
             }
 
             Excel::import(new LeadsImport, $request->file('file'));

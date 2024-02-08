@@ -11,7 +11,8 @@ class LeadGenerator extends BaseModel
     use HasFactory, HasRecordCreator;
 
     protected $fillable = [
-        'name'
+        'name',
+        'mask_name'
     ];
 
     protected array $allowedIncludes = [

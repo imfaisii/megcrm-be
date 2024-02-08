@@ -26,9 +26,12 @@ class LeadsImport implements ToCollection, WithHeadingRow
 
                 try {
                     // lead generator
-                    $leadGenerator = LeadGenerator::firstOrCreate([
-                        'name' => $row['website'] ?? 'Lead Generator Default'
-                    ]);
+                    $leadGenerator = LeadGenerator::firstOrCreate(
+                        [
+                            'mask_name' => $row['website'] ?? 'Lead Generator Default'
+                        ],
+                        ['name' => "Lead Generator " . LeadGenerator::count() + 1]
+                    );
 
                     // name
                     if (Str::contains(Arr::get($row, 'name', ''), " ")) {
