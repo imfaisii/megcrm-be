@@ -21,7 +21,7 @@ return new class extends Migration
             $table->boolean('is_customer_owner')->default(false);
             $table->boolean('is_lead_shared')->default(false);
             $table->boolean('is_datamatch_required')->default(false);
-            $table->string('datamatch_progress')->nullable();
+            $table->string('datamatch_progress')->default('Not Sent');
             $table->date('datamatch_progress_date')->nullable();
             $table->foreignIdFor(Lead::class);
             $table->timestamps();
