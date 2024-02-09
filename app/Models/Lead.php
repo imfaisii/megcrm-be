@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Actions\Common\BaseModel;
+use App\Filters\Leads\FilterByName;
 use App\Filters\Leads\FilterByStatus;
 use App\Traits\Common\HasRecordCreator;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -67,6 +68,7 @@ class Lead extends BaseModel
     protected function getExtraFilters(): array
     {
         return [
+            AllowedFilter::custom('name', new FilterByName()),
             AllowedFilter::custom('statuses', new FilterByStatus()),
         ];
     }
