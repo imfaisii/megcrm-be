@@ -39,6 +39,10 @@ class Lead extends BaseModel
 
     protected $appends = ['full_name', 'status_details'];
 
+    protected $casts = [
+        'is_marked_as_job' => 'boolean'
+    ];
+
     protected array $allowedIncludes = [
         'leadStatus',
         'leadGenerator',

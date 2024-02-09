@@ -22,6 +22,11 @@ class LeadCustomerAdditionalDetail extends BaseModel
         'lead_id'
     ];
 
+    protected $casts = [
+        'is_datamatch_required' => 'boolean',
+        'is_customer_owner' => 'boolean',
+    ];
+
     public function lead()
     {
         return $this->belongsTo(Lead::class);
