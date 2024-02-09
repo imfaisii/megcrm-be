@@ -59,7 +59,6 @@ class LeadsImport implements ToCollection, WithHeadingRow
                         ])->id;
                     }
 
-
                     $lead = Lead::firstOrCreate([
                         'address' => $address
                     ], [
@@ -68,7 +67,10 @@ class LeadsImport implements ToCollection, WithHeadingRow
                         'last_name' => $lastName,
                         'email' => $email,
                         'phone_no' => $phoneNo,
-                        'dob' => is_null($dob) ? now()->format('Y-m-d') : \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($dob)->format('Y-m-d'),
+                        'dob' => is_null($dob)
+                            ? now()->format('Y-m-d') : (is_int($dob)
+                                ? \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($dob)->format('Y-m-d')
+                                : $dob),
                         'post_code' => $postCode,
                         'lead_generator_id' => $leadGenerator->id,
                         'user_id' => auth()->id(),
