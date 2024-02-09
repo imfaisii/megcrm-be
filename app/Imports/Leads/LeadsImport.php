@@ -20,8 +20,6 @@ class LeadsImport implements ToCollection, WithHeadingRow
     {
         foreach ($rows as $key => $row) {
             if (isset($row['address']) && $row['address'] !== null) {
-                $firstName = null;
-                $lastName = null;
                 $benefitTypes = [];
 
                 try {
@@ -33,20 +31,8 @@ class LeadsImport implements ToCollection, WithHeadingRow
                         ['name' => "Lead Generator " . LeadGenerator::count() + 1]
                     );
 
-                    // name
-                    if (Str::contains(Arr::get($row, 'name', ''), " ")) {
-                        $name = explode(" ", $row['name']);
-
-                        if (count($name) > 1) {
-                            $firstName = $name[0];
-                            $lastName = filled($name[1]) ? $name[1]  : null;
-                        }
-                    } else {
-                        $firstName = $row['name'] ?? null;
-                    }
-
                     $email = Arr::get($row, 'email', null);
-                    $phoneNo = Arr::get($row, 'contact_number', null);
+                    $phoneNo = Arr::get($row, 'contact_number', '000000');
                     $dob = Arr::get($row, 'dob', null);
                     $postCode = Arr::get($row, 'postcode', null);
                     $address = Arr::get($row, 'address', null);
@@ -59,14 +45,17 @@ class LeadsImport implements ToCollection, WithHeadingRow
                         ])->id;
                     }
 
-                    $lead = Lead::firstOrCreate([
-                        'address' => $address
+                    $name = $this->split_name($row['name'] ?? '');
+
+                    $lead = Lead::updateOrCreate([
+                        'address' => (string)$address
                     ], [
                         'title' => 'Mr',
-                        'first_name' => $firstName,
-                        'last_name' => $lastName,
+                        'first_name' => $name['first_name'] ?? '',
+                        'middle_name' => $name['middle_name'] ?? '',
+                        'last_name' => $name['last_name'] ?? '',
                         'email' => $email,
-                        'phone_no' => $phoneNo,
+                        'phone_no' => $phoneNo ?? '00000',
                         'dob' => is_null($dob)
                             ? now()->format('Y-m-d') : (is_int($dob)
                                 ? \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($dob)->format('Y-m-d')
@@ -90,7 +79,35 @@ class LeadsImport implements ToCollection, WithHeadingRow
                         "Error importing lead address: " . $address . ". " . $exception->getMessage()
                     );
                 }
+            } else {
+                Log::channel('lead_file_read_log')->info(
+                    "Error importing lead address else: " . $row['address']
+                );
             }
         }
+    }
+
+    public function split_name($name)
+    {
+        $parts = array();
+
+        while (strlen(trim($name)) > 0) {
+            $name = trim($name);
+            $string = preg_replace('#.*\s([\w-]*)$#', '$1', $name);
+            $parts[] = $string;
+            $name = trim(preg_replace('#' . preg_quote($string, '#') . '#', '', $name));
+        }
+
+        if (empty($parts)) {
+            return false;
+        }
+
+        $parts = array_reverse($parts);
+        $name = array();
+        $name['first_name'] = $parts[0];
+        $name['middle_name'] = (isset($parts[2])) ? $parts[1] : '';
+        $name['last_name'] = (isset($parts[2])) ? $parts[2] : (isset($parts[1]) ? $parts[1] : '');
+
+        return $name;
     }
 }
