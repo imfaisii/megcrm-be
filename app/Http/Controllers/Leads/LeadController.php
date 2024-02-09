@@ -24,6 +24,7 @@ use App\Models\Surveyor;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\ResourceCollection;
+use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Facades\Excel;
 use Maatwebsite\Excel\HeadingRowImport;
 
@@ -103,7 +104,7 @@ class LeadController extends Controller
             $headings = (new HeadingRowImport())->toArray($request->file('file'))[0][0];
 
             if (count($headings) < 8) {
-                return $this->error('File has invalid header.');
+                throw new Exception('File has invalid header. (less headings)' . json_encode($headings));
             }
 
             for ($i = 0; $i < 9; $i++) {
@@ -113,13 +114,16 @@ class LeadController extends Controller
             }
 
             if (!$matched) {
-                return $this->error('File has invalid header.');
+                throw new Exception('File has invalid header ( not matched ).' . json_encode($headings));
             }
 
             Excel::import(new LeadsImport, $request->file('file'));
 
             return $this->success('File was uploaded successfully.');
         } catch (Exception $e) {
+            Log::channel('lead_file_read_log')->info(
+                "Error importing exception " . $e->getMessage()
+            );
             return $this->error($e->getMessage());
         }
     }
