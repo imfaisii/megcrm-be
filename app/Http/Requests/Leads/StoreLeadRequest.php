@@ -27,7 +27,7 @@ class StoreLeadRequest extends BaseFormRequest
             'surveyor_id' => ['nullable', 'exists:surveyors,id'],
             'lead_generator_id' => ['nullable', 'exists:lead_generators,id'],
             'lead_source_id' => ['nullable', 'exists:lead_sources,id'],
-            'benefit_type_id' => ['nullable', 'exists:benefit_types,id'],
+            'benefits' => ['nullable', 'array'],
             'comments' => ['nullable']
         ];
     }

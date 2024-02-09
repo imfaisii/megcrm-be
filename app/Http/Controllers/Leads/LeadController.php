@@ -40,8 +40,8 @@ class LeadController extends Controller
 
     public function store(StoreLeadRequest $request, StoreLeadAction $action)
     {
-        $action->create($request->validated());
-        return null_resource();
+        $lead = $action->create($request->validated());
+        return $action->individualResource($lead);
     }
 
     public function show(int $lead, FindLeadAction $action)

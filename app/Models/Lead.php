@@ -43,7 +43,8 @@ class Lead extends BaseModel
         'leadStatus',
         'leadGenerator',
         'statuses',
-        'leadCustomerAdditionalDetail'
+        'leadCustomerAdditionalDetail',
+        'benefits'
     ];
 
     protected function getFullNameAttribute()

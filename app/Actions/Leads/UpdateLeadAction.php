@@ -24,6 +24,11 @@ class UpdateLeadAction extends AbstractUpdateAction
         // updating relation
         $lead->leadCustomerAdditionalDetail()->update($data['lead_customer_additional_detail']);
 
+        // adding benefits
+        $lead->benefits()->syncWithPivotValues($data['benefits'], [
+            'created_by_id' => auth()->id()
+        ]);
+
         return $lead;
     }
 }

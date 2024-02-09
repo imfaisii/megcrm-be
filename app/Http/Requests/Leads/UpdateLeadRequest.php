@@ -28,7 +28,7 @@ class UpdateLeadRequest extends BaseFormRequest
             'surveyor_id' => ['sometimes', 'nullable', 'exists:surveyors,id'],
             'lead_generator_id' => ['sometimes', 'nullable', 'exists:lead_generators,id'],
             'lead_source_id' => ['sometimes', 'nullable', 'exists:lead_sources,id'],
-            'benefit_type_id' => ['sometimes', 'nullable', 'exists:benefit_types,id'],
+            'benefits' => ['sometimes', 'array'],
             'comments' => ['sometimes', 'nullable'],
             'lead_customer_additional_detail' => ['required', 'array'],
             'lead_customer_additional_detail.contact_method' => ['nullable', 'string'],
