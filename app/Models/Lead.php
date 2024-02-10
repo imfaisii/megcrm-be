@@ -8,7 +8,6 @@ use App\Filters\Leads\FilterByStatus;
 use App\Traits\Common\HasRecordCreator;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Imfaisii\ModelStatus\HasStatuses;
-use Spatie\Activitylog\Models\Activity;
 use Spatie\QueryBuilder\AllowedFilter;
 
 
@@ -48,7 +47,9 @@ class Lead extends BaseModel
         'leadGenerator',
         'statuses',
         'leadCustomerAdditionalDetail',
-        'benefits'
+        'benefits',
+        'callCenters',
+        'callCenters.callCenterStatus'
     ];
 
     protected function getFullNameAttribute()
@@ -103,16 +104,6 @@ class Lead extends BaseModel
         return $this->belongsTo(LeadGenerator::class);
     }
 
-    public function benefitType()
-    {
-        return $this->belongsTo(BenefitType::class);
-    }
-
-    public function leadAdditionalDetail()
-    {
-        return $this->hasOne(LeadAdditionalDetail::class);
-    }
-
     public function secondReceipent()
     {
         return $this->hasOne(SecondReceipent::class);
@@ -126,6 +117,11 @@ class Lead extends BaseModel
     public function leadCustomerAdditionalDetail()
     {
         return $this->hasOne(LeadCustomerAdditionalDetail::class);
+    }
+
+    public function callCenters()
+    {
+        return $this->hasMany(CallCenter::class);
     }
 
     public function benefits()

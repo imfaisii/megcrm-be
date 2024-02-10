@@ -13,6 +13,7 @@ use App\Http\Requests\Leads\UpdateLeadRequest;
 use App\Http\Requests\Leads\UpdateLeadStatusRequest;
 use App\Imports\Leads\LeadsImport;
 use App\Models\BenefitType;
+use App\Models\CallCenterStatus;
 use App\Models\FuelType;
 use App\Models\JobType;
 use App\Models\Lead;
@@ -73,7 +74,8 @@ class LeadController extends Controller
             'lead_generators' => LeadGenerator::all(),
             'lead_sources' => LeadSource::all(),
             'lead_statuses' => LeadStatus::all(),
-            'lead_table_filters' => LeadStatus::take(6)->get()
+            'lead_table_filters' => LeadStatus::take(6)->get(),
+            'call_center_statuses' => CallCenterStatus::all()
         ];
 
         return $this->success(data: $data);

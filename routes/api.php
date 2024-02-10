@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\BenefitTypeController;
+use App\Http\Controllers\CallCenterController;
+use App\Http\Controllers\CallCenterStatusesController;
 use App\Http\Controllers\FuelTypeController;
 use App\Http\Controllers\JobTypeController;
 use App\Http\Controllers\LeadGeneratorAssignmentController;
@@ -60,6 +62,8 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::apiResource('/benefit-types', BenefitTypeController::class);
     Route::apiResource('/fuel-types', FuelTypeController::class);
     Route::apiResource('/measures', MeasureController::class);
+    Route::apiResource('/call-center', CallCenterController::class);
+    Route::apiResource('/call-center-statuses', CallCenterStatusesController::class);
 
     Route::post('/leads/upload', [LeadController::class, 'handleFileUpload'])->name('leads.file-upload');
 

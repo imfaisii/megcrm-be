@@ -2,6 +2,7 @@
 
 namespace App\Traits\Common;
 
+use App\Models\LeadCustomerAdditionalDetail;
 use Spatie\Activitylog\Models\Activity;
 
 use function App\Helpers\is_append_present;
@@ -20,13 +21,7 @@ trait HasLogsAppend
 
     public function getLogsAttribute()
     {
-        $modelInstance = $this->getModel();
-
-        return Activity::where([
-            'subject_type' => get_class($modelInstance),
-            'subject_id' => $this->id
-        ])
-            ->latest()
+        return Activity::forSubject($this)->latest()
             ->with(['causer' => function ($query) {
                 $query->select('id', 'name', 'created_at', 'updated_at');
             }])
