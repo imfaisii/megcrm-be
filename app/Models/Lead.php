@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Actions\Common\BaseModel;
 use App\Filters\Leads\FilterByName;
 use App\Filters\Leads\FilterByStatus;
+use App\Traits\Common\HasCalenderEvent;
 use App\Traits\Common\HasRecordCreator;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Imfaisii\ModelStatus\HasStatuses;
@@ -14,7 +15,7 @@ use Spatie\QueryBuilder\AllowedFilter;
 
 class Lead extends BaseModel
 {
-    use HasFactory, HasRecordCreator, HasStatuses;
+    use HasFactory, HasRecordCreator, HasStatuses, HasCalenderEvent;
 
     protected $fillable = [
         'title',
