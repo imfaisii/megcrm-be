@@ -108,7 +108,7 @@
             }
         }
     </style>
-
+    @stack('style')
     <!--[if !mso]><!-->
     <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,700&display=swap" rel="stylesheet"
         type="text/css" />
@@ -318,7 +318,8 @@
                                                         <a href="#" style="color: #66667e">Contact Us</a>
                                                     </td>
                                                     <td>
-                                                        <a href="https://megcrm.co.uk/login" style="color: #66667e">View in
+                                                        <a href="https://megcrm.co.uk/login" style="color: #66667e">View
+                                                            in
                                                             Browser</a>
                                                     </td>
                                                 </tr>

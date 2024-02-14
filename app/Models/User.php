@@ -96,4 +96,8 @@ class User extends BaseModel implements AuthenticatableContract
             ->withPivot('created_by_id')
             ->withTimestamps();
     }
+    public function routeNotificationForSlack()
+    {
+        return data_get(config('logging.channels.slack-crm'),'url');
+    }
 }
