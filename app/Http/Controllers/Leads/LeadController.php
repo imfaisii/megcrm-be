@@ -71,7 +71,8 @@ class LeadController extends Controller
             'Ready for Installation',
             'Installed',
             'Follow Up',
-            'Survey Booked'
+            'Survey Booked',
+            'Cancelled'
         ];
 
         $data = [
