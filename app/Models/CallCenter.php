@@ -18,6 +18,10 @@ class CallCenter extends BaseModel
         'call_center_status_id'
     ];
 
+    protected $casts = [
+        'is_call_scheduled' => 'boolean'
+    ];
+
     public function lead()
     {
         return $this->belongsTo(Lead::class);
