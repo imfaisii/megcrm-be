@@ -65,6 +65,15 @@ class LeadController extends Controller
 
     public function getExtras()
     {
+        $tableStatuses = [
+            'Ready for Survey',
+            'Waiting for Datamatch',
+            'Ready for Installation',
+            'Installed',
+            'Follow Up',
+            'Survey Booked'
+        ];
+
         $data = [
             'job_types' => JobType::all(),
             'fuel_types' => FuelType::all(),
@@ -74,7 +83,7 @@ class LeadController extends Controller
             'lead_generators' => LeadGenerator::all(),
             'lead_sources' => LeadSource::all(),
             'lead_statuses' => LeadStatus::all(),
-            'lead_table_filters' => LeadStatus::take(6)->get(),
+            'lead_table_filters' => LeadStatus::whereIn('name', $tableStatuses)->get(),
             'call_center_statuses' => CallCenterStatus::all()
         ];
 

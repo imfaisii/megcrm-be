@@ -30,7 +30,7 @@ class DatabaseSeeder extends Seeder
             LeadSourceSeeder::class,
             MeasureSeeder::class,
             SurveyorSeeder::class,
-            CallCenterStatus::class,
+            CallCenterStatusSeeder::class,
 
             //! Always after adminseeder
             LeadStatusSeeder::class
@@ -39,8 +39,7 @@ class DatabaseSeeder extends Seeder
         if ($local) {
             // factories
             User::factory()->count(20)->create();
+            Lead::factory()->count(20)->create();
         }
-
-        Lead::factory()->count($local ? 20 : 5)->create();
     }
 }
