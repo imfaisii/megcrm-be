@@ -24,7 +24,8 @@ class CalenderEvents extends BaseModel
         'description',
         'location',
         'extra_data',
-        'lead_id',
+        'eventable_id',
+        'eventable_type',
         'user_id',
         'created_by_id',
     ];

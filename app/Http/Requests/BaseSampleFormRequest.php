@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Foundation\Http\FormRequest;
 
-final class sampleRequest extends FormRequest
+ abstract class BaseSampleFormRequest extends FormRequest
 {
   protected $stopOnFirstFailure = true;   // whether to stop the request validation after first failure of any attribute
   public function authorize()

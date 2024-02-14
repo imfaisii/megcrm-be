@@ -13,6 +13,7 @@ use App\Http\Controllers\Permissions\PermissionController;
 use App\Http\Controllers\Permissions\RoleController;
 use App\Http\Controllers\SurveyorController;
 use App\Http\Controllers\Users\UserController;
+use App\Models\CalenderEvents;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -60,6 +61,9 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::apiResource('/benefit-types', BenefitTypeController::class);
     Route::apiResource('/fuel-types', FuelTypeController::class);
     Route::apiResource('/measures', MeasureController::class);
+
+    Route::apiResource('/calender-event', CalenderEvents::class);
+
 
     Route::post('/leads/upload', [LeadController::class, 'handleFileUpload'])->name('leads.file-upload');
 
