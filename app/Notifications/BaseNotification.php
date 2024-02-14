@@ -11,31 +11,32 @@ use Illuminate\Mail\Mailable;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Messages\SlackMessage;
 use Illuminate\Notifications\Notification;
+use Illuminate\Support\Arr;
 
 abstract class BaseNotification extends Notification implements ShouldQueue
 {
   use Queueable;
+  public array $data;
+  public array $viaOptions;
 
   /**
    * Create a new notification instance.
    */
   public function __construct(...$params)
   {
+    $this->data = Arr::get($params, 'data', []);
+    $this->viaOptions = Arr::get($params, 'via', ['database']);
     $this->afterCommit();
-    $this->onConnection(app()->isLocal() ? 'sync' : 'database'); //later we would change it to redis
+    $this->onConnection(app()->isLocal() ? 'sync' : env('QUEUE_CONNECTION', 'database')); //later we would change it to redis
   }
 
   public function viaQueues(): array
   {
     return [
-      'mail' => AppEnum::MailQue,
-      'slack' => AppEnum::SlackQue,
+      'mail' => 'mail-queue',
+      'slack' => 'slack-queue',
     ];
   }
-
-
-
-
   /**
    * Get the notification's delivery channels.
    *
@@ -43,22 +44,7 @@ abstract class BaseNotification extends Notification implements ShouldQueue
    */
   public function via(object $notifiable): array
   {
-    //this notifiable is an entry of user to whom the notification is being sent as one model each time 
-    return ($notifiable instanceof User) ? ($notifiable?->prefer_notification   ? json_decode($notifiable->prefer_notification) : ['mail', ]) : ['mail'];
-  }
-
-  /**
-   * Get the mail representation of the notification.
-   */
-  public function toMail(object $notifiable): MailMessage|Mailable
-  {
-    return   (new MailMessage)->view(['mails.status.status-update-email', 'mails.status.status-update-email'], ['data'=>['email' => 'hamza@gmail.com','password'=>'12324']]
-  );
-    return (new MailMessage)
-      ->line('The introduction to the notification.')
-      ->action('Notification Action', url('/'))
-      ->line('Thank you for using our application!');
-      // ->attach(storage_path('app/public/dummy.pdf'));
+    return ($notifiable instanceof User) ? ($notifiable?->prefer_notification   ? json_decode($notifiable->prefer_notification) : $this->viaOptions) : ['mail'];
   }
 
   /**
@@ -68,15 +54,13 @@ abstract class BaseNotification extends Notification implements ShouldQueue
    */
   public function toArray(object $notifiable): array
   {
-    return [
-      //
-    ];
+    return $this->data;
   }
 
 
-  public function toSlack($notifiable)
-  {
-    return (new SlackMessage)
-      ->content("A new Update Status Message has been sent to the User {$notifiable->email}");
-  }
+  //   public function toSlack($notifiable)
+  //   {
+  //     return (new SlackMessage)
+  //  ->content("A new Update Status Message has been sent to the User {$notifiable->email}");
+  //   }
 }
