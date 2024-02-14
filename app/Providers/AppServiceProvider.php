@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Notifications\Events\NewCalLScheduledNotification;
 use App\Notifications\TestNotification;
 use Illuminate\Support\ServiceProvider;
 use Test;
@@ -13,11 +14,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        
-        app()->bind(TestNotification::class, function ($app, $parameters) {
-            return new TestNotification(...$parameters);
+
+        app()->bind(NewCalLScheduledNotification::class, function ($app, $parameters) {
+            return new NewCalLScheduledNotification(...$parameters);
         });
-        
     }
 
     /**

@@ -22,7 +22,14 @@ use Spatie\QueryBuilder\AllowedFilter;
 
 class User extends BaseModel implements AuthenticatableContract
 {
-    use HasApiTokens, HasCalenderEvent,HasFactory, Authenticatable, Notifiable, HasRoles, LaravelPermissionToVueJS, CausesActivity;
+    use HasApiTokens,
+        HasCalenderEvent,
+        HasFactory,
+        Authenticatable,
+        Notifiable,
+        HasRoles,
+        LaravelPermissionToVueJS,
+        CausesActivity;
 
     protected $guard_name = 'sanctum';
 
@@ -99,6 +106,6 @@ class User extends BaseModel implements AuthenticatableContract
     }
     public function routeNotificationForSlack()
     {
-        return data_get(config('logging.channels.slack-crm'),'url');
+        return data_get(config('logging.channels.slack-crm'), 'url');
     }
 }

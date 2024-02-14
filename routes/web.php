@@ -1,9 +1,7 @@
 <?php
 
-use App\Enums\AppEnum;
 use App\Models\User;
-use App\Notifications\StatusChangeNotification;
-use Illuminate\Support\Facades\Notification;
+use App\Notifications\Events\NewCallScheduledNotification;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -17,13 +15,14 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('test',function(){
-    
+Route::get('test', function () {
     $user = User::skip(1)->take(1)->first();
-    Notification::send($user,new StatusChangeNotification());
-   return $data = $user->notify(new StatusChangeNotification());
-    dd($data);
 
+    $user->notify(new NewCallScheduledNotification([
+        'title' => 'Some title',
+        'subtitle' => 'Some Subtitle',
+        'module' => 'leads'
+    ]));
 });
 
 Route::get('/', function () {
