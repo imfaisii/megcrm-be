@@ -49,6 +49,7 @@ class Lead extends BaseModel
         'leadCustomerAdditionalDetail',
         'benefits',
         'callCenters',
+        'callCenters.createdBy',
         'callCenters.callCenterStatus'
     ];
 

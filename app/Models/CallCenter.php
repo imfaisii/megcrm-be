@@ -11,7 +11,8 @@ class CallCenter extends BaseModel
     use HasFactory, HasRecordCreator;
 
     protected $fillable = [
-        'called_at',
+        'is_call_scheduled',
+        'call_scheduled_time',
         'comments',
         'lead_id',
         'call_center_status_id'
