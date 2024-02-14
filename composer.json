@@ -19,6 +19,7 @@
         "laravel/tinker": "^2.8",
         "maatwebsite/excel": "^3.1",
         "spatie/laravel-activitylog": "^4.7",
+        "spatie/laravel-backup": "^8.6",
         "spatie/laravel-deleted-models": "^1.0",
         "spatie/laravel-permission": "^6.3",
         "spatie/laravel-query-builder": "^5.7",
