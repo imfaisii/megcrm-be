@@ -9,7 +9,7 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class StatusChangeEmailEmail extends Mailable
+class StatusChangeEmail extends Mailable
 {
     use Queueable, SerializesModels;
 
@@ -27,7 +27,7 @@ class StatusChangeEmailEmail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Status Change Email Email',
+            subject: 'Status Change Email',
         );
     }
 
