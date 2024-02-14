@@ -47,7 +47,7 @@ class LeadsImport implements ToCollection, WithHeadingRow
 
                     $name = $this->split_name($row['name'] ?? '');
 
-                    $lead = Lead::updateOrCreate([
+                    $lead = Lead::firstOrCreate([
                         'address' => (string)$address
                     ], [
                         'title' => 'Mr',
