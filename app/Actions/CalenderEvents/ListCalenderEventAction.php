@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Actions\CalendereEvent;
+namespace App\Actions\CalenderEvents;
 
 use App\Actions\Common\AbstractListAction;
 use App\Models\CalenderEvent;

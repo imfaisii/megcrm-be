@@ -13,6 +13,7 @@ final class StoreCalenderEventRequest extends BaseFormRequest
             'start_date' => 'required|date',
             'end_date' => 'required|date|after_or_equal:start_date',
             'all_day' => 'nullable|boolean',
+            'calendar_id' => 'nullable|integer',
             'description' => 'nullable|string:max:250',
             'location' => 'nullable|string|max:255',
             'extra_data' => 'nullable|array',

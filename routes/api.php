@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\BenefitTypeController;
+use App\Http\Controllers\CalendarController;
+use App\Http\Controllers\CalenderEventsController;
 use App\Http\Controllers\CallCenterController;
 use App\Http\Controllers\CallCenterStatusesController;
 use App\Http\Controllers\FuelTypeController;
@@ -15,8 +17,6 @@ use App\Http\Controllers\Permissions\PermissionController;
 use App\Http\Controllers\Permissions\RoleController;
 use App\Http\Controllers\SurveyorController;
 use App\Http\Controllers\Users\UserController;
-use App\Models\CalenderEvents;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -65,36 +65,12 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::apiResource('/measures', MeasureController::class);
     Route::apiResource('/call-center', CallCenterController::class);
     Route::apiResource('/call-center-statuses', CallCenterStatusesController::class);
-
-    Route::apiResource('/calender-event', CalenderEvents::class);
+    Route::apiResource('/calendars', CalendarController::class);
+    Route::apiResource('/calendar-events', CalenderEventsController::class);
 
 
     Route::post('/leads/upload', [LeadController::class, 'handleFileUpload'])->name('leads.file-upload');
 
     Route::get('/lead-extras', [LeadController::class, 'getExtras'])->name('leads.extras');
     Route::post('/lead-status/{lead}', [LeadController::class, 'updateStatus'])->name('leads.set-lead-status');
-});
-
-Route::get('/calendar/events', function () {
-    $data = [
-        'id' => 1,
-        'title' => 'Test Event',
-        'start' => Carbon::now(),
-        'end' => Carbon::now()->addHour(),
-        'extendedProps' => [
-            'calendar' => 'Holiday',
-            'guests' => [],
-            'location' => 'Dunkinfield',
-            'description' => 'Some description'
-        ],
-        'allDay' => false
-    ];
-
-    $calendars = request()->get('calendars', '');
-
-    $array = explode(",", $calendars);
-
-    return response()->json([
-        'data' => in_array('Holiday', $array) ? [$data] : []
-    ]);
 });

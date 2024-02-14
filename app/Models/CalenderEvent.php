@@ -26,6 +26,7 @@ class CalenderEvent extends BaseModel
         'extra_data',
         'eventable_id',
         'eventable_type',
+        'calendar_id',
         'user_id',
         'created_by_id',
     ];

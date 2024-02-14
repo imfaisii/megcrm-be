@@ -2,20 +2,20 @@
 
 namespace App\Http\Controllers;
 
-use App\Actions\CalenderEvents\ListCalenderEventAction;
-use App\Actions\CalenderEvents\StoreCalenderEventAction;
+use App\Actions\Calendars\ListCalendarAction;
+use App\Actions\Calendars\StoreCalendarAction;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 
-class CalenderEventsController extends Controller
+class CalendarController extends Controller
 {
-    public function index(ListCalenderEventAction $action): ResourceCollection
+    public function index(ListCalendarAction $action): ResourceCollection
     {
         $action->enableQueryBuilder();
         return $action->resourceCollection($action->listOrPaginate());
     }
 
-    public function store(Request $request, StoreCalenderEventAction $action)
+    public function store(Request $request, StoreCalendarAction $action)
     {
         $lead = $action->create($request->validated());
         return $action->individualResource($lead);
