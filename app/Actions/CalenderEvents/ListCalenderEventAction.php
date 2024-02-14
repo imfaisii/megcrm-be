@@ -3,9 +3,9 @@
 namespace App\Actions\CalendereEvent;
 
 use App\Actions\Common\AbstractListAction;
-use App\Models\CalenderEvents;
+use App\Models\CalenderEvent;
 
 class ListCalenderEventAction extends AbstractListAction
 {
-    protected string $modelClass = CalenderEvents::class;
+    protected string $modelClass = CalenderEvent::class;
 }

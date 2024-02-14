@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Imfaisii\ModelStatus\HasStatuses;
 
-class CalenderEvents extends BaseModel
+class CalenderEvent extends BaseModel
 {
     use HasFactory, HasRecordCreator, HasStatuses;
 

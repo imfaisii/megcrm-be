@@ -2,14 +2,10 @@
 
 namespace App\Actions\CalendereEvent;
 
-use App\Actions\Common\AbstractListAction;
-use App\Models\CalenderEvents;
+use App\Actions\Common\AbstractCreateAction;
+use App\Models\CalenderEvent;
 
-class StoreCalenderEventAction extends AbstractListAction
+class StoreCalenderEventAction extends AbstractCreateAction
 {
-  protected string $modelClass = CalenderEvents::class;
-
-  public function create(array $data){
-    
-  }
+    protected string $modelClass = CalenderEvent::class;
 }
