@@ -27,6 +27,8 @@ class StoreCallCenterAction extends AbstractCreateAction
                     'all_day' => CallScheduledEnum::IS_FULL_DAY,
                     'description' => CallScheduledEnum::getDescriptionMessage($lead->full_name, $lead->status_details->name),
                     'calendar_id' => CallScheduledEnum::getCalendarId(),
+                    'eventable_type' => Lead::class,
+                    'eventable_id' => $lead->id,
                     'user_id' => auth()->id(),
                     'created_by_id' => auth()->id(),
                 ]);

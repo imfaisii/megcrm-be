@@ -11,7 +11,9 @@ class CalenderEventsController extends Controller
 {
     public function index(ListCalenderEventAction $action): ResourceCollection
     {
-        $action->enableQueryBuilder();
+        $action
+            ->setUser(auth()->user())
+            ->enableQueryBuilder();
         return $action->resourceCollection($action->listOrPaginate());
     }
 
