@@ -31,6 +31,7 @@ class DatabaseSeeder extends Seeder
             MeasureSeeder::class,
             SurveyorSeeder::class,
             CallCenterStatusSeeder::class,
+            CalendarSeeder::class,
 
             //! Always after adminseeder
             LeadStatusSeeder::class

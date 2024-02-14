@@ -81,6 +81,14 @@ return [
             'level' => env('LOG_LEVEL', 'critical'),
             'replace_placeholders' => true,
         ],
+        'slack-crm'=>[
+            'driver' => 'slack',
+            'url' => "https://hooks.slack.com/services/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",
+            'username' => 'MEG CRM',
+            'emoji' => ':boom:',
+            'level' => env('LOG_LEVEL', 'info'),
+            'replace_placeholders' => true,
+        ],
 
         'papertrail' => [
             'driver' => 'monolog',

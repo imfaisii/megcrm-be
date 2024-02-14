@@ -6,6 +6,7 @@ namespace App\Models;
 
 use App\Actions\Common\BaseModel;
 use App\Filters\Users\FilterByRole;
+use App\Traits\Common\HasCalenderEvent;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -21,7 +22,7 @@ use Spatie\QueryBuilder\AllowedFilter;
 
 class User extends BaseModel implements AuthenticatableContract
 {
-    use HasApiTokens, HasFactory, Authenticatable, Notifiable, HasRoles, LaravelPermissionToVueJS, CausesActivity;
+    use HasApiTokens, HasCalenderEvent,HasFactory, Authenticatable, Notifiable, HasRoles, LaravelPermissionToVueJS, CausesActivity;
 
     protected $guard_name = 'sanctum';
 
@@ -95,5 +96,9 @@ class User extends BaseModel implements AuthenticatableContract
         return $this->belongsToMany(LeadGenerator::class, LeadGeneratorAssignment::class)
             ->withPivot('created_by_id')
             ->withTimestamps();
+    }
+    public function routeNotificationForSlack()
+    {
+        return data_get(config('logging.channels.slack-crm'),'url');
     }
 }
