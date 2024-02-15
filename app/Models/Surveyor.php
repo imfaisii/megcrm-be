@@ -11,7 +11,8 @@ class Surveyor extends BaseModel
     use HasFactory, HasRecordCreator;
 
     protected $fillable = [
-        'name'
+        'name',
+        'user_id'
     ];
 
     protected array $allowedIncludes = [

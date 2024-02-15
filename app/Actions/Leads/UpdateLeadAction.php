@@ -5,7 +5,6 @@ namespace App\Actions\Leads;
 use App\Actions\Common\AbstractUpdateAction;
 use App\Models\BenefitType;
 use App\Models\Lead;
-use App\Models\LeadCustomerAdditionalDetail;
 use Illuminate\Support\Arr;
 
 class UpdateLeadAction extends AbstractUpdateAction
