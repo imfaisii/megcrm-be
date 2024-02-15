@@ -7,7 +7,6 @@ use App\Actions\Common\AbstractCreateAction;
 use App\Enums\Events\Leads\CallScheduledEnum;
 use App\Models\CallCenter;
 use App\Models\Lead;
-use App\Models\User;
 use App\Notifications\Events\NewCallScheduledNotification;
 use Carbon\Carbon;
 use Illuminate\Support\Arr;
@@ -41,6 +40,12 @@ class StoreCallCenterAction extends AbstractCreateAction
                     'subtitle' => CallScheduledEnum::getNotificationSubtitle($lead->full_name),
                     'module' => 'leads'
                 ]));
+
+                activity()
+                    ->causedBy(auth()->user())
+                    ->performedOn($lead)
+                    ->event('updated')
+                    ->log( "A call is scheduled {$lead->full_name} at " . Carbon::parse($data['call_scheduled_time'])->format('H:i:s Y/m/d'));
             }
         }
 

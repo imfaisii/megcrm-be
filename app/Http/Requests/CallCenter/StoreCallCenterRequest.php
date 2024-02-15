@@ -12,7 +12,7 @@ class StoreCallCenterRequest extends BaseFormRequest
             'call_center_status_id' => ['required', 'exists:call_center_statuses,id'],
             'comments' => ['string', 'nullable'],
             'is_call_scheduled' => ['required', 'boolean'],
-            'call_scheduled_time' => ['required_if:is_call_scheduled,true'],
+            'call_scheduled_time' => ['required_if:is_call_scheduled,true', 'after:now'],
             'lead_id' => ['required', 'exists:leads,id']
         ];
     }
