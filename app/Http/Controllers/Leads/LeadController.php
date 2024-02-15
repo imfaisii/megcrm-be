@@ -75,7 +75,10 @@ class LeadController extends Controller
             'Survey Booked',
             'Cancelled',
             'Waiting for Boiler Picture',
-            'Not interested'
+            'Not interested',
+            'Called from ring central',
+            'Called from second number',
+            'No answer'
         ];
 
         $data = [
