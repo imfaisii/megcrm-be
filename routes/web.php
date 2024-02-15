@@ -1,5 +1,6 @@
 <?php
 
+use App\Classes\AirCall;
 use App\Models\User;
 use App\Notifications\Events\NewCallScheduledNotification;
 use Illuminate\Support\Facades\Route;
@@ -16,13 +17,16 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('test', function () {
-    $user = User::skip(1)->take(1)->first();
-
-    $user->notify(new NewCallScheduledNotification([
-        'title' => 'Some title',
-        'subtitle' => 'Some Subtitle',
-        'module' => 'leads'
-    ]));
+  
+   
+    // // userId:1128951
+    // // return (new AirCall())->startACall(userId:1129004,queryParams:[
+    // //     'number_id'=>'720272',
+    // //     'to'=>'+447932460925'
+    // // ]);   // samiya 
+    //      return (new AirCall())->getUsers(userId:1129004);
+    
+    
 });
 
 Route::get('/', function () {
