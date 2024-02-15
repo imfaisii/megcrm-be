@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Actions\Common\BaseModel;
 use App\Filters\Leads\FilterByName;
+use App\Filters\Leads\FilterByPostcode;
 use App\Filters\Leads\FilterByStatus;
 use App\Traits\Common\HasCalenderEvent;
 use App\Traits\Common\HasRecordCreator;
@@ -54,6 +55,10 @@ class Lead extends BaseModel
         'callCenters.callCenterStatus'
     ];
 
+    protected array $discardedFieldsInFilter = [
+        'post_code'
+    ];
+
     protected function getFullNameAttribute()
     {
         return $this->first_name . ' ' . $this->middle_name . ' ' . $this->last_name;
@@ -76,6 +81,7 @@ class Lead extends BaseModel
     protected function getExtraFilters(): array
     {
         return [
+            AllowedFilter::custom('post_code', new FilterByPostcode()),
             AllowedFilter::custom('name', new FilterByName()),
             AllowedFilter::custom('statuses', new FilterByStatus()),
         ];
