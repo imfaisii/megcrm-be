@@ -41,6 +41,7 @@ class UpdateLeadRequest extends BaseFormRequest
             'lead_customer_additional_detail.datamatch_progress' => ['nullable', 'string'],
             'lead_customer_additional_detail.datamatch_progress_date' => ['nullable', 'date'],
             'lead_customer_additional_detail.lead_id' => ['required', 'exists:leads,id'],
+            'survey_booking' => ['required', 'array'],
         ];
     }
 }

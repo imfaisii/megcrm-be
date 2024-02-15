@@ -22,9 +22,27 @@ class UpdateLeadAction extends AbstractUpdateAction
 
         $lead = parent::update($lead, Arr::except($data, ['lead_customer_additional_detail']));
 
+        $this->updateLeadRelations($lead, $data);
+
+        return $lead;
+    }
+
+    public function updateLeadRelations(Lead $lead, array $data)
+    {
         // updating relation
         $lead->leadCustomerAdditionalDetail->update($data['lead_customer_additional_detail']);
+        $lead->surveyBooking()->updateOrCreate(
+            [
+                'lead_id' => $lead->id
+            ],
+            $data['survey_booking']
+        );
 
+        $this->updateLeadBenefits($lead, $data);
+    }
+
+    public function updateLeadBenefits(Lead $lead, array $data)
+    {
         $oldBenefits = $lead->benefits()->pluck('name');
 
         // adding benefits
@@ -53,8 +71,5 @@ class UpdateLeadAction extends AbstractUpdateAction
                 ->event('updated')
                 ->log('This record has been updated');
         }
-
-
-        return $lead;
     }
 }

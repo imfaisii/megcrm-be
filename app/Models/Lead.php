@@ -6,10 +6,12 @@ use App\Actions\Common\BaseModel;
 use App\Filters\Leads\FilterByName;
 use App\Filters\Leads\FilterByPostcode;
 use App\Filters\Leads\FilterByStatus;
+use App\Models\SurveyBooking;
 use App\Traits\Common\HasCalenderEvent;
 use App\Traits\Common\HasRecordCreator;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Imfaisii\ModelStatus\HasStatuses;
+use Spatie\Activitylog\Models\Activity;
 use Spatie\QueryBuilder\AllowedFilter;
 
 
@@ -48,6 +50,7 @@ class Lead extends BaseModel
         'leadStatus',
         'leadGenerator',
         'statuses',
+        'surveyBooking',
         'leadCustomerAdditionalDetail',
         'benefits',
         'callCenters',
@@ -85,6 +88,31 @@ class Lead extends BaseModel
             AllowedFilter::custom('name', new FilterByName()),
             AllowedFilter::custom('statuses', new FilterByStatus()),
         ];
+    }
+
+    public function getLogsAttribute()
+    {
+        $lead = $this;
+
+        return Activity::forSubject($this)
+            ->orWhere(function ($query) use ($lead) {
+                if (!is_null($lead->leadCustomerAdditionalDetail)) {
+                    $query
+                        ->where('subject_type', (new LeadCustomerAdditionalDetail())->getMorphClass())
+                        ->where('subject_id', $lead->leadCustomerAdditionalDetail->id);
+                }
+            })
+            ->orWhere(function ($query) use ($lead) {
+                if (!is_null($lead->surveyBooking)) {
+                    $query
+                        ->where('subject_type', (new SurveyBooking())->getMorphClass())
+                        ->where('subject_id', $lead->surveyBooking->id);
+                }
+            })
+            ->with(['causer' => function ($query) {
+                $query->select('id', 'name', 'created_at', 'updated_at');
+            }])
+            ->get();
     }
 
     public function jobType()
@@ -125,6 +153,11 @@ class Lead extends BaseModel
     public function leadCustomerAdditionalDetail()
     {
         return $this->hasOne(LeadCustomerAdditionalDetail::class);
+    }
+
+    public function surveyBooking()
+    {
+        return $this->hasOne(SurveyBooking::class);
     }
 
     public function callCenters()
