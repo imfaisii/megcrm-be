@@ -45,7 +45,9 @@ class LeadStatusSeeder extends Seeder
         'Job Submitted By Other Companies',
         'Awaiting Information',
         'Reschedule Jobs',
-        'Cancelled'
+        'Cancelled',
+        'Not Interested',
+        'Waiting for Boiler Picture'
     ];
 
 

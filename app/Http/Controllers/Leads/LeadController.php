@@ -66,13 +66,16 @@ class LeadController extends Controller
     public function getExtras()
     {
         $tableStatuses = [
+            'Raw Lead',
             'Ready for Survey',
             'Waiting for Datamatch',
             'Ready for Installation',
             'Installed',
             'Follow Up',
             'Survey Booked',
-            'Cancelled'
+            'Cancelled',
+            'Waiting for Boiler Picture',
+            'Not interested'
         ];
 
         $data = [
