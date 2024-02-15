@@ -6,6 +6,7 @@ namespace App\Models;
 
 use App\Actions\Common\BaseModel;
 use App\Filters\Users\FilterByRole;
+use App\Includes\Users\UserNotificationsInclude;
 use App\Traits\Common\HasCalenderEvent;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
@@ -19,6 +20,7 @@ use Illuminate\Support\Arr;
 use LaravelAndVueJS\Traits\LaravelPermissionToVueJS;
 use Spatie\Activitylog\Traits\CausesActivity;
 use Spatie\QueryBuilder\AllowedFilter;
+use Spatie\QueryBuilder\AllowedInclude;
 
 class User extends BaseModel implements AuthenticatableContract
 {
@@ -56,7 +58,8 @@ class User extends BaseModel implements AuthenticatableContract
 
     protected array $allowedIncludes = [
         'createdBy',
-        'leadGeneratorAssignments'
+        'leadGeneratorAssignments',
+        'notifications'
     ];
 
     protected $appends = ['rights', 'top_role'];
@@ -65,6 +68,13 @@ class User extends BaseModel implements AuthenticatableContract
     {
         return [
             AllowedFilter::custom('roles_except', new FilterByRole()),
+        ];
+    }
+
+    protected function getExtraIncludes(): array
+    {
+        return [
+            AllowedInclude::custom('latestNotifications', new UserNotificationsInclude()),
         ];
     }
 

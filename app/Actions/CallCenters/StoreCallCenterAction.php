@@ -7,6 +7,8 @@ use App\Actions\Common\AbstractCreateAction;
 use App\Enums\Events\Leads\CallScheduledEnum;
 use App\Models\CallCenter;
 use App\Models\Lead;
+use App\Models\User;
+use App\Notifications\Events\NewCallScheduledNotification;
 use Carbon\Carbon;
 use Illuminate\Support\Arr;
 
@@ -18,8 +20,9 @@ class StoreCallCenterAction extends AbstractCreateAction
     {
         if (Arr::get($data, 'call_scheduled_time', null)) {
             $lead = Lead::where('id', $data['lead_id'])->first();
+            $user = auth()->user();
 
-            if ($lead) {
+            if ($lead && $user) {
                 (new StoreCalenderEventAction)->create([
                     'title' => CallScheduledEnum::TITLE,
                     'start_date' => Carbon::parse($data['call_scheduled_time']),
@@ -29,9 +32,15 @@ class StoreCallCenterAction extends AbstractCreateAction
                     'calendar_id' => CallScheduledEnum::getCalendarId(),
                     'eventable_type' => Lead::class,
                     'eventable_id' => $lead->id,
-                    'user_id' => auth()->id(),
-                    'created_by_id' => auth()->id(),
+                    'user_id' => $user->id,
+                    'created_by_id' => $user->id
                 ]);
+
+                $user->notify(new NewCallScheduledNotification([
+                    'title' => CallScheduledEnum::NOTIFICATION_TITLE,
+                    'subtitle' => CallScheduledEnum::getNotificationSubtitle($lead->full_name),
+                    'module' => 'leads'
+                ]));
             }
         }
 

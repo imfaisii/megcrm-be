@@ -11,6 +11,7 @@ final class CallScheduledEnum extends Enum
 {
     const CALENDAR_NAME = 'Scheduled Calls';
     const TITLE = 'Call Scheduled';
+    const NOTIFICATION_TITLE = 'New call scheduled.';
     const IS_FULL_DAY = false;
 
     public static function getCalendarId(): int|null
@@ -21,5 +22,10 @@ final class CallScheduledEnum extends Enum
     public static function getDescriptionMessage(string $customerName, string $leadStatus): string
     {
         return "You have a scheduled call with {$customerName} with a lead status of {$leadStatus}";
+    }
+
+    public static function getNotificationSubtitle(string $customerName): string
+    {
+        return "You have a scheduled call with {$customerName}.";
     }
 }

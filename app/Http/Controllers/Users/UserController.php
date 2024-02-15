@@ -43,6 +43,12 @@ class UserController extends Controller
         return $action->individualResource($action->update($user, $request->validated()));
     }
 
+    public function currentUser(FindUserAction $action): BaseJsonResource
+    {
+        $action->enableQueryBuilder();
+        return $action->individualResource($action->findOrFail(auth()->id()));
+    }
+
     public function destroy(User $user, DeleteUserAction $action): BaseJsonResource
     {
         $action->delete($user);
