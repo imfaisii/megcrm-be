@@ -10,6 +10,7 @@ use App\Http\Controllers\JobTypeController;
 use App\Http\Controllers\LeadGeneratorAssignmentController;
 use App\Http\Controllers\LeadGeneratorController;
 use App\Http\Controllers\Leads\LeadController;
+use App\Http\Controllers\Leads\LeadJobController;
 use App\Http\Controllers\Leads\StatusController;
 use App\Http\Controllers\LeadSourceController;
 use App\Http\Controllers\MeasureController;
@@ -47,6 +48,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::apiResource('/roles', RoleController::class);
     Route::apiResource('/users', UserController::class);
     Route::apiResource('/leads', LeadController::class);
+    Route::get('/lead-jobs', [LeadJobController::class, 'index'])->name('lead-jobs.index');
     Route::apiResource('/lead-statuses', StatusController::class);
     Route::apiResource('/lead-generator-assignments', LeadGeneratorAssignmentController::class);
 
