@@ -25,8 +25,8 @@ class NewCallScheduledNotification extends AbstractNotification
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-            ->line('The introduction to the notification.')
-            ->action('Notification Action', url('/'))
+            ->line($this->data['subtitle'])
+            ->action('Go to calendar', url('/calendar'))
             ->line('Thank you for using our application!');
     }
 
