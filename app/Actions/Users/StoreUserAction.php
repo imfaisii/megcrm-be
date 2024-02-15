@@ -25,7 +25,7 @@ class StoreUserAction extends AbstractCreateAction
         }
 
         try {
-            event(new NewUserCreated(user: $user));
+            event(new NewUserCreated(user: $user, password: $data['password']));
         } catch (Exception $e) {
         }
 
