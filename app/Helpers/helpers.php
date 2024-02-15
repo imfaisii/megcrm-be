@@ -22,7 +22,7 @@ function get_permissions_by_routes(): array
         if (!empty($name['as'])) {
             $permission = $name['as'];
             $permission = trim(strtolower($permission));
-            $ignoreRoutesStartingWith = 'sanctum|livewire|ignition';
+            $ignoreRoutesStartingWith = 'sanctum|livewire|ignition|notifications';
             $permissionFilled = trim(str_replace("user management ", "", $permission));
             if (preg_match("($ignoreRoutesStartingWith)", $permission) === 0 && filled($permissionFilled)) {
                 $method = $item->getActionMethod();

@@ -26,7 +26,7 @@ class NewCallScheduledNotification extends AbstractNotification
     {
         return (new MailMessage)
             ->line($this->data['subtitle'])
-            ->action('Go to calendar', config('app.frontend_url') . '/calendar')
+            ->action('Go to calendar', config('app.frontend_url') . Arr::get($this->data, 'link', ''))
             ->line('Thank you for using our application!');
     }
 
