@@ -24,15 +24,10 @@ class StoreUserAction extends AbstractCreateAction
             $user->syncRoles($data['roles']);
         }
 
-        // try {
-        //     event(new NewUserCreated(user: $user));
-        // } catch (Exception $e) {
-        //     //
-        // }
-
-        //! DELETE IT LATER
-        Mail::to($user->email)
-            ->send(new NewUserCredentialsMail($data));
+        try {
+            event(new NewUserCreated(user: $user));
+        } catch (Exception $e) {
+        }
 
         return $user;
     }
