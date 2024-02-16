@@ -3,6 +3,7 @@
 namespace App\Classes;
 
 use App\traits\Jsonify;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
@@ -39,7 +40,7 @@ class AirCall
       $response = $this->HttpClient->get("{$this->BaseUrl}{$this->version}/ping");
       return $response->successful() ? $this->success(data: $response->json()) : $this->error();
     } catch (Exception $e) {
-      return $this->error($e);
+      return $this->exception($e);
     }
   }
   /**
@@ -71,7 +72,7 @@ class AirCall
       }
       return $response->successful() ? $this->success(data: $this->data) : $this->error();
     } catch (Exception $e) {
-      return $this->error($e);
+      return $this->exception($e);
     }
   }
 
@@ -101,7 +102,7 @@ class AirCall
       }
       return $response->successful() ? $this->success(data: $this->data) : $this->error();
     } catch (Exception $e) {
-      return $this->error($e);
+      return $this->exception($e);
     }
   }
 
@@ -118,7 +119,7 @@ class AirCall
       $response = $this->HttpClient->get($Url);
       return $response->successful() ? $this->success(data: $response->json()) : $this->error();
     } catch (Exception $e) {
-      return $this->error($e);
+      return $this->exception($e);
     }
   }
 
@@ -140,7 +141,7 @@ class AirCall
       return $response->successful() ? $this->success(data: $response->json()) : $this->error(message: "Couldn't do it because of status Code :{$response->status()}");
     } catch (Exception $e) {
       dd($e->getMessage());
-      return $this->error($e);
+      return $this->exception($e);
     }
   }
 
@@ -161,11 +162,219 @@ class AirCall
       $response = $this->HttpClient->POST($Url, $queryParams);
       return $response->successful() ? $this->success(data: $response->json()) : $this->error(message: "Couldn't do it because of status Code :{$response->status()}");
     } catch (Exception $e) {
-      dd($e->getMessage());
-      return $this->error($e);
+      return $this->exception($e);
     }
   }
 
+
+  /*
+    |--------------------------------------------------------------------------
+    | Call Api End Points
+    |--------------------------------------------------------------------------
+    |
+    */
+
+  public function GeneralDataSet(array &$data): void
+  {
+    $data = Arr::add($data, 'from', now()->subDay()->timestamp);
+    $data = Arr::add($data, 'to', now()->timestamp);
+  }
+
+  /**
+   * Get details of calls associated with the company account 
+   * @description By default it goes one month back 
+   * @param array $queryParams
+   * @return JsonResponse
+   */
+  public function getCalls(array $queryParams = ['order' => 'asc', "fetch_contact" => false]): JsonResponse
+  {
+    try {
+      $this->GeneralDataSet($queryParams);
+      $isNextPage = true;
+      $Url =  "{$this->BaseUrl}{$this->version}/calls";
+      while (!empty($isNextPage)) {
+        $response = $this->HttpClient->get($Url, $queryParams);
+        if ($response->successful()) {
+          $Url = data_get($response->json(), 'meta.next_page_link', null);
+          $isNextPage = filled($Url);
+          $result = data_get($response->json(), 'calls', []);
+          $ResponseData =   filled($result) ? (Arr::get($result, '0', null) ? $result : [$result]) : [];
+          foreach ($ResponseData as $eachcall) {
+            $this->data->push($eachcall);
+          }
+        } else {
+          $isNextPage = null;
+        }
+      }
+      return $response->successful() ? $this->success(data: $this->data) : $this->error();
+    } catch (Exception $e) {
+      return $this->exception($e);
+    }
+  }
+
+
+  /**
+   * Get details of calls 
+   * @param string $callId
+   * @return JsonResponse
+   */
+  public function getDetailOfACall(string $callId): JsonResponse
+  {
+    try {
+      $isNextPage = true;
+      $Url =  "{$this->BaseUrl}{$this->version}/calls/{$callId}";
+      while (!empty($isNextPage)) {
+        $response = $this->HttpClient->get($Url);
+        if ($response->successful()) {
+          $Url = data_get($response->json(), 'meta.next_page_link', null);
+          $isNextPage = filled($Url);
+          $result = data_get($response->json(), 'call', []);
+          $ResponseData =   filled($result) ? (Arr::get($result, '0', null) ? $result : [$result]) : [];
+          foreach ($ResponseData as $eachcall) {
+            $this->data->push($eachcall);
+          }
+        } else {
+          $isNextPage = null;
+        }
+      }
+      return $response->successful() ? $this->success(data: $this->data) : $this->error();
+    } catch (Exception $e) {
+      return $this->exception($e);
+    }
+  }
+
+
+  /**
+   * Add comment to a Call 
+   * @param string $callId
+   * @return JsonResponse
+   */
+  public function addCommentToCall(string $callId, array $queryParams = ["content" => "Default Comment"]): JsonResponse
+  {
+    try {
+      $Url =  "{$this->BaseUrl}{$this->version}/calls/{$callId}/comments";
+      $response = $this->HttpClient->put($Url, $queryParams);
+
+      return $response->successful() ? $this->success(data: $response->json()) : $this->error();
+    } catch (Exception $e) {
+      return $this->exception($e);
+    }
+  }
+
+  /**
+   * Pause Recording of a Call
+   * @param string $callId
+   * @return JsonResponse
+   */
+  public function pauseRecordingOfCall(string $callId): JsonResponse
+  {
+    try {
+      $Url =  "{$this->BaseUrl}{$this->version}/calls/{$callId}/pause_recording";
+      $response = $this->HttpClient->POST($Url);
+
+      return $response->successful() ? $this->success(data: $response->json()) : $this->error();
+    } catch (Exception $e) {
+      return $this->exception($e);
+    }
+  }
+
+  /**
+   * Resume Recording of a Call
+   * @param string $callId
+   * @return JsonResponse
+   */
+  public function resumeRecordingOfCall(string $callId): JsonResponse
+  {
+    try {
+      $Url =  "{$this->BaseUrl}{$this->version}/calls/{$callId}/resume_recording";
+      $response = $this->HttpClient->POST($Url);
+
+      return $response->successful() ? $this->success(data: $response->json()) : $this->error();
+    } catch (Exception $e) {
+      return $this->exception($e);
+    }
+  }
+
+
+  /**
+   * Resume Recording of a Call
+   * @param string $callId
+   * @return JsonResponse
+   */
+  public function deleteVoiceMailOfACall(string $callId): JsonResponse
+  {
+    try {
+      $Url =  "{$this->BaseUrl}{$this->version}/calls/{$callId}/voicemail";
+      $response = $this->HttpClient->delete($Url);
+
+      return $response->successful() ? $this->success(data: $response->json()) : $this->error();
+    } catch (Exception $e) {
+      return $this->exception($e);
+    }
+  }
+
+
+
+  /**
+   * Get Contact Shared By Company
+   * @param  array $queryParams
+   * @return JsonResponse
+   */
+  public function getContactOfComapny(array $queryParams = []): JsonResponse
+  {
+    try {
+      $this->GeneralDataSet($queryParams);
+      $isNextPage = true;
+      $Url =  "{$this->BaseUrl}{$this->version}/contacts";
+      while (!empty($isNextPage)) {
+        $response = $this->HttpClient->get($Url);
+        if ($response->successful()) {
+          $Url = data_get($response->json(), 'meta.next_page_link', null);
+          $isNextPage = filled($Url);
+          $result = data_get($response->json(), 'contacts', []);
+          $ResponseData =   filled($result) ? (Arr::get($result, '0', null) ? $result : [$result]) : [];
+          foreach ($ResponseData as $eachcall) {
+            $this->data->push($eachcall);
+          }
+        } else {
+          $isNextPage = null;
+        }
+      }
+      return $response->successful() ? $this->success(data: $this->data) : $this->error();
+    } catch (Exception $e) {
+      return $this->exception($e);
+    }
+  }
+
+  /**
+   * Get Details of a Contact
+   * @param  string $contactId
+   * @return JsonResponse
+   */
+  public function getDetailsOfAContact(string $contactId): JsonResponse
+  {
+    try {
+      $isNextPage = true;
+      $Url =  "{$this->BaseUrl}{$this->version}/contacts{$contactId}";
+      while (!empty($isNextPage)) {
+        $response = $this->HttpClient->get($Url);
+        if ($response->successful()) {
+          $Url = data_get($response->json(), 'meta.next_page_link', null);
+          $isNextPage = filled($Url);
+          $result = data_get($response->json(), 'contact', []);
+          $ResponseData =   filled($result) ? (Arr::get($result, '0', null) ? $result : [$result]) : [];
+          foreach ($ResponseData as $eachcall) {
+            $this->data->push($eachcall);
+          }
+        } else {
+          $isNextPage = null;
+        }
+      }
+      return $response->successful() ? $this->success(data: $this->data) : $this->error();
+    } catch (Exception $e) {
+      return $this->exception($e);
+    }
+  }
 
 
 
