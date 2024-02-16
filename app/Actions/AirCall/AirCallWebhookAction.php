@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Actions\Aircall;
+namespace App\Actions\AirCall;
 
 use App\traits\Jsonify;
 use Exception;

@@ -1,11 +1,6 @@
 <?php
 
-use App\Classes\AirCall;
-use App\Fascade\AirCallFascade;
 use App\Http\Controllers\AirCallWebhookController;
-use App\Models\User;
-use App\Notifications\Events\NewCallScheduledNotification;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 
 /*
