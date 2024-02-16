@@ -1,5 +1,6 @@
 <?php
 
+use App\Fascade\AirCallFascade;
 use App\Http\Controllers\AirCallWebhookController;
 use Illuminate\Support\Facades\Route;
 
@@ -13,7 +14,18 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
+Route::get('test-caller',function(){
+//   return  AirCallFascade::getUsers(); 
+//   return  AirCallFascade::getUsers(userId:1128951);   // hajra ben
+//   return  AirCallFascade::getCalls();   // hajra ben
+  return  AirCallFascade::searchCall([
+    'user_id' => '1128951',
+    'phone_number'=>'+447713176822'
+  ]);   // hajra ben
 
+
+
+});
 
 Route::get('/', function () {
 
