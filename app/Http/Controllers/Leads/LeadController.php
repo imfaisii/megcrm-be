@@ -7,6 +7,7 @@ use App\Actions\Leads\FindLeadAction;
 use App\Actions\Leads\ListLeadAction;
 use App\Actions\Leads\StoreLeadAction;
 use App\Actions\Leads\UpdateLeadAction;
+use App\Enums\Permissions\RoleEnum;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Leads\StoreLeadRequest;
 use App\Http\Requests\Leads\UpdateLeadRequest;
@@ -82,13 +83,19 @@ class LeadController extends Controller
             'No answer'
         ];
 
+        $user = auth()->user();
+        $leadGenerators = $user->hasRole(RoleEnum::SURVEYOR)
+            ? LeadGenerator::whereIn('id', $user->leadGeneratorAssignments()
+                ->pluck('lead_generator_id'))->get()
+            : LeadGenerator::all();
+
         $data = [
             'job_types' => JobType::all(),
             'fuel_types' => FuelType::all(),
             'surveyors' => Surveyor::all(),
             'measures' => Measure::all(),
             'benefit_types' => BenefitType::all(),
-            'lead_generators' => LeadGenerator::all(),
+            'lead_generators' => $leadGenerators,
             'lead_sources' => LeadSource::all(),
             'lead_statuses' => LeadStatus::all(),
             'lead_table_filters' => LeadStatus::whereIn('name', $tableStatuses)->get(),

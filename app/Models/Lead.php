@@ -62,6 +62,19 @@ class Lead extends BaseModel
         'post_code'
     ];
 
+    public function scopeByRole($query, string $role, ?User $user = null)
+    {
+        $user ??= auth()->user();
+
+        if ($user->hasRole($role)) {
+            $assignedLeadGenerators = $user->leadGeneratorAssignments()->pluck('lead_generator_id');
+
+            $query->whereIn('lead_generator_id', $assignedLeadGenerators);
+        }
+
+        return $query;
+    }
+
     protected function getFullNameAttribute()
     {
         return $this->first_name . ' ' . $this->middle_name . ' ' . $this->last_name;

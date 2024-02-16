@@ -19,8 +19,8 @@ class ListLeadAction extends AbstractListAction
 
         $query->where('is_marked_as_job', false);
 
-        if($user->hasRole(RoleEnum::SURVEYOR)) {
-            // $query->
+        if ($user->hasRole(RoleEnum::SURVEYOR)) {
+            $query->byRole(RoleEnum::SURVEYOR);
         }
 
         return $query;
