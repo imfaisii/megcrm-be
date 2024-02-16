@@ -34,6 +34,10 @@ class SurveyorSeeder extends Seeder
                     'created_by_id' => 1
                 ]
             )->assignRole(Role::where('name', RoleEnum::SURVEYOR)->first());
+
+            $user->surveyor()->firstOrCreate([
+                'created_by_id' => 1
+            ]);
         }
     }
 }
