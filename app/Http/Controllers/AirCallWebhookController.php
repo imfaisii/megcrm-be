@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Actions\Aircall\AirCallWebhookAction;
+use App\Actions\AirCall\AirCallWebhookAction;
 use App\Enums\Aircall\AirCallEnum;
 use App\traits\Jsonify;
 use Exception;
