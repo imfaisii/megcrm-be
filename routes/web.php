@@ -1,7 +1,11 @@
 <?php
 
+use App\Classes\AirCall;
+use App\Fascade\AirCallFascade;
+use App\Http\Controllers\AirCallWebhookController;
 use App\Models\User;
 use App\Notifications\Events\NewCallScheduledNotification;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -15,16 +19,12 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('test', function () {
-    $user = User::skip(1)->take(1)->first();
-
-    $user->notify(new NewCallScheduledNotification([
-        'title' => 'Some title',
-        'subtitle' => 'Some Subtitle',
-        'module' => 'leads'
-    ]));
-});
 
 Route::get('/', function () {
+
     return ['Laravel' => app()->version()];
+});
+
+Route::prefix('aircall')->as('aircall_')->group(function () {
+    Route::post('check/webhook', AirCallWebhookController::class)->name("webhook");
 });
