@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Enums\Aircall;
+namespace App\Enums\AirCall;
 
 use BenSampo\Enum\Enum;
 
