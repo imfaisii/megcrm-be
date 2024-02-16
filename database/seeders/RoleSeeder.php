@@ -17,14 +17,10 @@ class RoleSeeder extends Seeder
         $roles = RoleEnum::getValues();
 
         foreach ($roles as $key => $role) {
-            $roleModel = Role::firstOrCreate([
+            Role::firstOrCreate([
                 'name' => $role,
                 'guard_name' => 'sanctum'
             ]);
-
-            if ($role === RoleEnum::SURVEYOR) {
-                $roleModel->syncPermissions(['leads.assigned-leads', 'lead-jobs.assigned-jobs']);
-            }
         }
     }
 }
