@@ -11,6 +11,21 @@ use function App\Helpers\get_permissions_by_routes;
 
 class PermissionSeeder extends Seeder
 {
+    protected $customPermissions = [
+        'leads' => [
+            [
+                'name' => 'assigned-leads',
+                'method' => 'index'
+            ]
+        ],
+        'lead-jobs' => [
+            [
+                'name' => 'assigned-jobs',
+                'method' => 'index'
+            ]
+        ],
+    ];
+
     /**
      * Run the database seeds.
      */
@@ -19,6 +34,22 @@ class PermissionSeeder extends Seeder
         app()[PermissionRegistrar::class]->forgetCachedPermissions();
 
         $permissionsByRoutes = get_permissions_by_routes();
+
+        foreach ($this->customPermissions as $key => $value) {
+            if (!isset($permissionsByRoutes[$key])) {
+                $permissionsByRoutes[$key] = $value;
+            } else {
+                if (is_array($permissionsByRoutes[$key])) {
+                    if (is_array($value)) {
+                        $permissionsByRoutes[$key] = array_merge($permissionsByRoutes[$key], $value);
+                    } else {
+                        $permissionsByRoutes[$key][] = $value;
+                    }
+                } else {
+                    $permissionsByRoutes[$key] = $value;
+                }
+            }
+        }
 
         foreach ($permissionsByRoutes as $module => $subModules) {
             Permission::firstOrCreate(['name' => $module, 'is_module' => true, 'guard_name' => 'sanctum']);

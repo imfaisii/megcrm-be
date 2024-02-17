@@ -19,8 +19,8 @@ class DatabaseSeeder extends Seeder
         $local = app()->environment('local');
 
         $this->call([
-            RoleSeeder::class,
             PermissionSeeder::class,
+            RoleSeeder::class,
             AdminSeeder::class,
 
             JobTypeSeeder::class,
@@ -39,8 +39,8 @@ class DatabaseSeeder extends Seeder
 
         if ($local) {
             // factories
-            User::factory()->count(20)->create();
-            Lead::factory()->count(20)->create();
+            User::factory()->count(5)->create();
+            Lead::factory()->count(5)->create();
         }
     }
 }

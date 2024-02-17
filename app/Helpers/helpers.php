@@ -135,9 +135,9 @@ function get_permissions_as_modules_array(mixed $permissions): array
             return [
                 'id' => $permission['id'],
                 'name' => match ($name) {
-                    'Index' => 'Can view all records',
+                    'Index' => 'Can view records',
                     'Destroy' => 'Can delete records',
-                    'Show' => 'Can view single record',
+                    'Show' => 'Can view record details',
                     'Store' => 'Can save new record',
                     'Update' => 'Can update old record',
                     default => $name
