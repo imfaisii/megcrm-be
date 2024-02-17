@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Actions\Leads;
+namespace App\Actions\LeadJobs;
 
 use App\Actions\Common\AbstractListAction;
 use App\Models\Lead;
 use Spatie\QueryBuilder\QueryBuilder as SpatieQueryBuilder;
 use Illuminate\Database\Eloquent\Builder;
 
-class ListLeadAction extends AbstractListAction
+class ListLeadJobAction extends AbstractListAction
 {
     protected string $modelClass = Lead::class;
 
@@ -15,6 +15,6 @@ class ListLeadAction extends AbstractListAction
     {
         $query = parent::getQuery();
 
-        return $query->where('is_marked_as_job', false);
+        return $query->where('is_marked_as_job', true);
     }
 }
