@@ -39,6 +39,7 @@ class User extends BaseModel implements AuthenticatableContract
         'name',
         'email',
         'password',
+        'air_caller_id',
         'is_active',
         'created_by_id'
     ];
