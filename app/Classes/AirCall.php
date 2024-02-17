@@ -186,7 +186,7 @@ class AirCall
    * @param array $queryParams
    * @return JsonResponse
    */
-  public function getCalls(array $queryParams = ['order' => 'asc', "fetch_contact" => false, 'raw_digits' => "+44 7710 589471"]): JsonResponse
+  public function getCalls(array $queryParams = ['order' => 'asc', "fetch_contact" => false, ]): JsonResponse
   {
     try {
       $this->GeneralDataSet($queryParams);
