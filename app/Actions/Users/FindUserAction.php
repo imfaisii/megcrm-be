@@ -27,7 +27,7 @@ class FindUserAction extends AbstractFindAction
             ]);
 
             $user['dropbox'] = [
-                'status' => false,
+                'status' => true,
                 'data' => $response->json()['access_token']
             ];
         } catch (Exception $e) {
