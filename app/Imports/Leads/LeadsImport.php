@@ -49,7 +49,7 @@ class LeadsImport implements ToCollection, WithHeadingRow
 
                     $lead = Lead::firstOrCreate([
                         'address' => (string)$address,
-                        'phone' => $phoneNo,
+                        'phone_no' => $phoneNo,
                         'email' => $email
                     ], [
                         'title' => 'Mr',
