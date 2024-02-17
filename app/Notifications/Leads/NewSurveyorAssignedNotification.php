@@ -1,20 +1,20 @@
 <?php
 
-namespace App\Notifications;
+namespace App\Notifications\Leads;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-abstract class AbstractNotification extends Notification implements ShouldQueue
+class NewSurveyorAssignedNotification extends Notification
 {
     use Queueable;
 
     /**
      * Create a new notification instance.
      */
-    public function __construct(public array $data = [])
+    public function __construct()
     {
         //
     }
@@ -26,22 +26,29 @@ abstract class AbstractNotification extends Notification implements ShouldQueue
      */
     public function via(object $notifiable): array
     {
-        return ['database', 'mail'];
+        return ['mail'];
     }
 
     /**
      * Get the mail representation of the notification.
-     *
-     * @param object $notifiable
-     * @return MailMessage
      */
-    abstract public function toMail(object $notifiable): MailMessage;
+    public function toMail(object $notifiable): MailMessage
+    {
+        return (new MailMessage)
+                    ->line('The introduction to the notification.')
+                    ->action('Notification Action', url('/'))
+                    ->line('Thank you for using our application!');
+    }
 
     /**
      * Get the array representation of the notification.
      *
-     * @param object $notifiable
      * @return array<string, mixed>
      */
-    abstract public function toArray(object $notifiable): array;
+    public function toArray(object $notifiable): array
+    {
+        return [
+            //
+        ];
+    }
 }

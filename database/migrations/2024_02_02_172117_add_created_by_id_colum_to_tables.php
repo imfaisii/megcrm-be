@@ -14,7 +14,6 @@ return new class extends Migration
         'lead_generators',
         'lead_sources',
         'measures',
-        'surveyors'
     ];
 
     /**

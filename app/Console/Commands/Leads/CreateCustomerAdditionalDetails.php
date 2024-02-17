@@ -13,7 +13,7 @@ class CreateCustomerAdditionalDetails extends Command
      *
      * @var string
      */
-    protected $signature = 'create-lead-additional:customer';
+    protected $signature = 'create-lead-additional:details';
 
     /**
      * The console command description.

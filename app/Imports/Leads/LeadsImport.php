@@ -34,7 +34,7 @@ class LeadsImport implements ToCollection, WithHeadingRow
                     $email = Arr::get($row, 'email', null);
                     $phoneNo = Arr::get($row, 'contact_number', '000000');
                     $dob = Arr::get($row, 'dob', null);
-                    $postCode = Arr::get($row, 'postcode', null);
+                    $postCode = Arr::get($row, 'postcode', '00000');
                     $address = Arr::get($row, 'address', null);
                     $benefits = Arr::get($row, 'benefits', []);
                     $benefits = explode("\n", $benefits);
@@ -48,7 +48,9 @@ class LeadsImport implements ToCollection, WithHeadingRow
                     $name = $this->split_name($row['name'] ?? '');
 
                     $lead = Lead::firstOrCreate([
-                        'address' => (string)$address
+                        'address' => (string)$address,
+                        'phone_no' => $phoneNo,
+                        'email' => $email
                     ], [
                         'title' => 'Mr',
                         'first_name' => $name['first_name'] ?? '',

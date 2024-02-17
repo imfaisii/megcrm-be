@@ -2,7 +2,6 @@
 
 namespace App\Traits\Common;
 
-use App\Models\LeadCustomerAdditionalDetail;
 use Spatie\Activitylog\Models\Activity;
 
 use function App\Helpers\is_append_present;

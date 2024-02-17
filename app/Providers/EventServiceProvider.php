@@ -4,6 +4,8 @@ namespace App\Providers;
 
 use App\Events\Users\NewUserCreated;
 use App\Listeners\Users\SendUserCredentialsListener;
+use App\Models\SurveyBooking;
+use App\Observers\Leads\SurveyBookingObserver;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -32,7 +34,7 @@ class EventServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        SurveyBooking::observe(SurveyBookingObserver::class);
     }
 
     /**

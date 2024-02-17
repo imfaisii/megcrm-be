@@ -5,6 +5,7 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
 use App\Actions\Common\BaseModel;
+use App\Filters\Users\FilterByGivenRole;
 use App\Filters\Users\FilterByRole;
 use App\Includes\Users\UserNotificationsInclude;
 use App\Traits\Common\HasCalenderEvent;
@@ -69,6 +70,7 @@ class User extends BaseModel implements AuthenticatableContract
     {
         return [
             AllowedFilter::custom('roles_except', new FilterByRole()),
+            AllowedFilter::custom('roles', new FilterByGivenRole()),
         ];
     }
 
@@ -107,6 +109,11 @@ class User extends BaseModel implements AuthenticatableContract
     public function createdBy()
     {
         return $this->belongsTo(User::class, 'created_by_id');
+    }
+
+    public function surveyor()
+    {
+        return $this->hasOne(Surveyor::class);
     }
 
     public function leadGeneratorAssignments()

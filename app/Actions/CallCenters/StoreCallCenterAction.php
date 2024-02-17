@@ -39,7 +39,7 @@ class StoreCallCenterAction extends AbstractCreateAction
                     'title' => CallScheduledEnum::NOTIFICATION_TITLE,
                     'subtitle' => CallScheduledEnum::getNotificationSubtitle($lead->full_name),
                     'module' => 'leads',
-                    'link' => config('app.frontend_url'). '/calendar'
+                    'link' => '/calendar'
                 ]));
 
                 activity()

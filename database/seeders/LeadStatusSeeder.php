@@ -47,7 +47,10 @@ class LeadStatusSeeder extends Seeder
         'Reschedule Jobs',
         'Cancelled',
         'Not Interested',
-        'Waiting for Boiler Picture'
+        'Waiting for Boiler Picture',
+        'Called from ring central',
+        'Called from second number',
+        'No answer'
     ];
 
 

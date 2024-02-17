@@ -15,6 +15,7 @@ use App\Http\Controllers\Leads\LeadJobController;
 use App\Http\Controllers\Leads\StatusController;
 use App\Http\Controllers\LeadSourceController;
 use App\Http\Controllers\MeasureController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\Permissions\PermissionController;
 use App\Http\Controllers\Permissions\RoleController;
 use App\Http\Controllers\SurveyorController;
@@ -67,6 +68,9 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
 
     Route::post('aircall/search-call', [AirCallController::class, 'searchCall'])->name('aircall.search-call');
 
+    Route::get('/notifications/{id}', [NotificationController::class, 'markSingleAsMarked'])->name('notifications.mark-single-as-read');
+    Route::delete('/notifications/{id}', [NotificationController::class, 'deleteNotification'])->name('notifications.destroy');
+    Route::get('/notifications', [NotificationController::class, 'markAllAsRead'])->name('notifications.mark-all-as-read');
 
     Route::post('/leads/upload', [LeadController::class, 'handleFileUpload'])->name('leads.file-upload');
 
