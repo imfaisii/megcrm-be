@@ -26,6 +26,7 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 use Illuminate\Support\Facades\Log;
+use Imfaisii\ModelStatus\Status;
 use Maatwebsite\Excel\Facades\Excel;
 use Maatwebsite\Excel\HeadingRowImport;
 
@@ -100,6 +101,12 @@ class LeadController extends Controller
 
     public function updateStatus(Lead $lead, UpdateLeadStatusRequest $request)
     {
+        if (str_contains(str()->lower($request->status), "survey booked")) {
+            $lead->update([
+                'is_marked_as_job' => true
+            ]);
+        }
+
         $lead->setStatus($request->status, $request->comments);
         return null_resource();
     }
