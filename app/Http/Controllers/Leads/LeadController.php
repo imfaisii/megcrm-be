@@ -79,8 +79,6 @@ class LeadController extends Controller
 
     public function downloadDatamatch()
     {
-        $now = now()->format('Y-m-d-H:i:s');
-
-        return Excel::download(new DatamatchExport, "datamatch-required-$now.xlsx");
+        return new DatamatchExport;
     }
 }
