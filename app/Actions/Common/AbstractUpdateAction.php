@@ -17,7 +17,7 @@ class AbstractUpdateAction
      * @param array $data
      * @return BaseModel|Role|Permission
      */
-    public function update(mixed $model, array $data): mixed
+    public function update(BaseModel|Role|Permission $model, array $data): BaseModel|Role|Permission
     {
         return tap($model, function (BaseModel|Role|Permission $model) use ($data) {
             $model->update($data);
