@@ -89,7 +89,11 @@ class Lead extends BaseModel
     {
         $latest = $this->latestStatus();
 
-        $latest['lead_status_model'] = LeadStatus::where('name', $latest->name)->first();
+        if (!is_null($latest)) {
+            $latest['lead_status_model'] = LeadStatus::where('name', $latest->name)->first();
+        } else {
+            $latest['lead_status_model'] = null;
+        }
 
         return $latest;
     }

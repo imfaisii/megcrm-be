@@ -20,10 +20,18 @@ trait HasLogsAppend
 
     public function getLogsAttribute()
     {
-        return Activity::forSubject($this)->latest()
+        $dispatcher = Activity::getEventDispatcher();
+        Activity::unsetEventDispatcher();
+
+
+        $logs = Activity::forSubject($this)->latest()
             ->with(['causer' => function ($query) {
                 $query->select('id', 'name', 'created_at', 'updated_at');
             }])
             ->get();
+
+        Activity::setEventDispatcher($dispatcher);
+
+        return $logs;
     }
 }

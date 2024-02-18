@@ -35,6 +35,7 @@ use Illuminate\Support\Facades\Route;
 
 require __DIR__ . '/auth.php';
 
+Route::get('/leads-datamatch-download', [LeadController::class, 'downloadDatamatch'])->name('download-datamatch');
 
 Route::group(['middleware' => 'auth:sanctum'], function () {
 
