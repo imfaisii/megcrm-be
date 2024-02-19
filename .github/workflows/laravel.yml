@@ -7,7 +7,7 @@ on:
     branches: [ "develop" ]
 
 jobs:
-  laravel-tests:
+  deploy-to-production:
 
     runs-on: ubuntu-latest
 
