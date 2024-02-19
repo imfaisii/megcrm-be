@@ -103,8 +103,6 @@ class User extends BaseModel implements AuthenticatableContract
         return $this->authentications->take($count)->unique('login_at')->map(function ($log) {
             $agent = tap(new Agent, fn ($agent) => $agent->setUserAgent($log->user_agent));
 
-
-
             return [
                 'is_mobile' => ($agent->isMobile() || $agent->isTablet()) ? true : false,
                 'device' => $agent->device(),
