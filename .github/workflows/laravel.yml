@@ -1,4 +1,4 @@
-name: Laravel
+name: "MEG BACKEND"
 
 on:
   push:
@@ -44,8 +44,14 @@ jobs:
           composer i
           php artisan migrate --force
     - name: Send Success Notification
-      if: always()
+      if: ${{ success() }}
       uses: imfaisii/slack-action@v1
       with:
         slack_webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
         status: "success"
+    - name: Send Failure Notification
+      if: ${{ success() }}
+      uses: imfaisii/slack-action@v1
+      with:
+        slack_webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
+        status: "failure"
