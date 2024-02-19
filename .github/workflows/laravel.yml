@@ -13,10 +13,8 @@ jobs:
 
     steps:
     - name: Send In Progress Notification
-      if: always()
       uses: imfaisii/slack-action@v1
       with:
-        slack_channel: "test-channel"
         slack_webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
         status: "started"
     - uses: shivammathur/setup-php@15c43e89cdef867065b0213be354c2841860869e
@@ -45,13 +43,13 @@ jobs:
           composer i
           php artisan migrate --force
     - name: Send Success Notification
-      if: ${{ success() }}
+      if: success()
       uses: imfaisii/slack-action@v1
       with:
         slack_webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
         status: "success"
     - name: Send Failure Notification
-      if: ${{ success() }}
+      if: failure()
       uses: imfaisii/slack-action@v1
       with:
         slack_webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
