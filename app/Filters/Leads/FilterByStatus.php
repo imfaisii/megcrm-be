@@ -2,7 +2,6 @@
 
 namespace App\Filters\Leads;
 
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Spatie\QueryBuilder\Filters\Filter;
 

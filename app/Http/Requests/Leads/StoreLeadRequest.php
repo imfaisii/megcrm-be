@@ -13,10 +13,10 @@ class StoreLeadRequest extends BaseFormRequest
             'first_name' => ['required', 'string'],
             'middle_name' => ['nullable', 'string'],
             'last_name' => ['required', 'string'],
-            'email' => ['required', 'email'],
-            'phone_no' => ['required', 'numeric'],
+            'email' => ['required', 'email', 'unique:leads,email'],
+            'phone_no' => ['required', 'string', 'unique:leads,phone_no'],
             'dob' => ['required', 'string'],
-            'address' => ['required', 'string'],
+            'address' => ['required', 'string', 'unique:leads,address'],
             'post_code' => ['required', 'string'],
             'measures' => ['array'],
             'has_second_receipent' => ['required', 'boolean'],
@@ -27,7 +27,7 @@ class StoreLeadRequest extends BaseFormRequest
             'surveyor_id' => ['nullable', 'exists:surveyors,id'],
             'lead_generator_id' => ['nullable', 'exists:lead_generators,id'],
             'lead_source_id' => ['nullable', 'exists:lead_sources,id'],
-            'benefit_type_id' => ['nullable', 'exists:benefit_types,id'],
+            'benefits' => ['nullable', 'array'],
             'comments' => ['nullable']
         ];
     }

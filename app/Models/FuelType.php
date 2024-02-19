@@ -2,14 +2,19 @@
 
 namespace App\Models;
 
+use App\Traits\Common\HasRecordCreator;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use App\Actions\Common\BaseModel;
 
-class FuelType extends Model
+class FuelType extends BaseModel
 {
-    use HasFactory;
+    use HasFactory, HasRecordCreator;
 
     protected $fillable = [
         'name'
+    ];
+
+    protected array $allowedIncludes = [
+        'createdBy'
     ];
 }

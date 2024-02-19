@@ -13,6 +13,6 @@ class SendUserCredentialsListener implements ShouldQueue
     public function handle(NewUserCreated $event): void
     {
         Mail::to($event->user->email)
-            ->send(new NewUserCredentialsMail($event->user));
+            ->send(new NewUserCredentialsMail([...$event->user->toArray(), 'password' => $event->password]));
     }
 }

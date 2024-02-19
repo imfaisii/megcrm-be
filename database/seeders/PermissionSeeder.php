@@ -19,7 +19,7 @@ class PermissionSeeder extends Seeder
         app()[PermissionRegistrar::class]->forgetCachedPermissions();
 
         $permissionsByRoutes = get_permissions_by_routes();
-
+        
         foreach ($permissionsByRoutes as $module => $subModules) {
             Permission::firstOrCreate(['name' => $module, 'is_module' => true, 'guard_name' => 'sanctum']);
 

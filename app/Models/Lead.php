@@ -3,18 +3,21 @@
 namespace App\Models;
 
 use App\Actions\Common\BaseModel;
+use App\Filters\Leads\FilterByName;
+use App\Filters\Leads\FilterByPostcode;
 use App\Filters\Leads\FilterByStatus;
+use App\Models\SurveyBooking;
+use App\Traits\Common\HasCalenderEvent;
 use App\Traits\Common\HasRecordCreator;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Imfaisii\ModelStatus\HasStatuses;
 use Spatie\Activitylog\Models\Activity;
 use Spatie\QueryBuilder\AllowedFilter;
 
-use function App\Helpers\shouldAppend;
 
 class Lead extends BaseModel
 {
-    use HasFactory, HasRecordCreator, HasStatuses;
+    use HasFactory, HasRecordCreator, HasStatuses, HasCalenderEvent;
 
     protected $fillable = [
         'title',
@@ -39,30 +42,94 @@ class Lead extends BaseModel
 
     protected $appends = ['full_name', 'status_details'];
 
-    protected array $allowedIncludes = [
-        'leadGenerator',
+    protected $casts = [
+        'is_marked_as_job' => 'boolean'
     ];
+
+    protected array $allowedIncludes = [
+        'leadStatus',
+        'leadGenerator',
+        'statuses',
+        'surveyBooking',
+        'leadCustomerAdditionalDetail',
+        'benefits',
+        'callCenters',
+        'callCenters.createdBy',
+        'callCenters.callCenterStatus'
+    ];
+
+    protected array $discardedFieldsInFilter = [
+        'post_code'
+    ];
+
+    public function scopeByRole($query, string $role, ?User $user = null)
+    {
+        $user ??= auth()->user();
+
+        if ($user->hasRole($role)) {
+            $assignedLeadGenerators = $user->leadGeneratorAssignments()->pluck('lead_generator_id');
+
+            $query->whereIn('lead_generator_id', $assignedLeadGenerators);
+        }
+
+        return $query;
+    }
 
     protected function getFullNameAttribute()
     {
         return $this->first_name . ' ' . $this->middle_name . ' ' . $this->last_name;
     }
 
+    protected function getStatusesAttribute()
+    {
+        return $this->statuses();
+    }
+
     protected function getStatusDetailsAttribute()
     {
-        $data = $this->latestStatus();
+        $latest = $this->latestStatus();
 
-        $data['user'] = User::find($data['user_id']);
-        $data['lead_status'] = LeadStatus::where('name', $data['name'])->first();
+        if (!is_null($latest)) {
+            $latest['lead_status_model'] = LeadStatus::where('name', $latest->name)->first();
+        } else {
+            $latest['lead_status_model'] = null;
+        }
 
-        return $data;
+        return $latest;
     }
 
     protected function getExtraFilters(): array
     {
         return [
+            AllowedFilter::custom('post_code', new FilterByPostcode()),
+            AllowedFilter::custom('name', new FilterByName()),
             AllowedFilter::custom('statuses', new FilterByStatus()),
         ];
+    }
+
+    public function getLogsAttribute()
+    {
+        $lead = $this;
+
+        return Activity::forSubject($this)
+            ->orWhere(function ($query) use ($lead) {
+                if (!is_null($lead->leadCustomerAdditionalDetail)) {
+                    $query
+                        ->where('subject_type', (new LeadCustomerAdditionalDetail())->getMorphClass())
+                        ->where('subject_id', $lead->leadCustomerAdditionalDetail->id);
+                }
+            })
+            ->orWhere(function ($query) use ($lead) {
+                if (!is_null($lead->surveyBooking)) {
+                    $query
+                        ->where('subject_type', (new SurveyBooking())->getMorphClass())
+                        ->where('subject_id', $lead->surveyBooking->id);
+                }
+            })
+            ->with(['causer' => function ($query) {
+                $query->select('id', 'name', 'created_at', 'updated_at');
+            }])
+            ->get();
     }
 
     public function jobType()
@@ -90,16 +157,6 @@ class Lead extends BaseModel
         return $this->belongsTo(LeadGenerator::class);
     }
 
-    public function benefitType()
-    {
-        return $this->belongsTo(BenefitType::class);
-    }
-
-    public function leadAdditionalDetail()
-    {
-        return $this->hasOne(LeadAdditionalDetail::class);
-    }
-
     public function secondReceipent()
     {
         return $this->hasOne(SecondReceipent::class);
@@ -108,5 +165,27 @@ class Lead extends BaseModel
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function leadCustomerAdditionalDetail()
+    {
+        return $this->hasOne(LeadCustomerAdditionalDetail::class);
+    }
+
+    public function surveyBooking()
+    {
+        return $this->hasOne(SurveyBooking::class);
+    }
+
+    public function callCenters()
+    {
+        return $this->hasMany(CallCenter::class);
+    }
+
+    public function benefits()
+    {
+        return $this->belongsToMany(BenefitType::class, LeadHasBenefit::class)
+            ->withPivot('created_by_id')
+            ->withTimestamps();
     }
 }

@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
+use App\Models\CallCenterStatus;
 use App\Models\Lead;
 use App\Models\User;
 use Illuminate\Database\Seeder;
@@ -18,6 +19,10 @@ class DatabaseSeeder extends Seeder
         $local = app()->environment('local');
 
         $this->call([
+            PermissionSeeder::class,
+            RoleSeeder::class,
+            AdminSeeder::class,
+
             JobTypeSeeder::class,
             FuelTypeSeeder::class,
             BenefitTypeSeeder::class,
@@ -25,9 +30,8 @@ class DatabaseSeeder extends Seeder
             LeadSourceSeeder::class,
             MeasureSeeder::class,
             SurveyorSeeder::class,
-            RoleSeeder::class,
-            PermissionSeeder::class,
-            AdminSeeder::class,
+            CallCenterStatusSeeder::class,
+            CalendarSeeder::class,
 
             //! Always after adminseeder
             LeadStatusSeeder::class
@@ -35,9 +39,8 @@ class DatabaseSeeder extends Seeder
 
         if ($local) {
             // factories
-            User::factory()->count(20)->create();
+            User::factory()->count(5)->create();
+            Lead::factory()->count(5)->create();
         }
-
-        Lead::factory()->count($local ? 20 : 5)->create();
     }
 }

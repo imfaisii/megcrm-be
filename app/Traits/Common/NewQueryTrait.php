@@ -3,8 +3,10 @@
 namespace App\Traits\Common;
 
 use App\Actions\Common\BaseQueryBuilder as QueryBuilder;
+use App\Filters\Common\FilterByTimestamp;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Arr;
+use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder as SpatieQueryBuilder;
 
 /**
@@ -115,7 +117,9 @@ trait NewQueryTrait
      */
     protected function getExtraFilters(): array
     {
-        return [];
+        return [
+            AllowedFilter::custom('timestamp', new FilterByTimestamp()),
+        ];
     }
 
     /**

@@ -4,22 +4,21 @@ namespace App\Http\Controllers\Leads;
 
 use App\Actions\Leads\DeleteLeadAction;
 use App\Actions\Leads\FindLeadAction;
+use App\Actions\Leads\GetLeadExtrasAction;
 use App\Actions\Leads\ListLeadAction;
 use App\Actions\Leads\StoreLeadAction;
+use App\Actions\Leads\UpdateLeadAction;
+use App\Actions\Leads\UploadLeadsFileAction;
+use App\Exports\Leads\DatamatchExport;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Leads\StoreLeadRequest;
+use App\Http\Requests\Leads\UpdateLeadRequest;
 use App\Http\Requests\Leads\UpdateLeadStatusRequest;
-use App\Models\BenefitType;
-use App\Models\FuelType;
-use App\Models\JobType;
+use App\Http\Requests\Leads\UploadLeadFileRequest;
 use App\Models\Lead;
-use App\Models\LeadGenerator;
-use App\Models\LeadSource;
-use App\Models\LeadStatus;
-use App\Models\Measure;
-use App\Models\Surveyor;
-use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\ResourceCollection;
+use Maatwebsite\Excel\Facades\Excel;
 
 use function App\Helpers\null_resource;
 
@@ -33,8 +32,8 @@ class LeadController extends Controller
 
     public function store(StoreLeadRequest $request, StoreLeadAction $action)
     {
-        $action->create($request->validated());
-        return null_resource();
+        $lead = $action->create($request->validated());
+        return $action->individualResource($lead);
     }
 
     public function show(int $lead, FindLeadAction $action)
@@ -43,9 +42,10 @@ class LeadController extends Controller
         return $action->individualResource($action->findOrFail($lead));
     }
 
-    public function update(Request $request, string $id)
+    public function update(Lead $lead, UpdateLeadRequest $request, UpdateLeadAction $action)
     {
-        //
+        $action->enableQueryBuilder();
+        return $action->individualResource($action->update($lead, $request->validated()));
     }
 
     public function destroy(Lead $lead, DeleteLeadAction $action)
@@ -54,26 +54,31 @@ class LeadController extends Controller
         return null_resource();
     }
 
-    public function getExtras()
+    public function getExtras(): JsonResponse
     {
-        $data = [
-            'job_types' => JobType::all(),
-            'fuel_types' => FuelType::all(),
-            'surveyors' => Surveyor::all(),
-            'measures' => Measure::all(),
-            'benefit_types' => BenefitType::all(),
-            'lead_generators' => LeadGenerator::all(),
-            'lead_sources' => LeadSource::all(),
-            'lead_statuses' => LeadStatus::all(),
-            'lead_table_filters' => LeadStatus::take(6)->get()
-        ];
-
-        return $this->success(data: $data);
+        return $this->success(data: (new GetLeadExtrasAction(auth()->user()))->execute());
     }
 
     public function updateStatus(Lead $lead, UpdateLeadStatusRequest $request)
     {
+        if (str_contains(str()->lower($request->status), "survey booked")) {
+            $lead->update([
+                'is_marked_as_job' => true
+            ]);
+        }
+
         $lead->setStatus($request->status, $request->comments);
+
         return null_resource();
+    }
+
+    public function handleFileUpload(UploadLeadFileRequest $request, UploadLeadsFileAction $action): JsonResponse
+    {
+        return $action->execute($request);
+    }
+
+    public function downloadDatamatch()
+    {
+        return new DatamatchExport;
     }
 }

@@ -22,7 +22,7 @@ function get_permissions_by_routes(): array
         if (!empty($name['as'])) {
             $permission = $name['as'];
             $permission = trim(strtolower($permission));
-            $ignoreRoutesStartingWith = 'sanctum|livewire|ignition';
+            $ignoreRoutesStartingWith = 'sanctum|livewire|ignition|notifications|log-viewer|debugbar';
             $permissionFilled = trim(str_replace("user management ", "", $permission));
             if (preg_match("($ignoreRoutesStartingWith)", $permission) === 0 && filled($permissionFilled)) {
                 $method = $item->getActionMethod();
@@ -135,9 +135,9 @@ function get_permissions_as_modules_array(mixed $permissions): array
             return [
                 'id' => $permission['id'],
                 'name' => match ($name) {
-                    'Index' => 'Can view all records',
+                    'Index' => 'Can view records',
                     'Destroy' => 'Can delete records',
-                    'Show' => 'Can view single record',
+                    'Show' => 'Can view record details',
                     'Store' => 'Can save new record',
                     'Update' => 'Can update old record',
                     default => $name

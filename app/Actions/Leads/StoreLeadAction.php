@@ -28,6 +28,14 @@ class StoreLeadAction extends AbstractCreateAction
 
         $lead->setStatus(LeadStatus::first()->name, 'Created');
 
+        // creating additional empty record for lead
+        $lead->leadCustomerAdditionalDetail()->create();
+
+        // adding benefits
+        $lead->benefits()->syncWithPivotValues($data['benefits'], [
+            'created_by_id' => auth()->id()
+        ]);
+
         return $lead;
     }
 }
