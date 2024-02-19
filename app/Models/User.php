@@ -100,7 +100,7 @@ class User extends BaseModel implements AuthenticatableContract
 
     public function getUserAgentsAttribute($count = 5)
     {
-        return $this->authentications->take($count)->map(function ($log) {
+        return $this->authentications->take($count)->unique('login_at')->map(function ($log) {
             $agent = tap(new Agent, fn ($agent) => $agent->setUserAgent($log->user_agent));
 
             return [
