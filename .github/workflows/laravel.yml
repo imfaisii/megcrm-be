@@ -16,7 +16,7 @@ jobs:
       if: always()
       uses: imfaisii/slack-action@v1
       with:
-        slack_channel: "text-channel"
+        slack_channel: "test-channel"
         slack_webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
         status: "started"
     - uses: shivammathur/setup-php@15c43e89cdef867065b0213be354c2841860869e
