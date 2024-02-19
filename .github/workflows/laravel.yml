@@ -14,11 +14,7 @@ jobs:
     steps:
     - uses: slackapi/slack-github-action@v1.25.0
       with:
-        payload: |
-          {
-            "key": "value",
-            "foo": "bar"
-          }
+        slack-message: "GitHub build result: ${{ job.status }}\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
       env:
         SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
     - uses: shivammathur/setup-php@15c43e89cdef867065b0213be354c2841860869e
