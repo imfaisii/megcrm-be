@@ -14,10 +14,22 @@ jobs:
     steps:
     - uses: slackapi/slack-github-action@v1.25.0
       with:
-       payload: |
-        {
-          "text": "GitHub Action build result: ${{ job.status }}\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
-        }
+        payload: |
+          {
+            "text": "Deployment finished (Completed)",
+            "attachments": [
+              {
+                "pretext": "Deployment finished",
+                "color": "28a745",
+                "fields": [
+                  {
+                    "title": "Status",
+                    "short": true,
+                    "value": "Completed"
+                  }
+                ]
+              }
+          }
       env:
         SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
     - uses: shivammathur/setup-php@15c43e89cdef867065b0213be354c2841860869e
@@ -50,4 +62,3 @@ jobs:
       uses: craftech-io/slack-action@v1
       with:
         slack_webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
-        status: "The workflow has succeeded."
