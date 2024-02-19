@@ -16,7 +16,7 @@ jobs:
       with:
        payload: |
         {
-          "text": "GitHub Action build result:",
+          "text": "GitHub Action build result"
         }
       env:
         SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
