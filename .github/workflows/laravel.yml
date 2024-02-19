@@ -15,7 +15,7 @@ jobs:
     - uses: craftech-io/slack-action@v1
       with:
         slack_webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
-        message: "Backend Code Deployment in progress."
+        status: "Backend Code Deployment in progress."
     - uses: shivammathur/setup-php@15c43e89cdef867065b0213be354c2841860869e
       with:
         php-version: '8.3'
@@ -46,4 +46,4 @@ jobs:
       uses: craftech-io/slack-action@v1
       with:
         slack_webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
-        message: "The workflow has succeeded."
+        status: "The workflow has succeeded."
