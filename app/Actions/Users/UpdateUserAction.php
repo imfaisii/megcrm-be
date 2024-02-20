@@ -3,6 +3,8 @@
 namespace App\Actions\Users;
 
 use App\Actions\Common\AbstractUpdateAction;
+use App\Enums\Permissions\RoleEnum;
+use App\Models\Surveyor;
 use App\Models\User;
 use Spatie\Permission\Models\Role;
 
@@ -25,6 +27,11 @@ class UpdateUserAction extends AbstractUpdateAction
 
         // adding roles
         $user->syncRoles($data['roles']);
+        $surveyorRole = Role::where('name', RoleEnum::SURVEYOR)->first();
+
+        if (in_array($surveyorRole->id, $data['roles'])) {
+            Surveyor::updateOrCreate(['user_id' => $user->id]);
+        }
 
         $newRoles = Role::whereIn('id', $data['roles'])->pluck('name');
 
