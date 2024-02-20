@@ -18,7 +18,6 @@ use App\Http\Requests\Leads\UploadLeadFileRequest;
 use App\Models\Lead;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\ResourceCollection;
-use Maatwebsite\Excel\Facades\Excel;
 
 use function App\Helpers\null_resource;
 

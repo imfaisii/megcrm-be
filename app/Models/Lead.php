@@ -70,6 +70,10 @@ class Lead extends BaseModel
             $assignedLeadGenerators = $user->leadGeneratorAssignments()->pluck('lead_generator_id');
 
             $query->whereIn('lead_generator_id', $assignedLeadGenerators);
+
+            $query->whereHas('surveyBooking', function ($query) use ($user) {
+                $query->where('surveyor_id', $user->id);
+            });
         }
 
         return $query;
