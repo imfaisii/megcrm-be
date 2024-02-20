@@ -9,7 +9,7 @@ use Carbon\Carbon;
 
 class SurveyBookingObserver
 {
-    public function updated(SurveyBooking $surveyBooking): void
+    public function notification(SurveyBooking $surveyBooking)
     {
         $updatedProperties = $surveyBooking->getDirty();
 
@@ -51,5 +51,15 @@ class SurveyBookingObserver
                 );
             }
         }
+    }
+
+    public function created(SurveyBooking $surveyBooking): void
+    {
+        $this->notification($surveyBooking);
+    }
+
+    public function updated(SurveyBooking $surveyBooking): void
+    {
+        $this->notification($surveyBooking);
     }
 }
