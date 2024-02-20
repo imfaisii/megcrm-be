@@ -42,6 +42,9 @@ jobs:
           git pull
           composer i
           php artisan migrate --force
+          php artisan optimize:clear
+          php artisan config:cache
+          supervisorctl restart all
     - name: Send Success Notification
       if: success()
       uses: imfaisii/slack-action@v1

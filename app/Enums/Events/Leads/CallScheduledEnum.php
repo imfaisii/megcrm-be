@@ -24,8 +24,8 @@ final class CallScheduledEnum extends Enum
         return "You have a scheduled call with {$customerName} with a lead status of {$leadStatus}";
     }
 
-    public static function getNotificationSubtitle(string $customerName): string
+    public static function getNotificationSubtitle(string $customerName, string $dateTime): string
     {
-        return "You have a scheduled call with {$customerName}.";
+        return "You have a scheduled call with {$customerName} at {$dateTime}.";
     }
 }

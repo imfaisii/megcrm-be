@@ -52,7 +52,7 @@ class GetLeadExtrasAction
         return [
             'job_types' => JobType::all(),
             'fuel_types' => FuelType::all(),
-            'surveyors' => Surveyor::all(),
+            'surveyors' => Surveyor::with('user')->get(),
             'measures' => Measure::all(),
             'benefit_types' => BenefitType::all(),
             'lead_generators' => $leadGenerators,

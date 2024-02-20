@@ -3,7 +3,6 @@
 namespace App\Actions\Users;
 
 use App\Actions\Common\AbstractCreateAction;
-use App\Events\Users\NewUserCreated;
 use App\Models\User;
 use Exception;
 
@@ -20,11 +19,6 @@ class StoreUserAction extends AbstractCreateAction
 
     if (isset($data['roles'])) {
       $user->syncRoles($data['roles']);
-    }
-
-    try {
-      event(new NewUserCreated(user: $user, password: $data['password']));
-    } catch (Exception $e) {
     }
 
     return $user;

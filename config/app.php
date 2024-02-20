@@ -128,6 +128,8 @@ return [
 
     'cipher' => 'AES-256-CBC',
 
+    'date_time_format' => 'l jS \of F Y h:i:s A',
+
     /*
     |--------------------------------------------------------------------------
     | Maintenance Mode Driver

@@ -100,20 +100,22 @@ class User extends BaseModel implements AuthenticatableContract
 
     public function getUserAgentsAttribute($count = 5)
     {
-        return $this->authentications->take($count)->unique('login_at')->map(function ($log) {
+        return $this->authentications->map(function ($log) {
             $agent = tap(new Agent, fn ($agent) => $agent->setUserAgent($log->user_agent));
 
             return [
                 'is_mobile' => ($agent->isMobile() || $agent->isTablet()) ? true : false,
-                'device' => $agent->device(),
-                'platform' => $agent->platform(),
-                'browser' => $agent->browser(),
+                'device' => $agent->device() === false ? 'WebKit' : $agent->device(),
+                'platform' => $agent->platform() === false ? 'Windows' : $agent->platform(),
+                'browser' => $agent->browser() === false ? 'Chrome' : $agent->browser(),
                 'login_at' => Carbon::parse($log->login_at)->format('l M d g:i a'),
                 'country' => $log->location['country'],
                 'ip' => $log->location['ip'],
                 'timezone' => $log->location['timezone'],
             ];
-        });
+        })
+            ->take($count)
+            ->unique('login_at');
     }
 
     public function scopeActive(Builder $builder)
