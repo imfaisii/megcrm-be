@@ -71,7 +71,7 @@ class Lead extends BaseModel
 
             $query->whereIn('lead_generator_id', $assignedLeadGenerators);
 
-            $query->whereHas('surveyBooking', function ($query) use ($user) {
+            $query->orWhereHas('surveyBooking', function ($query) use ($user) {
                 $query->where('surveyor_id', $user->id);
             });
         }
