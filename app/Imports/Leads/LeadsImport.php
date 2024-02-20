@@ -48,17 +48,17 @@ class LeadsImport implements ToCollection, WithHeadingRow
                     $name = $this->split_name($row['name'] ?? '');
                     $lead = Lead::firstOrCreate([
                         'post_code' => $postCode,
-                        'address' => (string)$address
+                        'email' => $email
                     ], [
                         'title' => 'Mr',
                         'first_name' => $name['first_name'] ?? '',
                         'middle_name' => $name['middle_name'] ?? '',
                         'last_name' => $name['last_name'] ?? '',
+                        'address' => (string)$address,
                         'dob' => is_null($dob)
                             ? now()->format('Y-m-d') : (is_int($dob)
                                 ? \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($dob)->format('Y-m-d')
                                 : $dob),
-                        'email' => $email,
                         'phone_no' => $phoneNo ?? '00000',
                         'lead_generator_id' => $leadGenerator->id,
                         'user_id' => auth()->id(),
