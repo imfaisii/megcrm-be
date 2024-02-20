@@ -81,9 +81,9 @@ class LeadsImport implements ToCollection, WithHeadingRow
                     );
                 }
             } else {
-                Log::channel('lead_file_read_log')->info(
-                    "Error importing lead address else: " . $row['address']
-                );
+                //Log::channel('lead_file_read_log')->info(
+                    //"Error importing lead address else: " . $row['address']
+                //);
             }
         }
     }
