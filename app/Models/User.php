@@ -100,7 +100,7 @@ class User extends BaseModel implements AuthenticatableContract
 
     public function getUserAgentsAttribute($count = 5)
     {
-        return $this->authentications->map(function ($log) {
+        return $this->authentications->take($count)->map(function ($log) {
             $agent = tap(new Agent, fn ($agent) => $agent->setUserAgent($log->user_agent));
 
             return [
@@ -114,7 +114,6 @@ class User extends BaseModel implements AuthenticatableContract
                 'timezone' => $log->location['timezone'],
             ];
         })
-            ->take($count)
             ->unique('login_at');
     }
 
