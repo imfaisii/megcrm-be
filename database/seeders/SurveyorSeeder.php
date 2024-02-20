@@ -17,7 +17,7 @@ class SurveyorSeeder extends Seeder
             $email = str_replace(" ", "", str()->lower($name)) . "@megcrm.co.uk";
             $password = "12345678";
 
-            $user = User::firstOrCreate(
+            User::firstOrCreate(
                 [
                     'name' => $name,
                     'email' => $email
