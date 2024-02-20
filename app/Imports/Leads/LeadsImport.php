@@ -2,6 +2,8 @@
 
 namespace App\Imports\Leads;
 
+ini_set('memory_limit', '-1');
+
 use App\Models\BenefitType;
 use App\Models\Lead;
 use App\Models\LeadGenerator;
