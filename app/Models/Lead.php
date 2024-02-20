@@ -149,7 +149,7 @@ class Lead extends BaseModel
 
     public function surveyor()
     {
-        return $this->belongsTo(Surveyor::class);
+        return $this->belongsTo(User::class, 'surveyor_id', 'id');
     }
 
     public function leadGenerator()

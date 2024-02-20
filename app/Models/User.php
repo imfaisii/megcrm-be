@@ -138,11 +138,6 @@ class User extends BaseModel implements AuthenticatableContract
         return $this->belongsTo(User::class, 'created_by_id');
     }
 
-    public function surveyor()
-    {
-        return $this->hasOne(Surveyor::class);
-    }
-
     public function leadGeneratorAssignments()
     {
         return $this->belongsToMany(LeadGenerator::class, LeadGeneratorAssignment::class)

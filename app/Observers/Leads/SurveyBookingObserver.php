@@ -29,7 +29,7 @@ class SurveyBookingObserver
 
                 CalenderEvent::updateOrCreate(
                     [
-                        'user_id' => $surveyBooking->surveyor->user->id,
+                        'user_id' => $surveyBooking->surveyor->id,
                         'calendar_id' => SurveyBookedEnum::getCalendarId(),
                         'eventable_type' => SurveyBooking::class,
                         'eventable_id' => $surveyBooking->id,

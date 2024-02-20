@@ -11,7 +11,6 @@ use App\Models\LeadGenerator;
 use App\Models\LeadSource;
 use App\Models\LeadStatus;
 use App\Models\Measure;
-use App\Models\Surveyor;
 use App\Models\User;
 
 class GetLeadExtrasAction
@@ -52,7 +51,9 @@ class GetLeadExtrasAction
         return [
             'job_types' => JobType::all(),
             'fuel_types' => FuelType::all(),
-            'surveyors' => Surveyor::with('user')->get(),
+            'surveyors' => User::whereHas('roles', function ($query) {
+                $query->where('name', RoleEnum::SURVEYOR);
+            })->get(),
             'measures' => Measure::all(),
             'benefit_types' => BenefitType::all(),
             'lead_generators' => $leadGenerators,

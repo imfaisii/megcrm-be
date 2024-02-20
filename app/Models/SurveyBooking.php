@@ -4,7 +4,6 @@ namespace App\Models;
 
 use App\Actions\Common\BaseModel;
 use App\Models\Lead;
-use App\Models\Surveyor;
 use App\Traits\Common\HasRecordCreator;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -22,7 +21,7 @@ class SurveyBooking extends BaseModel
 
     public function surveyor()
     {
-        return $this->belongsTo(Surveyor::class);
+        return $this->belongsTo(User::class, 'surveyor_id', 'id');
     }
 
     public function lead()

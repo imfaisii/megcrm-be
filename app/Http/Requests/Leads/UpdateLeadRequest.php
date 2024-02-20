@@ -25,7 +25,7 @@ class UpdateLeadRequest extends BaseFormRequest
             'is_marked_as_job' => ['sometimes', 'required', 'boolean'],
             'job_type_id' => ['sometimes', 'nullable', 'exists:job_types,id'],
             'fuel_type_id' => ['sometimes', 'nullable', 'exists:fuel_types,id'],
-            'surveyor_id' => ['sometimes', 'nullable', 'exists:surveyors,id'],
+            'surveyor_id' => ['sometimes', 'nullable', 'exists:users,id'],
             'lead_generator_id' => ['sometimes', 'nullable', 'exists:lead_generators,id'],
             'lead_source_id' => ['sometimes', 'nullable', 'exists:lead_sources,id'],
             'benefits' => ['sometimes', 'array'],

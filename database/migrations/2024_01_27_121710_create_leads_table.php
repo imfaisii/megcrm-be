@@ -5,7 +5,6 @@ use App\Models\FuelType;
 use App\Models\JobType;
 use App\Models\LeadGenerator;
 use App\Models\LeadSource;
-use App\Models\Surveyor;
 use App\Models\User;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -32,7 +31,7 @@ return new class extends Migration
             $table->boolean('is_marked_as_job')->default(false);
             $table->foreignIdFor(JobType::class)->nullable();
             $table->foreignIdFor(FuelType::class)->nullable();
-            $table->foreignIdFor(Surveyor::class)->nullable();
+            $table->foreignIdFor(User::class, 'surveyor_id')->nullable();
             $table->foreignIdFor(LeadGenerator::class)->nullable();
             $table->foreignIdFor(LeadSource::class)->nullable();
             $table->foreignIdFor(BenefitType::class)->nullable();
