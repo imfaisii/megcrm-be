@@ -38,15 +38,19 @@ class UploadLeadsFileAction
                 throw new Exception('File has invalid header. (less headings)' . json_encode($headings));
             }
 
-            for ($i = 0; $i < 9; $i++) {
-                if ($headings[$i] !== $exampleHeader[$i]) {
-                    $matched = false;
-                }
-            }
+            $headings =  array_map('strtolower', $headings);
 
-            if (!$matched) {
-                throw new Exception('File has invalid header ( not matched ).' . json_encode($headings));
-            }
+            // for ($i = 0; $i < 9; $i++) {
+            //     if ($headings[$i] !== $exampleHeader[$i]) {
+            //         $matched = false;
+            //     }
+            // }
+            $headerDifference = array_diff($exampleHeader, $headings);
+            throw_if(filled($headerDifference), new Exception('File has invalid header ( not matched ).' . json_encode($headerDifference)));
+
+            // if (!$matched) {
+            //     throw new Exception('File has invalid header ( not matched ).' . json_encode($headings));
+            // }
 
             Excel::import(new LeadsImport, $request->file('file'));
 

@@ -44,7 +44,7 @@ class AirCall
     }
   }
   /**
-   * Get details of the users associated with the account or if the user id is provided then get the specific user's details 
+   * Get details of the users associated with the account or if the user id is provided then get the specific user's details
    *
    * @param array $queryParams
    * @param string|null $userId
@@ -62,7 +62,6 @@ class AirCall
           $isNextPage = filled($Url);
           $result = data_get($response->json(), $userId ? 'user' : 'users', []);
           $ResponseData =   filled($result) ? (Arr::get($result, '0', null) ? $result : [$result]) : [];
-          // dd($ResponseData);
           foreach ($ResponseData as $eachuser) {
             $this->data->push($eachuser);
           }
@@ -125,7 +124,7 @@ class AirCall
 
 
   /**
-   * Start An Outbound Call 
+   * Start An Outbound Call
    * @param string $userId
    * @param array $queryParams
    * @return JsonResponse
@@ -140,14 +139,13 @@ class AirCall
       $response = $this->HttpClient->POST($Url, $queryParams);
       return $response->successful() ? $this->success(data: $response->json()) : $this->error(message: "Couldn't do it because of status Code :{$response->status()}");
     } catch (Exception $e) {
-      dd($e->getMessage());
       return $this->exception($e);
     }
   }
 
 
   /**
-   * set the dial number on the app for user 
+   * set the dial number on the app for user
    * @param string $userId
    * @param array $queryParams
    * @return JsonResponse
@@ -181,8 +179,8 @@ class AirCall
   }
 
   /**
-   * Get details of calls associated with the company account 
-   * @description By default it goes one month back 
+   * Get details of calls associated with the company account
+   * @description By default it goes one month back
    * @param array $queryParams
    * @return JsonResponse
    */
@@ -214,7 +212,7 @@ class AirCall
 
 
   /**
-   * Get details of calls 
+   * Get details of calls
    * @param string $callId
    * @return JsonResponse
    */
@@ -245,7 +243,7 @@ class AirCall
 
 
   /**
-   * Add comment to a Call 
+   * Add comment to a Call
    * @param string $callId
    * @return JsonResponse
    */
@@ -382,7 +380,6 @@ class AirCall
   {
     try {
     } catch (Exception $e) {
-      dd($e->getMessage());
     }
   }
 }
