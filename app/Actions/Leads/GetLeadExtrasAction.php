@@ -60,7 +60,7 @@ class GetLeadExtrasAction
             'lead_sources' => LeadSource::all(),
             'lead_statuses' => LeadStatus::all(),
             'lead_table_filters' => LeadStatus::whereIn('name', $tableStatuses)->get(),
-            'lead_jobs_filters' => LeadStatus::whereNotIn('name', $tableStatuses)->get(),
+            'lead_jobs_filters' => LeadStatus::whereNotIn('name', $tableStatuses)->orWhere('name', 'Survey Booked')->get(),
             'call_center_statuses' => CallCenterStatus::all()
         ];
     }

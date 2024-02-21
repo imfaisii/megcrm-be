@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Str;
 use Spatie\Permission\Contracts\Role;
 use Spatie\Permission\Models\Role as ModelsRole;
-use Spatie\Permission\PermissionRegistrar;
 
 use function App\Helpers\get_permissions_as_modules_array;
 use function App\Helpers\is_include_present;

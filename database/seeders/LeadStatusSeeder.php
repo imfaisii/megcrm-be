@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\LeadStatus;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class LeadStatusSeeder extends Seeder
@@ -50,7 +49,8 @@ class LeadStatusSeeder extends Seeder
         'Waiting for Boiler Picture',
         'Called from ring central',
         'Called from second number',
-        'No answer'
+        'No answer',
+        'Survey Pending'
     ];
 
 

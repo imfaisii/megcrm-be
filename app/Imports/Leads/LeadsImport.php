@@ -46,14 +46,12 @@ class LeadsImport implements ToCollection, WithHeadingRow
                     $benefitTypes = [];
 
                     try {
-                        // lead generator
-                        $leadGenerator = LeadGenerator::firstOrCreate(
-                            [
-                                'mask_name' => $row['website'] ?? 'Lead Generator Default'
-                            ],
-                            ['name' => "Lead Generator " . LeadGenerator::count() + 1]
-                        );
-
+                      // lead generator
+                    $leadGenerator = LeadGenerator::firstOrCreate(
+                        [
+                            'name' => $row['website'] ?? 'Lead Generator Default'
+                        ],
+                    );
                         $email = Arr::get($row, 'email', null);
                         $phoneNo = Arr::get($row, 'contact_number', '000000');
                         $dob = Arr::get($row, 'dob', null);
