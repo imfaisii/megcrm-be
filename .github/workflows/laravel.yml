@@ -3,10 +3,14 @@ name: "MEG BACKEND"
 on:
   push:
     branches: [ "develop" ]
+  pull_request:
+    types:
+      - closed
 
 jobs:
   deploy-to-production:
 
+    if: ${{ github.event.pull_request.merged }}
     runs-on: ubuntu-latest
 
     steps:
