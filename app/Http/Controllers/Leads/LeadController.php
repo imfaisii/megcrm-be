@@ -4,31 +4,20 @@ namespace App\Http\Controllers\Leads;
 
 use App\Actions\Leads\DeleteLeadAction;
 use App\Actions\Leads\FindLeadAction;
+use App\Actions\Leads\GetLeadExtrasAction;
 use App\Actions\Leads\ListLeadAction;
 use App\Actions\Leads\StoreLeadAction;
 use App\Actions\Leads\UpdateLeadAction;
+use App\Actions\Leads\UploadLeadsFileAction;
+use App\Exports\Leads\DatamatchExport;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Leads\StoreLeadRequest;
 use App\Http\Requests\Leads\UpdateLeadRequest;
 use App\Http\Requests\Leads\UpdateLeadStatusRequest;
-use App\Imports\Leads\LeadsImport;
-use App\Models\BenefitType;
-use App\Models\CallCenterStatus;
-use App\Models\FuelType;
-use App\Models\JobType;
+use App\Http\Requests\Leads\UploadLeadFileRequest;
 use App\Models\Lead;
-use App\Models\LeadGenerator;
-use App\Models\LeadSource;
-use App\Models\LeadStatus;
-use App\Models\Measure;
-use App\Models\Surveyor;
-use Exception;
-use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\ResourceCollection;
-use Illuminate\Support\Facades\Log;
-use Imfaisii\ModelStatus\Status;
-use Maatwebsite\Excel\Facades\Excel;
-use Maatwebsite\Excel\HeadingRowImport;
 
 use function App\Helpers\null_resource;
 
@@ -64,39 +53,9 @@ class LeadController extends Controller
         return null_resource();
     }
 
-    public function getExtras()
+    public function getExtras(): JsonResponse
     {
-        $tableStatuses = [
-            'Raw Lead',
-            'Ready for Survey',
-            'Waiting for Datamatch',
-            'Ready for Installation',
-            'Installed',
-            'Follow Up',
-            'Survey Booked',
-            'Cancelled',
-            'Waiting for Boiler Picture',
-            'Not interested',
-            'Called from ring central',
-            'Called from second number',
-            'No answer'
-        ];
-
-        $data = [
-            'job_types' => JobType::all(),
-            'fuel_types' => FuelType::all(),
-            'surveyors' => Surveyor::all(),
-            'measures' => Measure::all(),
-            'benefit_types' => BenefitType::all(),
-            'lead_generators' => LeadGenerator::all(),
-            'lead_sources' => LeadSource::all(),
-            'lead_statuses' => LeadStatus::all(),
-            'lead_table_filters' => LeadStatus::whereIn('name', $tableStatuses)->get(),
-            'lead_jobs_filters' => LeadStatus::whereNotIn('name', $tableStatuses)->get(),
-            'call_center_statuses' => CallCenterStatus::all()
-        ];
-
-        return $this->success(data: $data);
+        return $this->success(data: (new GetLeadExtrasAction(auth()->user()))->execute());
     }
 
     public function updateStatus(Lead $lead, UpdateLeadStatusRequest $request)
@@ -108,49 +67,17 @@ class LeadController extends Controller
         }
 
         $lead->setStatus($request->status, $request->comments);
+
         return null_resource();
     }
 
-    public function handleFileUpload(Request $request)
+    public function handleFileUpload(UploadLeadFileRequest $request, UploadLeadsFileAction $action): JsonResponse
     {
-        try {
-            $matched = true;
-            $exampleHeader = [
-                "website",
-                "name",
-                "email",
-                "contact_number",
-                "dob",
-                "postcode",
-                "address",
-                "what_is_your_home_ownership_status",
-                "benefits",
-            ];
+        return $action->execute($request);
+    }
 
-            $headings = (new HeadingRowImport())->toArray($request->file('file'))[0][0];
-
-            if (count($headings) < 8) {
-                throw new Exception('File has invalid header. (less headings)' . json_encode($headings));
-            }
-
-            for ($i = 0; $i < 9; $i++) {
-                if ($headings[$i] !== $exampleHeader[$i]) {
-                    $matched = false;
-                }
-            }
-
-            if (!$matched) {
-                throw new Exception('File has invalid header ( not matched ).' . json_encode($headings));
-            }
-
-            Excel::import(new LeadsImport, $request->file('file'));
-
-            return $this->success('File was uploaded successfully.');
-        } catch (Exception $e) {
-            Log::channel('lead_file_read_log')->info(
-                "Error importing exception " . $e->getMessage()
-            );
-            return $this->error($e->getMessage());
-        }
+    public function downloadDatamatch()
+    {
+        return new DatamatchExport;
     }
 }

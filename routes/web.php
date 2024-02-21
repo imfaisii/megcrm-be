@@ -2,7 +2,7 @@
 
 use App\Fascade\AirCallFascade;
 use App\Http\Controllers\AirCallWebhookController;
-use App\Models\User;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -16,25 +16,10 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('test-caller', function () {
-  //   return  AirCallFascade::getUsers(); 
-  //   return  AirCallFascade::getUsers(userId:1128951);   // hajra ben
-  //   return  AirCallFascade::getCalls();   // hajra ben
-  // return  AirCallFascade::searchCall([
-  //   'user_id' => '1128951',
-  //   'phone_number'=>'+447713176822'
-  // ]);   // hajra ben
 
-  // $data = AirCallFascade::getUsers();
-  // // dd($data->getOriginalContent());
-  // //  data_get($data->getOriginalContent(), 'datas', collect([]));
 
-});
-
-Route::get('/', function () {
-
-  return ['Laravel' => app()->version()];
-});
+Route::get('/', fn () => ['Laravel' => app()->version()]);
+Route::get('/dropbox/redirect', fn () => response()->json(response()->all()));
 
 Route::get('/dropbox', function () {
     $redirect = "http://localhost:8000/dropbox/redirect";
@@ -43,8 +28,11 @@ Route::get('/dropbox', function () {
     return redirect($url);
 });
 
-Route::get('/dropbox/redirect', function () {
-    dd(request()->all());
+
+Route::get('/webhook/{name}', function ($name) {
+    Log::driver($name)->info("Testing web hook");
+
+    return response()->json('Done');
 });
 
 Route::prefix('aircall')->as('aircall_')->group(function () {

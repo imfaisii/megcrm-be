@@ -5,19 +5,10 @@ namespace App\Notifications\Events;
 use App\Notifications\AbstractNotification;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
-use Illuminate\Support\Arr;
 
-class NewCallScheduledNotification extends AbstractNotification
+class CalendarEventNotification extends AbstractNotification
 {
     use Queueable;
-
-    /**
-     * Create a new notification instance.
-     */
-    public function __construct(public array $data = [])
-    {
-        //
-    }
 
     /**
      * Get the mail representation of the notification.
@@ -26,7 +17,7 @@ class NewCallScheduledNotification extends AbstractNotification
     {
         return (new MailMessage)
             ->line($this->data['subtitle'])
-            ->action('Go to calendar', config('app.frontend_url') . Arr::get($this->data, 'link', ''))
+            ->action('Go to calendar', config('app.frontend_url') . '/calendar')
             ->line('Thank you for using our application!');
     }
 
@@ -40,8 +31,8 @@ class NewCallScheduledNotification extends AbstractNotification
         return [
             'title' => $this->data['title'],
             'subtitle' => $this->data['subtitle'],
-            'module' => 'leads',
-            'redirect_link' => Arr::get($this->data, 'link', null)
+            'module' => $this->data['module'],
+            'redirect_link' => $this->data['link'] ?? null
         ];
     }
 }

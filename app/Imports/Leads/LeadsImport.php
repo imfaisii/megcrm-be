@@ -2,6 +2,8 @@
 
 namespace App\Imports\Leads;
 
+ini_set('memory_limit', '-1');
+
 use App\Models\BenefitType;
 use App\Models\Lead;
 use App\Models\LeadGenerator;
@@ -26,9 +28,8 @@ class LeadsImport implements ToCollection, WithHeadingRow
                     // lead generator
                     $leadGenerator = LeadGenerator::firstOrCreate(
                         [
-                            'mask_name' => $row['website'] ?? 'Lead Generator Default'
+                            'name' => $row['website'] ?? 'Lead Generator Default'
                         ],
-                        ['name' => "Lead Generator " . LeadGenerator::count() + 1]
                     );
 
                     $email = Arr::get($row, 'email', null);
@@ -46,23 +47,20 @@ class LeadsImport implements ToCollection, WithHeadingRow
                     }
 
                     $name = $this->split_name($row['name'] ?? '');
-
                     $lead = Lead::firstOrCreate([
-                        'address' => (string)$address,
-                        'phone_no' => $phoneNo,
+                        'post_code' => $postCode,
                         'email' => $email
                     ], [
                         'title' => 'Mr',
                         'first_name' => $name['first_name'] ?? '',
                         'middle_name' => $name['middle_name'] ?? '',
                         'last_name' => $name['last_name'] ?? '',
-                        'email' => $email,
-                        'phone_no' => $phoneNo ?? '00000',
+                        'address' => (string)$address,
                         'dob' => is_null($dob)
                             ? now()->format('Y-m-d') : (is_int($dob)
                                 ? \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($dob)->format('Y-m-d')
                                 : $dob),
-                        'post_code' => $postCode,
+                        'phone_no' => $phoneNo ?? '00000',
                         'lead_generator_id' => $leadGenerator->id,
                         'user_id' => auth()->id(),
                         'created_by_id' => auth()->id()
@@ -82,9 +80,9 @@ class LeadsImport implements ToCollection, WithHeadingRow
                     );
                 }
             } else {
-                Log::channel('lead_file_read_log')->info(
-                    "Error importing lead address else: " . $row['address']
-                );
+                //Log::channel('lead_file_read_log')->info(
+                //"Error importing lead address else: " . $row['address']
+                //);
             }
         }
     }

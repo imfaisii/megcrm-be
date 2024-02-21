@@ -2,14 +2,19 @@
 
 namespace App\Providers;
 
+use App\Events\Calendars\NewCalendarEvent;
 use App\Events\Users\NewUserCreated;
+use App\Listeners\Calendars\SendCalendarEventListener;
 use App\Listeners\Users\SendUserCredentialsListener;
+use App\Models\CalenderEvent;
 use App\Models\SurveyBooking;
+use App\Models\User;
+use App\Observers\Calendars\CalendarEventObserver;
 use App\Observers\Leads\SurveyBookingObserver;
+use App\Observers\Users\UserObserver;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
-use Illuminate\Support\Facades\Event;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -27,6 +32,11 @@ class EventServiceProvider extends ServiceProvider
         NewUserCreated::class => [
             SendUserCredentialsListener::class,
         ],
+
+        // calendar events
+        NewCalendarEvent::class => [
+            SendCalendarEventListener::class
+        ]
     ];
 
     /**
@@ -35,6 +45,8 @@ class EventServiceProvider extends ServiceProvider
     public function boot(): void
     {
         SurveyBooking::observe(SurveyBookingObserver::class);
+        CalenderEvent::observe(CalendarEventObserver::class);
+        User::observe(UserObserver::class);
     }
 
     /**

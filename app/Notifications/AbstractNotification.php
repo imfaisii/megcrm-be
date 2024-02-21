@@ -14,7 +14,7 @@ abstract class AbstractNotification extends Notification implements ShouldQueue
     /**
      * Create a new notification instance.
      */
-    public function __construct(public array $data = [])
+    public function __construct(public mixed $data)
     {
         //
     }
@@ -43,5 +43,10 @@ abstract class AbstractNotification extends Notification implements ShouldQueue
      * @param object $notifiable
      * @return array<string, mixed>
      */
-    abstract public function toArray(object $notifiable): array;
+    public function toArray(object $notifiable): array
+    {
+        return [
+            //
+        ];
+    }
 }

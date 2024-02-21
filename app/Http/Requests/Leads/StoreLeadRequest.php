@@ -24,7 +24,7 @@ class StoreLeadRequest extends BaseFormRequest
             'is_marked_as_job' => ['required', 'boolean'],
             'job_type_id' => ['nullable', 'exists:job_types,id'],
             'fuel_type_id' => ['nullable', 'exists:fuel_types,id'],
-            'surveyor_id' => ['nullable', 'exists:surveyors,id'],
+            'surveyor_id' => ['nullable', 'exists:users,id'],
             'lead_generator_id' => ['nullable', 'exists:lead_generators,id'],
             'lead_source_id' => ['nullable', 'exists:lead_sources,id'],
             'benefits' => ['nullable', 'array'],

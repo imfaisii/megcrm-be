@@ -24,6 +24,7 @@ class CalenderEvent extends BaseModel
         'extra_data',
         'eventable_id',
         'eventable_type',
+        'notification',
         'calendar_id',
         'user_id',
         'created_by_id',
@@ -33,7 +34,8 @@ class CalenderEvent extends BaseModel
         'start_date' => 'datetime',
         'end_date' => 'datetime',
         'extra_data' => 'array',
-        'all_day' => 'boolean'
+        'all_day' => 'boolean',
+        'notification' => 'json',
     ];
 
     protected array $allowedIncludes = [

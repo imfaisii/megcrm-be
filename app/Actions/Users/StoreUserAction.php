@@ -3,30 +3,24 @@
 namespace App\Actions\Users;
 
 use App\Actions\Common\AbstractCreateAction;
-use App\Events\Users\NewUserCreated;
+use App\Enums\Permissions\RoleEnum;
 use App\Models\User;
-use Exception;
 
 class StoreUserAction extends AbstractCreateAction
 {
-  protected string $modelClass = User::class;
+    protected string $modelClass = User::class;
 
-  public function create(array $data): User
-  {
-    /** @var User $user */
-    $data['created_by_id'] = auth()->id();
+    public function create(array $data): User
+    {
+        /** @var User $user */
+        $data['created_by_id'] = auth()->id();
 
-    $user = parent::create($data);
+        $user = parent::create($data);
 
-    if (isset($data['roles'])) {
-      $user->syncRoles($data['roles']);
+        if (isset($data['roles'])) {
+            $user->syncRoles($data['roles']);
+        }
+
+        return $user;
     }
-
-    try {
-      event(new NewUserCreated(user: $user, password: $data['password']));
-    } catch (Exception $e) {
-    }
-
-    return $user;
-  }
 }

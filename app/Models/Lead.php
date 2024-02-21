@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Actions\Common\BaseModel;
+use App\Enums\Permissions\RoleEnum;
 use App\Filters\Leads\FilterByName;
 use App\Filters\Leads\FilterByPostcode;
 use App\Filters\Leads\FilterByStatus;
@@ -62,6 +63,23 @@ class Lead extends BaseModel
         'post_code'
     ];
 
+    public function scopeByRole($query, string $role, ?User $user = null)
+    {
+        $user ??= auth()->user();
+
+        if ($user->hasRole($role) && $role === RoleEnum::SURVEYOR) {
+            $assignedLeadGenerators = $user->leadGeneratorAssignments()->pluck('lead_generator_id');
+
+            $query->whereIn('lead_generator_id', $assignedLeadGenerators);
+
+            $query->orWhereHas('surveyBooking', function ($query) use ($user) {
+                $query->where('surveyor_id', $user->id);
+            });
+        }
+
+        return $query;
+    }
+
     protected function getFullNameAttribute()
     {
         return $this->first_name . ' ' . $this->middle_name . ' ' . $this->last_name;
@@ -76,7 +94,11 @@ class Lead extends BaseModel
     {
         $latest = $this->latestStatus();
 
-        $latest['lead_status_model'] = LeadStatus::where('name', $latest->name)->first();
+        if (!is_null($latest)) {
+            $latest['lead_status_model'] = LeadStatus::where('name', $latest->name)->first();
+        } else {
+            $latest['lead_status_model'] = null;
+        }
 
         return $latest;
     }
@@ -132,7 +154,7 @@ class Lead extends BaseModel
 
     public function surveyor()
     {
-        return $this->belongsTo(Surveyor::class);
+        return $this->belongsTo(User::class, 'surveyor_id', 'id');
     }
 
     public function leadGenerator()

@@ -8,8 +8,10 @@ use App\Actions\Users\FindUserAction;
 use App\Actions\Users\ListUserAction;
 use App\Actions\Users\StoreUserAction;
 use App\Actions\Users\UpdateUserAction;
+use App\Actions\Users\UpdateUserProfileAction;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Users\StoreUserRequest;
+use App\Http\Requests\Users\UpdateProfileRequest;
 use App\Http\Requests\Users\UpdateUserRequest;
 use App\Models\User;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -52,6 +54,12 @@ class UserController extends Controller
     public function destroy(User $user, DeleteUserAction $action): BaseJsonResource
     {
         $action->delete($user);
+        return null_resource();
+    }
+
+    public function updateUserProfile(User $user, UpdateProfileRequest $request, UpdateUserProfileAction $action): BaseJsonResource
+    {
+        $action->update($user, $request->all());
         return null_resource();
     }
 }
