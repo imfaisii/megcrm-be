@@ -42,7 +42,7 @@ class AssignUserIdsOfAirCallToUser extends Command
                 $this->info("Looking for {$eachuser['email']}...");
 
                 $user = User::query()->whereHas('roles', function ($query) {
-                    return $query->whereIn('name', [RoleEnum::SUPER_ADMIN, RoleEnum::CALL_CENTER_REPRESENTATIVE]);
+                    return $query->whereIn('name', [RoleEnum::SUPER_ADMIN, RoleEnum::CSR]);
                 })->where('email', $eachuser['email'])->first();
                 if ($user) {
                     $this->info("Found User: {$user->email} with ID: {$user->id}...");
