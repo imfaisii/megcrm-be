@@ -50,7 +50,8 @@ class LeadStatusSeeder extends Seeder
         'Waiting for Boiler Picture',
         'Called from ring central',
         'Called from second number',
-        'No answer'
+        'No answer',
+        'Survey Pending'
     ];
 
 

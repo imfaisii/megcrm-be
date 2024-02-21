@@ -28,9 +28,8 @@ class LeadsImport implements ToCollection, WithHeadingRow
                     // lead generator
                     $leadGenerator = LeadGenerator::firstOrCreate(
                         [
-                            'mask_name' => $row['website'] ?? 'Lead Generator Default'
+                            'name' => $row['website'] ?? 'Lead Generator Default'
                         ],
-                        ['name' => "Lead Generator " . LeadGenerator::count() + 1]
                     );
 
                     $email = Arr::get($row, 'email', null);
@@ -82,7 +81,7 @@ class LeadsImport implements ToCollection, WithHeadingRow
                 }
             } else {
                 //Log::channel('lead_file_read_log')->info(
-                    //"Error importing lead address else: " . $row['address']
+                //"Error importing lead address else: " . $row['address']
                 //);
             }
         }
