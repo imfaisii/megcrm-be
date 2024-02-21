@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Actions\Common\BaseModel;
+use App\Enums\Permissions\RoleEnum;
 use App\Filters\Leads\FilterByName;
 use App\Filters\Leads\FilterByPostcode;
 use App\Filters\Leads\FilterByStatus;
@@ -66,7 +67,7 @@ class Lead extends BaseModel
     {
         $user ??= auth()->user();
 
-        if ($user->hasRole($role)) {
+        if ($user->hasRole($role) && $role === RoleEnum::SURVEYOR) {
             $assignedLeadGenerators = $user->leadGeneratorAssignments()->pluck('lead_generator_id');
 
             $query->whereIn('lead_generator_id', $assignedLeadGenerators);
