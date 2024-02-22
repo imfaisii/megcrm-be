@@ -10,6 +10,7 @@ use App\Filters\Leads\FilterByStatus;
 use App\Models\SurveyBooking;
 use App\Traits\Common\HasCalenderEvent;
 use App\Traits\Common\HasRecordCreator;
+use BeyondCode\Comments\Traits\HasComments;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Imfaisii\ModelStatus\HasStatuses;
 use Spatie\Activitylog\Models\Activity;
@@ -18,7 +19,7 @@ use Spatie\QueryBuilder\AllowedFilter;
 
 class Lead extends BaseModel
 {
-    use HasFactory, HasRecordCreator, HasStatuses, HasCalenderEvent;
+    use HasFactory, HasRecordCreator, HasStatuses, HasCalenderEvent, HasComments;
 
     protected $fillable = [
         'title',
@@ -56,7 +57,8 @@ class Lead extends BaseModel
         'benefits',
         'callCenters',
         'callCenters.createdBy',
-        'callCenters.callCenterStatus'
+        'callCenters.callCenterStatus',
+        'comments.commentator'
     ];
 
     protected array $discardedFieldsInFilter = [
@@ -88,6 +90,11 @@ class Lead extends BaseModel
     protected function getStatusesAttribute()
     {
         return $this->statuses();
+    }
+
+    public function comments()
+    {
+        return $this->morphMany(config('comments.comment_class'), 'commentable')->latest();
     }
 
     protected function getStatusDetailsAttribute()

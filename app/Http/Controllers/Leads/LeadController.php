@@ -7,10 +7,12 @@ use App\Actions\Leads\FindLeadAction;
 use App\Actions\Leads\GetLeadExtrasAction;
 use App\Actions\Leads\ListLeadAction;
 use App\Actions\Leads\StoreLeadAction;
+use App\Actions\Leads\StoreLeadCommentsAction;
 use App\Actions\Leads\UpdateLeadAction;
 use App\Actions\Leads\UploadLeadsFileAction;
 use App\Exports\Leads\DatamatchExport;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Leads\StoreLeadCommentsRequest;
 use App\Http\Requests\Leads\StoreLeadRequest;
 use App\Http\Requests\Leads\UpdateLeadRequest;
 use App\Http\Requests\Leads\UpdateLeadStatusRequest;
@@ -50,6 +52,12 @@ class LeadController extends Controller
     public function destroy(Lead $lead, DeleteLeadAction $action)
     {
         $action->delete($lead);
+        return null_resource();
+    }
+
+    public function storeComments(Lead $lead, StoreLeadCommentsRequest $request)
+    {
+        $lead->comment($request->comments);
         return null_resource();
     }
 
