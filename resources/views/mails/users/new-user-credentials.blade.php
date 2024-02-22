@@ -317,11 +317,11 @@
                                                     <td>
                                                         <a href="#" style="color: #66667e">Contact Us</a>
                                                     </td>
-                                                    <td>
+                                                    {{-- <td>
                                                         <a href="https://megcrm.co.uk/login" style="color: #66667e">View
                                                             in
                                                             Browser</a>
-                                                    </td>
+                                                    </td> --}}
                                                 </tr>
                                             </tbody>
                                         </table>
