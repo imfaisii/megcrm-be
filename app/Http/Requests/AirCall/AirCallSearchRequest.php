@@ -8,6 +8,7 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class AirCallSearchRequest extends BaseFormRequest
 {
+    protected $stopOnFirstFailure = true;
     /**
      * Get the validation rules that apply to the request.
      *
@@ -16,7 +17,7 @@ class AirCallSearchRequest extends BaseFormRequest
     public function rules(): array
     {
         return [
-            'phone_number' => ['required', 'string', 'max:20', new E164NumberCheckRule],
+            'phone_number' => ['required', 'string','min:10', 'max:20', new E164NumberCheckRule],
         ];
     }
 
@@ -28,8 +29,10 @@ class AirCallSearchRequest extends BaseFormRequest
         ]);
     }
 
-    public function validated($key = null, $default = null): array
-    {
-        return [...$this->validator->validated(), 'user_id' => auth()?->user()?->air_caller_id];
-    }
+    // public function validated($key = null, $default = null): array
+    // leter if we want to show specific call from the logged in user then we can uncomment it
+
+    // {
+    //     return [...$this->validator->validated(), 'user_id' => auth()?->user()?->air_caller_id];
+    // }
 }
