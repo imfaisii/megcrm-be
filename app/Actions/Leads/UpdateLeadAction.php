@@ -19,7 +19,7 @@ class UpdateLeadAction extends AbstractUpdateAction
             return $value !== null && $value !== '';
         });
 
-        $lead = parent::update($lead, Arr::except($data, ['lead_customer_additional_detail']));
+        $lead = parent::update($lead, Arr::except($data, ['lead_customer_additional_detail', 'lead_additional']));
 
         $this->updateLeadRelations($lead, $data);
 
@@ -30,12 +30,14 @@ class UpdateLeadAction extends AbstractUpdateAction
     {
         // updating relation
         $lead->leadCustomerAdditionalDetail->update($data['lead_customer_additional_detail']);
-        $lead->surveyBooking()->updateOrCreate(
-            [
-                'lead_id' => $lead->id
-            ],
-            $data['survey_booking']
-        );
+
+        $lead->leadAdditional()->updateOrCreate([
+            'lead_id' => $lead->id
+        ], $data['lead_additional']);
+
+        $lead->surveyBooking()->updateOrCreate([
+            'lead_id' => $lead->id
+        ], $data['survey_booking']);
 
         $this->updateLeadBenefits($lead, $data);
     }

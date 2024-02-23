@@ -58,7 +58,8 @@ class Lead extends BaseModel
         'callCenters',
         'callCenters.createdBy',
         'callCenters.callCenterStatus',
-        'comments.commentator'
+        'comments.commentator',
+        'leadAdditional'
     ];
 
     protected array $discardedFieldsInFilter = [
@@ -138,10 +139,22 @@ class Lead extends BaseModel
                         ->where('subject_id', $lead->surveyBooking->id);
                 }
             })
+            ->orWhere(function ($query) use ($lead) {
+                if (!is_null($lead->leadAdditional)) {
+                    $query
+                        ->where('subject_type', (new LeadAdditional())->getMorphClass())
+                        ->where('subject_id', $lead->leadAdditional->id);
+                }
+            })
             ->with(['causer' => function ($query) {
                 $query->select('id', 'name', 'created_at', 'updated_at');
             }])
             ->get();
+    }
+
+    public function leadAdditional()
+    {
+        return $this->hasOne(LeadAdditional::class);
     }
 
     public function jobType()
