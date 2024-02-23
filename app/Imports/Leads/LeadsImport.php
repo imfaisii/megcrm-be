@@ -122,7 +122,7 @@ class LeadsImport implements ToCollection, WithHeadingRow, WithEvents
                         if ($lead->wasRecentlyCreated) {
                             $this->classResponse->totalUploadedRows += 1;
                         } else {
-                            $this->classResponse->alreadyFoundEnteries[] = $row;
+                            $this->classResponse->alreadyFoundEnteries[] = [...$row,'isDataBase'=>true,'id'=>$lead->id];
                         }
                         $lead->setStatus(LeadStatus::first()->name, 'Created via file upload');
 
