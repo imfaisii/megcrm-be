@@ -170,3 +170,17 @@ function shouldAppend(string $append): bool
 
     return true;
 }
+
+function formatCommas($address): string
+{
+    // Remove commas followed by a space
+    $address = preg_replace('/,(?=\s)/', '', $address);   // woh comma remove kro jis k agy string h
+
+    // Remove commas not followed by a space
+    $address = preg_replace('/,(?!\s)/', ' ', $address);
+
+    // Remove extra spaces
+    $address = preg_replace('/\s+/', ' ', $address);
+
+    return $address;
+}
