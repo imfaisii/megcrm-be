@@ -40,17 +40,9 @@ class UploadLeadsFileAction
 
             $headings =  array_map('strtolower', $headings);
 
-            // for ($i = 0; $i < 9; $i++) {
-            //     if ($headings[$i] !== $exampleHeader[$i]) {
-            //         $matched = false;
-            //     }
-            // }
             $headerDifference = array_diff($exampleHeader, $headings);
-            throw_if(filled($headerDifference), new Exception('File has invalid header ( not matched ).' . json_encode($headerDifference)));
 
-            // if (!$matched) {
-            //     throw new Exception('File has invalid header ( not matched ).' . json_encode($headings));
-            // }
+            throw_if(filled($headerDifference), new Exception('File has invalid header ( not matched ).' . json_encode($headerDifference)));
 
             Excel::import(new LeadsImport, $request->file('file'));
 
