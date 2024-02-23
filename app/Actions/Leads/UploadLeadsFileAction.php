@@ -2,6 +2,7 @@
 
 namespace App\Actions\Leads;
 
+use App\Classes\LeadResponseClass;
 use App\Imports\Leads\LeadsImport;
 use App\Models\User;
 use App\traits\Jsonify;
@@ -15,6 +16,7 @@ use Maatwebsite\Excel\HeadingRowImport;
 class UploadLeadsFileAction
 {
     use Jsonify;
+    public function __construct(public LeadResponseClass $leadResponseClass){}
 
     public function execute(Request $request): JsonResponse
     {
@@ -38,7 +40,7 @@ class UploadLeadsFileAction
                 throw new Exception('File has invalid header. (less headings)' . json_encode($headings));
             }
 
-            $headings =  array_map('strtolower', $headings);
+            $headings = array_map('strtolower', $headings);
 
             // for ($i = 0; $i < 9; $i++) {
             //     if ($headings[$i] !== $exampleHeader[$i]) {
@@ -52,9 +54,8 @@ class UploadLeadsFileAction
             //     throw new Exception('File has invalid header ( not matched ).' . json_encode($headings));
             // }
 
-            Excel::import(new LeadsImport, $request->file('file'));
-
-            return $this->success('File was uploaded successfully.');
+            $result = Excel::import(new LeadsImport($this->leadResponseClass), $request->file('file'));
+            return $this->success('File was uploaded successfully.',data:$this->leadResponseClass);
         } catch (Exception $e) {
             Log::channel('lead_file_read_log')->info(
                 "Error importing exception " . $e->getMessage()

@@ -3,6 +3,7 @@
 namespace App\Imports\Leads;
 
 use App\Classes\GetAddress;
+use App\Classes\LeadResponseClass;
 
 ini_set('memory_limit', '-1');
 
@@ -19,39 +20,66 @@ use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Concerns\ToCollection;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use function App\Helpers\formatCommas;
+use Maatwebsite\Excel\Concerns\WithEvents;
+use Maatwebsite\Excel\Events\BeforeImport;
+use Maatwebsite\Excel\Events\AfterImport;
 
 
-class LeadsImport implements ToCollection, WithHeadingRow
+
+class LeadsImport implements ToCollection, WithHeadingRow, WithEvents
 {
 
+    public function __construct(public LeadResponseClass $classResponse)
+    {
+
+    }
     protected $class = GetAddress::class;
+    public $name = 'LeadsImport';
+    public function registerEvents(): array
+    {
+        return [
+                // Handle by a closure.
+            BeforeImport::class => function (BeforeImport $event) {
+                $reader = $event->reader;
+                $creator = $reader->getProperties()->getCreator();
+                $totalRows = array_sum($reader->getTotalRows());
+                $fileName = request()->file('file')->getClientOriginalName();
+                // Log::driver('slack')->info("{$creator} has uploaded Leads file named as  {$fileName} with {$totalRows} rows.");
+            },
+        ];
+    }
+
     public function collection(Collection $rows)
     {
         try {
 
             DB::beginTransaction();
-            $arrayPostCodesAddresses =  $rows->pluck('address', 'postcode')?->filter()?->map(function ($collection) {
-                return formatCommas($collection);
+            $arrayPostCodesAddresses = $rows->pluck('address', 'postcode')?->filter()?->map(function ($collection) {
+                return formatCommas(trim($collection));
             })->toArray();
             $lead = Lead::pluck('address', 'post_code')->toArray();
             $addressToInclude = (array_diff_assoc($arrayPostCodesAddresses ?? [], $lead));
-            $rows = $rows?->filter()?->transform(function ($item, int $key) {
+
+            $rows = $rows?->filter(function ($row) {
+                return $row['address'] ?? false;
+            })?->transform(function ($item, int $key) {
                 return [
                     ...$item,
-                    'address' => formatCommas(data_get($item, 'address', ''))
+                    'address' => formatCommas(trim(data_get($item, 'address', '')))
                 ];
             });
+            $this->classResponse->alreadyFoundEnteries = $rows->whereNotIn('address', $addressToInclude)->all();
             foreach ($rows->whereIn('address', $addressToInclude) as $key => $row) {
                 if (isset($row['address']) && $row['address'] !== null) {
                     $benefitTypes = [];
 
                     try {
-                      // lead generator
-                    $leadGenerator = LeadGenerator::firstOrCreate(
-                        [
-                            'name' => $row['website'] ?? 'Lead Generator Default'
-                        ],
-                    );
+                        // lead generator
+                        $leadGenerator = LeadGenerator::firstOrCreate(
+                            [
+                                'name' => $row['website'] ?? 'Lead Generator Default'
+                            ],
+                        );
                         $email = Arr::get($row, 'email', null);
                         $phoneNo = Arr::get($row, 'contact_number', '000000');
                         $dob = Arr::get($row, 'dob', null);
@@ -68,14 +96,14 @@ class LeadsImport implements ToCollection, WithHeadingRow
 
                         if (filled($address)) {
                             // $address = formatCommas($address);
-                            $address =  resolve($this->class)->getCompleteAddress($address, $postCode, 'autocomplete') ?: $address;
-                            $address = formatCommas($address);
+                            $address = resolve($this->class)->getCompleteAddress($address, $postCode, 'autocomplete') ?: $address;
+                            $address = formatCommas(trim($address));
                         }
 
                         $name = $this->split_name($row['name'] ?? '');
                         $lead = Lead::firstOrCreate([
                             'post_code' => $postCode,
-                            'address' => (string)$address,
+                            'address' => (string) $address,
                         ], [
                             'title' => 'Mr',
                             'first_name' => $name['first_name'] ?? '',
@@ -91,7 +119,11 @@ class LeadsImport implements ToCollection, WithHeadingRow
                             'user_id' => auth()->id(),
                             'created_by_id' => auth()->id()
                         ]);
-
+                        if ($lead->wasRecentlyCreated) {
+                            $this->classResponse->totalUploadedRows += 1;
+                        } else {
+                            $this->classResponse->alreadyFoundEnteries[] = $row;
+                        }
                         $lead->setStatus(LeadStatus::first()->name, 'Created via file upload');
 
                         // creating additional empty record for lead

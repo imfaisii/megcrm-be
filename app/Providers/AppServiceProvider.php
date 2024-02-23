@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Classes\AirCall;
+use App\Classes\LeadResponseClass;
 use App\Notifications\Events\NewCalLScheduledNotification;
 use App\Notifications\TestNotification;
 use Illuminate\Support\ServiceProvider;
@@ -16,8 +17,8 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
 
-        app()->bind(NewCalLScheduledNotification::class, function ($app, $parameters) {
-            return new NewCalLScheduledNotification(...$parameters);
+        app()->bind(LeadResponseClass::class, function ($app, $parameters) {
+            return new LeadResponseClass();
         });
 
         $this->app->bind('AirCall', function () {
@@ -25,7 +26,7 @@ class AppServiceProvider extends ServiceProvider
         });
     }
 
-    /** 
+    /**
      * Bootstrap any application services.
      */
     public function boot(): void
