@@ -35,6 +35,7 @@ class GetLeadExtrasAction
             'Called from ring central',
             'Called from second number',
             'No answer',
+            'Cancelled (old)'
         ];
 
         $both = [
