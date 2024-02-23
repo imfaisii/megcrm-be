@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AirCall\AirCallController;
 use App\Http\Controllers\BenefitTypeController;
 use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\CalenderEventsController;
@@ -65,6 +66,9 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::apiResource('/call-center-statuses', CallCenterStatusesController::class);
     Route::apiResource('/calendars', CalendarController::class);
     Route::apiResource('/calendar-events', CalenderEventsController::class);
+
+    Route::post('aircall/search-call', [AirCallController::class, 'searchCall'])->name('aircall.search-call');
+
     Route::get('/notifications/{id}', [NotificationController::class, 'markSingleAsMarked'])->name('notifications.mark-single-as-read');
     Route::delete('/notifications/{id}', [NotificationController::class, 'deleteNotification'])->name('notifications.destroy');
     Route::get('/notifications', [NotificationController::class, 'markAllAsRead'])->name('notifications.mark-all-as-read');
@@ -74,3 +78,4 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::get('/lead-extras', [LeadController::class, 'getExtras'])->name('leads.extras');
     Route::post('/lead-status/{lead}', [LeadController::class, 'updateStatus'])->name('leads.set-lead-status');
 });
+
