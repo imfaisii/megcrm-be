@@ -17,7 +17,10 @@ class ListLeadAction extends AbstractListAction
         $query = parent::getQuery();
         $user = auth()->user();
 
-        if ($user->hasRole(RoleEnum::SURVEYOR)) {
+        if (
+            !$user->hasRole(RoleEnum::SUPER_ADMIN)
+            && $user->hasRole(RoleEnum::SURVEYOR)
+        ) {
             $query->byRole(RoleEnum::SURVEYOR);
         }
 

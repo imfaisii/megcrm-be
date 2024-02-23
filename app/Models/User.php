@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Support\Str;
 use Illuminate\Support\Arr;
@@ -101,7 +102,7 @@ class User extends BaseModel implements AuthenticatableContract
     public function getUserAgentsAttribute($count = 5)
     {
         return $this->authentications->take($count)->map(function ($log) {
-            $agent = tap(new Agent, fn ($agent) => $agent->setUserAgent($log->user_agent));
+            $agent = tap(new Agent, fn($agent) => $agent->setUserAgent($log->user_agent));
 
             return [
                 'is_mobile' => ($agent->isMobile() || $agent->isTablet()) ? true : false,
@@ -147,4 +148,10 @@ class User extends BaseModel implements AuthenticatableContract
     {
         return data_get(config('logging.channels.slack-crm'), 'url');
     }
+
+    public function teams(): BelongsToMany
+    {
+        return $this->belongsToMany(Team::class, TeamUsers::class, 'user_id', 'team_id');
+    }
+
 }
