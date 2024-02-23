@@ -28,6 +28,7 @@ jobs:
         script_stop: true
         script: |
           cd /data/www/api.megcrm.co.uk/megcrm-be
+          git stash
           git pull
           composer i
           php artisan migrate --force
