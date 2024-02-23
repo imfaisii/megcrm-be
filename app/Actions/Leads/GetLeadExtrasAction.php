@@ -35,14 +35,14 @@ class GetLeadExtrasAction
             'Called from ring central',
             'Called from second number',
             'No answer',
-            'Cancelled (old)'
         ];
 
         $both = [
             'Survey Booked',
             'Cancelled Survey',
             'Cancelled Job',
-            'Cancelled Lead'
+            'Cancelled Lead',
+            'Cancelled (old)'
         ];
 
 
