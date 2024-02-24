@@ -46,8 +46,9 @@ class User extends BaseModel implements AuthenticatableContract
         'password',
         'air_caller_id',
         'is_active',
-        'created_by_id',
-        'phone_number_aircall'
+        'phone_number_aircall',
+        'aircall_email_address',
+        'created_by_id'
     ];
 
     protected $hidden = [
@@ -56,6 +57,8 @@ class User extends BaseModel implements AuthenticatableContract
         'phone_number_aircall',
         'air_caller_id'
     ];
+
+    protected $with = ['additional'];
 
     protected $casts = [
         'email_verified_at' => 'datetime',
@@ -119,6 +122,11 @@ class User extends BaseModel implements AuthenticatableContract
             ];
         })
             ->unique('login_at');
+    }
+
+    public function additional()
+    {
+        return $this->hasOne(UserAdditional::class);
     }
 
     public function scopeActive(Builder $builder)
