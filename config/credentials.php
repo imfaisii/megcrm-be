@@ -3,7 +3,7 @@
 return [
 
     /*
-    |-Credentials 
+    |-Credentials
     |--------------------------------------------------------------------------
     |
     | This is to get the credentials for the application.
@@ -15,5 +15,10 @@ return [
     'AIRCALL_WEBHOOK_TOKEN' => env('AIRCALL_WEBHOOK_TOKEN', null),
 
 
-  
+    'GET_ADDRESS_API_KEY' => env('GET_ADDRESS_API_KEY', null),
+
+    "AIRCALL_PHONE_NUMBER" => env("AIRCALL_PHONE_NUMBER", [707436, 720272]),
+
+
+
 ];

@@ -222,7 +222,7 @@ class AirCall
      * @param string $callId
      * @return JsonResponse
      */
-    public function searchCall(array $queryParams, array $defaultParams = []): JsonResponse
+    public function searchCall(array $queryParams, array $defaultParams = ['order' => 'desc']): JsonResponse
     {
         try {
             $this->setDataForSeacrhCall($defaultParams);

@@ -35,9 +35,9 @@ class AssignUserIdsOfAirCallToUser extends Command
     {
         try {
             $this->info('Starting to assign user ids of air calls to users...');
-            $getUsers =  AirCallFascade::getUsers();  // fetch all the users
+            $getUsers = AirCallFascade::getUsers();  // fetch all the users
             $this->newLine();
-            $users =  $this->withProgressBar(data_get($getUsers->getOriginalContent(), 'data', collect([])), function ($eachuser) {
+            $users = $this->withProgressBar(data_get($getUsers->getOriginalContent(), 'data', collect([])), function ($eachuser) {
                 $this->newLine(1);
                 $this->info("Looking for {$eachuser['email']}...");
 
@@ -46,8 +46,14 @@ class AssignUserIdsOfAirCallToUser extends Command
                 })->where('email', $eachuser['email'])->first();
                 if ($user) {
                     $this->info("Found User: {$user->email} with ID: {$user->id}...");
+                    $this->info("Getting Assigned Numbers");
+                    $getNumber = AirCallFascade::getUsers(userId:$eachuser['id']);
+                    $number = $getNumber->getData(true);
+
+                    $numberArray = data_get($number, 'data.0.numbers.*.id');
                     tap($user)->update([
-                        'air_caller_id' => $eachuser['id']
+                        'air_caller_id' => $eachuser['id'],
+                        'phone_number_aircall' => $numberArray,
                     ]);
                 }
             });
