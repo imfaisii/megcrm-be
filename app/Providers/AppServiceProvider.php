@@ -20,7 +20,7 @@ class AppServiceProvider extends ServiceProvider
             return new NewCalLScheduledNotification(...$parameters);
         });
 
-        $this->app->bind('AirCall', function () {
+        $this->app->bind(AirCall::class, function () {
             return new AirCall();
         });
     }

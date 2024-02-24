@@ -68,6 +68,10 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::apiResource('/calendar-events', CalenderEventsController::class);
 
     Route::post('aircall/search-call', [AirCallController::class, 'searchCall'])->name('aircall.search-call');
+    Route::post('aircall/dial-call', [AirCallController::class, 'dialCall'])->name('aircall.dial-call');
+    Route::post('aircall/make-call', [AirCallController::class, 'makeCall'])->name('aircall.make-call');
+
+
 
     Route::get('/notifications/{id}', [NotificationController::class, 'markSingleAsMarked'])->name('notifications.mark-single-as-read');
     Route::delete('/notifications/{id}', [NotificationController::class, 'deleteNotification'])->name('notifications.destroy');

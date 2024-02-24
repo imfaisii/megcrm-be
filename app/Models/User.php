@@ -46,12 +46,15 @@ class User extends BaseModel implements AuthenticatableContract
         'password',
         'air_caller_id',
         'is_active',
-        'created_by_id'
+        'created_by_id',
+        'phone_number_aircall'
     ];
 
     protected $hidden = [
         'password',
         'remember_token',
+        'phone_number_aircall',
+        'air_caller_id'
     ];
 
     protected $casts = [

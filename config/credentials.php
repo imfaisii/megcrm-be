@@ -17,6 +17,8 @@ return [
 
     'GET_ADDRESS_API_KEY' => env('GET_ADDRESS_API_KEY', null),
 
+    "AIRCALL_PHONE_NUMBER" => env("AIRCALL_PHONE_NUMBER", [707436, 720272]),
+
 
 
 ];
