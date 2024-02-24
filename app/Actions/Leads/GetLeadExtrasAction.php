@@ -30,12 +30,19 @@ class GetLeadExtrasAction
             'Installed',
             'Follow Up',
             'Survey Booked',
-            'Cancelled',
             'Waiting for Boiler Picture',
             'Not interested',
             'Called from ring central',
             'Called from second number',
-            'No answer'
+            'No answer',
+        ];
+
+        $both = [
+            'Survey Booked',
+            'Cancelled Survey',
+            'Cancelled Job',
+            'Cancelled Lead',
+            'Cancelled (old)'
         ];
 
 
@@ -59,8 +66,8 @@ class GetLeadExtrasAction
             'lead_generators' => $leadGenerators,
             'lead_sources' => LeadSource::all(),
             'lead_statuses' => LeadStatus::all(),
-            'lead_table_filters' => LeadStatus::whereIn('name', $tableStatuses)->get(),
-            'lead_jobs_filters' => LeadStatus::whereNotIn('name', $tableStatuses)->get(),
+            'lead_table_filters' => LeadStatus::whereIn('name', [...$tableStatuses, ...$both])->get(),
+            'lead_jobs_filters' => LeadStatus::whereNotIn('name', $tableStatuses)->orWhere('name', $both)->get(),
             'call_center_statuses' => CallCenterStatus::all()
         ];
     }

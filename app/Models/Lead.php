@@ -10,6 +10,7 @@ use App\Filters\Leads\FilterByStatus;
 use App\Models\SurveyBooking;
 use App\Traits\Common\HasCalenderEvent;
 use App\Traits\Common\HasRecordCreator;
+use BeyondCode\Comments\Traits\HasComments;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Imfaisii\ModelStatus\HasStatuses;
 use Spatie\Activitylog\Models\Activity;
@@ -18,7 +19,7 @@ use Spatie\QueryBuilder\AllowedFilter;
 
 class Lead extends BaseModel
 {
-    use HasFactory, HasRecordCreator, HasStatuses, HasCalenderEvent;
+    use HasFactory, HasRecordCreator, HasStatuses, HasCalenderEvent, HasComments;
 
     protected $fillable = [
         'title',
@@ -37,7 +38,7 @@ class Lead extends BaseModel
         'lead_generator_id',
         'lead_source_id',
         'benefit_type_id',
-        'comments',
+        'notes',
         'created_by_id'
     ];
 
@@ -56,7 +57,9 @@ class Lead extends BaseModel
         'benefits',
         'callCenters',
         'callCenters.createdBy',
-        'callCenters.callCenterStatus'
+        'callCenters.callCenterStatus',
+        'comments.commentator',
+        'leadAdditional'
     ];
 
     protected array $discardedFieldsInFilter = [
@@ -88,6 +91,11 @@ class Lead extends BaseModel
     protected function getStatusesAttribute()
     {
         return $this->statuses();
+    }
+
+    public function comments()
+    {
+        return $this->morphMany(config('comments.comment_class'), 'commentable')->latest();
     }
 
     protected function getStatusDetailsAttribute()
@@ -131,10 +139,22 @@ class Lead extends BaseModel
                         ->where('subject_id', $lead->surveyBooking->id);
                 }
             })
+            ->orWhere(function ($query) use ($lead) {
+                if (!is_null($lead->leadAdditional)) {
+                    $query
+                        ->where('subject_type', (new LeadAdditional())->getMorphClass())
+                        ->where('subject_id', $lead->leadAdditional->id);
+                }
+            })
             ->with(['causer' => function ($query) {
                 $query->select('id', 'name', 'created_at', 'updated_at');
             }])
             ->get();
+    }
+
+    public function leadAdditional()
+    {
+        return $this->hasOne(LeadAdditional::class);
     }
 
     public function jobType()

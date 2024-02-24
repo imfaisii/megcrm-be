@@ -4,7 +4,8 @@ on:
   push:
     branches: [ "develop" ]
   pull_request:
-    branches: [ "develop" ]
+    types:
+      - closed
 
 jobs:
   deploy-to-production:
@@ -27,6 +28,7 @@ jobs:
         script_stop: true
         script: |
           cd /data/www/api.megcrm.co.uk/megcrm-be
+          git stash
           git pull
           composer i
           php artisan migrate --force

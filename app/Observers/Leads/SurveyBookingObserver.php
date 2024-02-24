@@ -21,6 +21,8 @@ class SurveyBookingObserver
 
             if ($surveyBooking->survey_at && $surveyBooking->surveyor_id) {
 
+                $surveyBooking->lead->setStatus('Survey Booked', 'Assigned by system.');
+
                 $surveyBooking->load(['surveyor', 'lead']);
                 $prefferedTime = ($surveyBooking->preffered_time ? "( {$surveyBooking->preffered_time} )" : '');
 
