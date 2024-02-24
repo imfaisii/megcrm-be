@@ -38,7 +38,7 @@ class Lead extends BaseModel
         'lead_generator_id',
         'lead_source_id',
         'benefit_type_id',
-        'comments',
+        'notes',
         'created_by_id'
     ];
 
