@@ -13,7 +13,7 @@ class StoreLeadRequest extends BaseFormRequest
             'first_name' => ['required', 'string'],
             'middle_name' => ['nullable', 'string'],
             'last_name' => ['required', 'string'],
-            'email' => ['nullable', 'email', 'unique:leads,email'],
+            'email' => ['nullable', 'string'],
             'phone_no' => ['required', 'string', 'unique:leads,phone_no'],
             'dob' => ['required', 'string'],
             'address' => ['required', 'string', 'unique:leads,address'],
