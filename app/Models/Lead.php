@@ -7,6 +7,7 @@ use App\Enums\Permissions\RoleEnum;
 use App\Filters\Leads\FilterByName;
 use App\Filters\Leads\FilterByPostcode;
 use App\Filters\Leads\FilterByStatus;
+use App\Filters\Leads\FilterBySurveyor;
 use App\Models\SurveyBooking;
 use App\Traits\Common\HasCalenderEvent;
 use App\Traits\Common\HasRecordCreator;
@@ -34,7 +35,7 @@ class Lead extends BaseModel
         'is_marked_as_job',
         'job_type_id',
         'fuel_type_id',
-        'surveyor_id',
+        // 'surveyor_id',
         'lead_generator_id',
         'lead_source_id',
         'benefit_type_id',
@@ -117,6 +118,7 @@ class Lead extends BaseModel
             AllowedFilter::custom('post_code', new FilterByPostcode()),
             AllowedFilter::custom('name', new FilterByName()),
             AllowedFilter::custom('statuses', new FilterByStatus()),
+            AllowedFilter::custom('surveyor_id', new FilterBySurveyor()),
         ];
     }
 
