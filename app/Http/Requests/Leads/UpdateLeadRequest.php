@@ -14,7 +14,7 @@ class UpdateLeadRequest extends BaseFormRequest
             'first_name' => ['sometimes', 'required', 'string'],
             'middle_name' => ['nullable', 'string'],
             'last_name' => ['sometimes', 'required', 'string'],
-            'email' => ['sometimes', 'nullable', 'email'],
+            'email' => ['sometimes', 'nullable'],
             'phone_no' => ['sometimes', 'required', 'string'],
             'dob' => ['sometimes', 'required', 'string'],
             'address' => ['sometimes', 'required', 'string'],
