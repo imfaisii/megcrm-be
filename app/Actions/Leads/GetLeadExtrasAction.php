@@ -66,9 +66,9 @@ class GetLeadExtrasAction
             'benefit_types' => BenefitType::all(),
             'lead_generators' => $leadGenerators,
             'lead_sources' => LeadSource::all(),
-            'lead_statuses' => LeadStatus::latest('name')->get(),
-            'lead_table_filters' => LeadStatus::whereIn('name', [...$tableStatuses, ...$both])->latest('name')->get(),
-            'lead_jobs_filters' => LeadStatus::whereNotIn('name', $tableStatuses)->orWhere('name', $both)->latest('name')->get(),
+            'lead_statuses' => LeadStatus::oldest('name')->get(),
+            'lead_table_filters' => LeadStatus::whereIn('name', [...$tableStatuses, ...$both])->oldest('name')->get(),
+            'lead_jobs_filters' => LeadStatus::whereNotIn('name', $tableStatuses)->orWhere('name', $both)->oldest('name')->get(),
             'call_center_statuses' => CallCenterStatus::all()
         ];
     }
