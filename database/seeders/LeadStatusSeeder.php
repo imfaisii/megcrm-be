@@ -52,7 +52,8 @@ class LeadStatusSeeder extends Seeder
         'No answer',
         'Survey Pending',
         'Cancelled Survey',
-        'Cancelled Job'
+        'Cancelled Job',
+        'Condensing Boiler'
     ];
 
 

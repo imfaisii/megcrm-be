@@ -42,7 +42,8 @@ class GetLeadExtrasAction
             'Cancelled Survey',
             'Cancelled Job',
             'Cancelled Lead',
-            'Cancelled (old)'
+            'Cancelled (old)',
+            'Condensing Boiler'
         ];
 
 
