@@ -73,7 +73,7 @@ class User extends BaseModel implements AuthenticatableContract
         'authentications'
     ];
 
-    protected $appends = ['rights', 'top_role'];
+    protected $appends = ['rights', 'top_role', 'user_agents'];
 
     public function notifyAuthenticationLogVia()
     {
