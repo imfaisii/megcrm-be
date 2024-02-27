@@ -43,7 +43,7 @@ class AssignUserIdsOfAirCallToUser extends Command
 
                 $user = User::query()->whereHas('roles', function ($query) {
                     return $query->whereIn('name', [RoleEnum::SUPER_ADMIN, RoleEnum::CSR]);
-                })->where('email', $eachuser['email'])->first();
+                })->where('aircall_email_address', $eachuser['email'])->first();
                 if ($user) {
                     $this->info("Found User: {$user->email} with ID: {$user->id}...");
                     $this->info("Getting Assigned Numbers");
