@@ -7,6 +7,7 @@ use App\Http\Controllers\CalenderEventsController;
 use App\Http\Controllers\CallCenterController;
 use App\Http\Controllers\CallCenterStatusesController;
 use App\Http\Controllers\FuelTypeController;
+use App\Http\Controllers\InstallationTypeController;
 use App\Http\Controllers\JobTypeController;
 use App\Http\Controllers\LeadGeneratorAssignmentController;
 use App\Http\Controllers\LeadGeneratorController;
@@ -58,6 +59,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::apiResource('/lead-generators', LeadGeneratorController::class);
     Route::apiResource('/lead-sources', LeadSourceController::class);
     Route::apiResource('/surveyors', SurveyorController::class);
+    Route::apiResource('/installation-types', InstallationTypeController::class);
     Route::apiResource('/job-types', JobTypeController::class);
     Route::apiResource('/benefit-types', BenefitTypeController::class);
     Route::apiResource('/fuel-types', FuelTypeController::class);

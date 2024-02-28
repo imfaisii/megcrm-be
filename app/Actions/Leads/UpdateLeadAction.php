@@ -5,6 +5,7 @@ namespace App\Actions\Leads;
 use App\Actions\Common\AbstractUpdateAction;
 use App\Models\BenefitType;
 use App\Models\Lead;
+use App\Models\Measure;
 use Illuminate\Support\Arr;
 
 class UpdateLeadAction extends AbstractUpdateAction
@@ -39,11 +40,20 @@ class UpdateLeadAction extends AbstractUpdateAction
             'lead_id' => $lead->id
         ], $data['survey_booking']);
 
-        $lead->installationBooking()->updateOrCreate([
-            'lead_id' => $lead->id
-        ], $data['installation_booking']);
+        foreach ($data['installation_bookings'] as $key => $installation) {
+            $lead->installationBookings()->updateOrCreate([
+                'lead_id' => $lead->id,
+                'measure_id' => $installation['measure_id']
+            ], $installation);
+        }
 
-        $this->updateLeadBenefits($lead, $data);
+        if (Arr::has($data, 'benefits')) {
+            $this->updateLeadBenefits($lead, $data);
+        }
+
+        if (Arr::has($data, 'measures')) {
+            $this->updateLeadMeasures($lead, $data);
+        }
     }
 
     public function updateLeadBenefits(Lead $lead, array $data)
@@ -64,6 +74,38 @@ class UpdateLeadAction extends AbstractUpdateAction
             if ($newBenefits != $oldBenefits) {
                 $attributes['benefits'] = $newBenefits;
                 $old['benefits'] = $oldBenefits;
+            }
+
+            activity()
+                ->causedBy(auth()->user())
+                ->performedOn($lead)
+                ->withProperties([
+                    'attributes' => $attributes,
+                    'old' => $old
+                ])
+                ->event('updated')
+                ->log('This record has been updated');
+        }
+    }
+
+    public function updateLeadMeasures(Lead $lead, array $data)
+    {
+        $oldMeasures = $lead->measures()->pluck('name');
+
+        // adding measures
+        $lead->measures()->syncWithPivotValues($data['measures'], [
+            'created_by_id' => auth()->id()
+        ]);
+
+        $newMeasures = Measure::whereIn('id', $data['measures'])->pluck('name');
+
+        if ($newMeasures != $oldMeasures) {
+            $attributes = [];
+            $old = [];
+
+            if ($newMeasures != $oldMeasures) {
+                $attributes['benefits'] = $newMeasures;
+                $old['benefits'] = $oldMeasures;
             }
 
             activity()

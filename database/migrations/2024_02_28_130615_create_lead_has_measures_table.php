@@ -14,14 +14,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('installation_bookings', function (Blueprint $table) {
+        Schema::create('lead_has_measures', function (Blueprint $table) {
             $table->id();
-            $table->timestamp('installation_at')->nullable();
-            $table->text('comments')->nullable();
+            $table->foreignIdFor(Lead::class);
             $table->foreignIdFor(Measure::class);
-            $table->foreignIdFor(User::class, 'installer_id')->nullable();
-            $table->foreignIdFor(Lead::class)->nullable();
-            $table->foreignIdFor(User::class, 'created_by_id')->nullable();
+            $table->foreignIdFor(User::class, 'created_by_id');
             $table->timestamps();
         });
     }
@@ -31,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('installation_bookings');
+        Schema::dropIfExists('lead_has_measures');
     }
 };

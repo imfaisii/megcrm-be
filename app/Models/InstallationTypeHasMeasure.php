@@ -6,24 +6,27 @@ use App\Actions\Common\BaseModel;
 use App\Traits\Common\HasRecordCreator;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class InstallationType extends BaseModel
+class InstallationTypeHasMeasure extends BaseModel
 {
     use HasFactory, HasRecordCreator;
 
     protected $fillable = [
-        'name',
+        'installation_type_id',
+        'measure_id',
         'created_by_id'
     ];
 
     protected array $allowedIncludes = [
-        'installationTypeHasMeasures',
         'createdBy'
     ];
 
-    public function installationTypeHasMeasures()
+    public function installationType()
     {
-        return $this->belongsToMany(Measure::class, InstallationTypeHasMeasure::class)
-            ->withPivot('created_by_id')
-            ->withTimestamps();
+        return $this->belongsTo(InstallationType::class);
+    }
+
+    public function measure()
+    {
+        return $this->belongsTo(Measure::class);
     }
 }

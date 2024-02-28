@@ -54,9 +54,10 @@ class Lead extends BaseModel
         'leadGenerator',
         'statuses',
         'surveyBooking',
-        'installationBooking',
+        'installationBookings',
         'leadCustomerAdditionalDetail',
         'benefits',
+        'measures',
         'callCenters',
         'callCenters.createdBy',
         'callCenters.callCenterStatus',
@@ -205,9 +206,9 @@ class Lead extends BaseModel
         return $this->hasOne(SurveyBooking::class);
     }
 
-    public function installationBooking()
+    public function installationBookings()
     {
-        return $this->hasOne(InstallationBooking::class);
+        return $this->hasMany(InstallationBooking::class);
     }
 
     public function callCenters()
@@ -218,6 +219,13 @@ class Lead extends BaseModel
     public function benefits()
     {
         return $this->belongsToMany(BenefitType::class, LeadHasBenefit::class)
+            ->withPivot('created_by_id')
+            ->withTimestamps();
+    }
+
+    public function measures()
+    {
+        return $this->belongsToMany(Measure::class, LeadHasMeasure::class)
             ->withPivot('created_by_id')
             ->withTimestamps();
     }
