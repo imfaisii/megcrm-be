@@ -45,5 +45,5 @@ Route::get('/webhook/{name}', function ($name) {
 });
 
 Route::prefix('aircall')->as('aircall_')->group(function () {
-    Route::post('check/webhook', AirCallWebhookController::class)->name("webhook");
+  Route::post('check/webhook', AirCallWebhookController::class)->name("webhook");
 });

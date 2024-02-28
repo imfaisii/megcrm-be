@@ -7,6 +7,7 @@ use App\Enums\Permissions\RoleEnum;
 use App\Filters\Leads\FilterByName;
 use App\Filters\Leads\FilterByPostcode;
 use App\Filters\Leads\FilterByStatus;
+use App\Filters\Leads\FilterBySurveyor;
 use App\Models\SurveyBooking;
 use App\Traits\Common\HasCalenderEvent;
 use App\Traits\Common\HasRecordCreator;
@@ -34,11 +35,11 @@ class Lead extends BaseModel
         'is_marked_as_job',
         'job_type_id',
         'fuel_type_id',
-        'surveyor_id',
+        // 'surveyor_id',
         'lead_generator_id',
         'lead_source_id',
         'benefit_type_id',
-        'comments',
+        'notes',
         'created_by_id'
     ];
 
@@ -53,12 +54,14 @@ class Lead extends BaseModel
         'leadGenerator',
         'statuses',
         'surveyBooking',
+        'installationBooking',
         'leadCustomerAdditionalDetail',
         'benefits',
         'callCenters',
         'callCenters.createdBy',
         'callCenters.callCenterStatus',
-        'comments.commentator'
+        'comments.commentator',
+        'leadAdditional'
     ];
 
     protected array $discardedFieldsInFilter = [
@@ -116,6 +119,7 @@ class Lead extends BaseModel
             AllowedFilter::custom('post_code', new FilterByPostcode()),
             AllowedFilter::custom('name', new FilterByName()),
             AllowedFilter::custom('statuses', new FilterByStatus()),
+            AllowedFilter::custom('surveyor_id', new FilterBySurveyor()),
         ];
     }
 
@@ -138,10 +142,22 @@ class Lead extends BaseModel
                         ->where('subject_id', $lead->surveyBooking->id);
                 }
             })
+            ->orWhere(function ($query) use ($lead) {
+                if (!is_null($lead->leadAdditional)) {
+                    $query
+                        ->where('subject_type', (new LeadAdditional())->getMorphClass())
+                        ->where('subject_id', $lead->leadAdditional->id);
+                }
+            })
             ->with(['causer' => function ($query) {
                 $query->select('id', 'name', 'created_at', 'updated_at');
             }])
             ->get();
+    }
+
+    public function leadAdditional()
+    {
+        return $this->hasOne(LeadAdditional::class);
     }
 
     public function jobType()
@@ -187,6 +203,11 @@ class Lead extends BaseModel
     public function surveyBooking()
     {
         return $this->hasOne(SurveyBooking::class);
+    }
+
+    public function installationBooking()
+    {
+        return $this->hasOne(InstallationBooking::class);
     }
 
     public function callCenters()

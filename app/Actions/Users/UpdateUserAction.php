@@ -48,6 +48,9 @@ class UpdateUserAction extends AbstractUpdateAction
                 ->log('This record has been updated');
         }
 
+        // update or create relations
+        (new StoreUserAction())->relations($user, $data);
+
         return $user;
     }
 }

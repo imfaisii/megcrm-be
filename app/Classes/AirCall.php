@@ -62,7 +62,6 @@ class AirCall
                     $isNextPage = filled($Url);
                     $result = data_get($response->json(), $userId ? 'user' : 'users', []);
                     $ResponseData = filled($result) ? (Arr::get($result, '0', null) ? $result : [$result]) : [];
-                    // dd($ResponseData);
                     foreach ($ResponseData as $eachuser) {
                         $this->data->push($eachuser);
                     }
@@ -175,7 +174,7 @@ class AirCall
 
     public function GeneralDataSet(array &$data): void
     {
-        $data = Arr::add($data, 'from', now()->subYear()->timestamp);
+        $data = Arr::add($data, 'from', now()->subMinutes(180)->timestamp);
         $data = Arr::add($data, 'to', now()->timestamp);
     }
 
@@ -206,6 +205,46 @@ class AirCall
                 }
             }
             return $response->successful() ? $this->success(data: $this->data) : $this->error();
+        } catch (Exception $e) {
+            return $this->exception($e);
+        }
+    }
+
+    public function setDataForSeacrhCall(array &$queryParams): void
+    {
+        $queryParams = Arr::add($queryParams, 'from', now()->subMonths(1)->timestamp);  // 1 saal tk search kro
+        $queryParams = Arr::add($queryParams, 'to', now()->timestamp);
+        $queryParams = Arr::add($queryParams, 'fetch_contact', true);
+    }
+
+    /**
+     * Search A Call
+     * @param string $callId
+     * @return JsonResponse
+     */
+    public function searchCall(array $queryParams, array $defaultParams = ['order' => 'desc']): JsonResponse
+    {
+        try {
+            $this->setDataForSeacrhCall($defaultParams);
+            if (blank(Arr::get($queryParams, 'phone_number')))
+                return $this->error();
+            $isNextPage = true;
+            $Url = "{$this->BaseUrl}{$this->version}/calls/search";
+            while (!empty($isNextPage)) {
+                $response = $this->HttpClient->get($Url, [...$defaultParams, ...$queryParams]);
+                if ($response->successful()) {
+                    $Url = data_get($response->json(), 'meta.next_page_link', null);
+                    $isNextPage = filled($Url);
+                    $result = data_get($response->json(), 'calls', []);
+                    $ResponseData = filled($result) ? (Arr::get($result, '0', null) ? $result : [$result]) : [];
+                    foreach ($ResponseData as $eachcall) {
+                        $this->data->push($eachcall);
+                    }
+                } else {
+                    $isNextPage = null;
+                }
+            }
+            return $response->successful() ? $this->success(data: $this->data) : $this->error(message: "No Result Found");
         } catch (Exception $e) {
             return $this->exception($e);
         }

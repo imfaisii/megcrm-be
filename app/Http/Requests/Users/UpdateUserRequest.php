@@ -21,6 +21,13 @@ class UpdateUserRequest extends FormRequest
             'password' => ['nullable', 'confirmed', \Illuminate\Validation\Rules\Password::defaults()],
             'roles' => ['array'],
             'is_active' => ['boolean'],
+            'aircall_email_address' => ['nullable', 'email'],
+            'additional' => ['nullable', 'array'],
+            'additional.dob' => ['nullable', 'string'],
+            'additional.gender' => ['nullable', 'string'],
+            'additional.address' => ['nullable', 'string'],
+            'additional.phone_no' => ['nullable', 'numeric'],
+            'installation_types' => ['nullable', 'array']
         ];
     }
 }

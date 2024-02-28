@@ -45,14 +45,21 @@ class User extends BaseModel implements AuthenticatableContract
         'name',
         'email',
         'password',
+        'air_caller_id',
         'is_active',
+        'phone_number_aircall',
+        'aircall_email_address',
         'created_by_id'
     ];
 
     protected $hidden = [
         'password',
         'remember_token',
+        'phone_number_aircall',
+        'air_caller_id'
     ];
+
+    protected $with = ['additional'];
 
     protected $casts = [
         'email_verified_at' => 'datetime',
@@ -67,7 +74,7 @@ class User extends BaseModel implements AuthenticatableContract
         'authentications'
     ];
 
-    protected $appends = ['rights', 'top_role'];
+    protected $appends = ['rights', 'top_role', 'user_agents'];
 
     public function notifyAuthenticationLogVia()
     {
@@ -118,6 +125,11 @@ class User extends BaseModel implements AuthenticatableContract
             ->unique('login_at');
     }
 
+    public function additional()
+    {
+        return $this->hasOne(UserAdditional::class);
+    }
+
     public function scopeActive(Builder $builder)
     {
         return $builder->where('is_active', true);
@@ -144,6 +156,14 @@ class User extends BaseModel implements AuthenticatableContract
             ->withPivot('created_by_id')
             ->withTimestamps();
     }
+
+    public function installationTypes()
+    {
+        return $this->belongsToMany(InstallationType::class, UserHasInstallationType::class)
+            ->withPivot('created_by_id')
+            ->withTimestamps();
+    }
+
     public function routeNotificationForSlack()
     {
         return data_get(config('logging.channels.slack-crm'), 'url');
