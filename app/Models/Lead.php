@@ -54,6 +54,7 @@ class Lead extends BaseModel
         'leadGenerator',
         'statuses',
         'surveyBooking',
+        'installationBooking',
         'leadCustomerAdditionalDetail',
         'benefits',
         'callCenters',
@@ -202,6 +203,11 @@ class Lead extends BaseModel
     public function surveyBooking()
     {
         return $this->hasOne(SurveyBooking::class);
+    }
+
+    public function installationBooking()
+    {
+        return $this->hasOne(InstallationBooking::class);
     }
 
     public function callCenters()

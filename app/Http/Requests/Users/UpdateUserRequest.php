@@ -27,6 +27,7 @@ class UpdateUserRequest extends FormRequest
             'additional.gender' => ['nullable', 'string'],
             'additional.address' => ['nullable', 'string'],
             'additional.phone_no' => ['nullable', 'numeric'],
+            'installation_types' => ['nullable', 'array']
         ];
     }
 }

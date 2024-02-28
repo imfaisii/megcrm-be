@@ -39,6 +39,10 @@ class UpdateLeadAction extends AbstractUpdateAction
             'lead_id' => $lead->id
         ], $data['survey_booking']);
 
+        $lead->installationBooking()->updateOrCreate([
+            'lead_id' => $lead->id
+        ], $data['installation_booking']);
+
         $this->updateLeadBenefits($lead, $data);
     }
 

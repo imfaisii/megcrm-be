@@ -6,6 +6,7 @@ use App\Enums\Permissions\RoleEnum;
 use App\Models\BenefitType;
 use App\Models\CallCenterStatus;
 use App\Models\FuelType;
+use App\Models\InstallationType;
 use App\Models\JobType;
 use App\Models\LeadGenerator;
 use App\Models\LeadSource;
@@ -59,17 +60,21 @@ class GetLeadExtrasAction
         return [
             'job_types' => JobType::all(),
             'fuel_types' => FuelType::all(),
-            'surveyors' => User::whereHas('roles', function ($query) {
-                $query->where('name', RoleEnum::SURVEYOR);
-            })->get(),
+            'call_center_statuses' => CallCenterStatus::all(),
+            'installation_types' => InstallationType::all(),
             'measures' => Measure::all(),
             'benefit_types' => BenefitType::all(),
-            'lead_generators' => $leadGenerators,
             'lead_sources' => LeadSource::all(),
+            'lead_generators' => $leadGenerators,
             'lead_statuses' => LeadStatus::oldest('name')->get(),
             'lead_table_filters' => LeadStatus::whereIn('name', [...$tableStatuses, ...$both])->oldest('name')->get(),
             'lead_jobs_filters' => LeadStatus::whereNotIn('name', $tableStatuses)->orWhere('name', $both)->oldest('name')->get(),
-            'call_center_statuses' => CallCenterStatus::all()
+            'installers' => User::whereHas('roles', function ($query) {
+                $query->where('name', RoleEnum::INSTALLER);
+            })->get(),
+            'surveyors' => User::whereHas('roles', function ($query) {
+                $query->where('name', RoleEnum::SURVEYOR);
+            })->get(),
         ];
     }
 }

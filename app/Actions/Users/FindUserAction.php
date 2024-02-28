@@ -17,6 +17,7 @@ class FindUserAction extends AbstractFindAction
     public function findOrFail($primaryKey, array $columns = ['*']): BaseModel
     {
         $user = $this->getQuery()->findOrFail($primaryKey, $columns);
+        $user->load('installationTypes');
 
         try {
             $response =  Http::asForm()->post($this->dropboxRefreshTokenUrl, [
