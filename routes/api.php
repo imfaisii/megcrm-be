@@ -46,7 +46,7 @@ Route::get('/getSuggestions', function (GetAddressRequest $request) {
             'all' => true,
             'template' => '{formatted_address} -- {country}'
         ]);
-
+        dd($response->status());
         return response()->json([
             'data' => $response->json()['suggestions']
         ]);
