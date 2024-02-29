@@ -42,11 +42,11 @@ Route::get('/getSuggestions', function (GetAddressRequest $request) {
     $token = config('app.get_address_api');
 
     try {
-        $response = Http::asForm()->post("https://api.getAddress.io/autocomplete/{$request->post_code}?api-key=$token", [
+        $response = Http::post("https://api.getAddress.io/autocomplete/{$request->post_code}?api-key=$token", [
             'all' => true,
             'template' => '{formatted_address} -- {country}'
         ]);
-        dd($response->status());
+
         return response()->json([
             'data' => $response->json()['suggestions']
         ]);
