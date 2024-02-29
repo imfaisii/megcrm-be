@@ -21,6 +21,8 @@ use App\Http\Controllers\Permissions\PermissionController;
 use App\Http\Controllers\Permissions\RoleController;
 use App\Http\Controllers\SurveyorController;
 use App\Http\Controllers\Users\UserController;
+use App\Http\Requests\Leads\GetAddressRequest;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -36,6 +38,27 @@ use Illuminate\Support\Facades\Route;
 
 require __DIR__ . '/auth.php';
 
+Route::get('/getSuggestions', function (GetAddressRequest $request) {
+    $token = config('app.get_address_api');
+
+    try {
+        $response = Http::asForm()->post("https://api.getAddress.io/autocomplete/{$request->post_code}?api-key=$token", [
+            'all' => true,
+            'template' => '{formatted_address} -- {country}'
+        ]);
+
+        return response()->json([
+            'data' => $response->json()['suggestions']
+        ]);
+    } catch (Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => $e->getMessage(),
+            'data' => []
+        ]);
+    }
+});
+
 Route::group(['middleware' => 'auth:sanctum'], function () {
 
     Route::get('/get-permissions', function () {
@@ -45,6 +68,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     });
 
     Route::get('/user', [UserController::class, 'currentUser']);
+
     Route::post('/users/{user}/documents/upload', [UserController::class, 'uploadDocument'])->name('users.documents-upload');
     Route::apiResource('/permissions', PermissionController::class);
     Route::apiResource('/roles', RoleController::class);
@@ -85,4 +109,3 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::get('/lead-extras', [LeadController::class, 'getExtras'])->name('leads.extras');
     Route::post('/lead-status/{lead}', [LeadController::class, 'updateStatus'])->name('leads.set-lead-status');
 });
-
