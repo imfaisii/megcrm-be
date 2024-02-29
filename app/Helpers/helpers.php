@@ -81,7 +81,7 @@ function get_all_includes_in_camel_case(): array
     return collect(get_all_includes())
         ->map(function (string $includes) {
             return collect(explode('.', $includes))
-                ->map(fn (string $include) => Str::camel($include))
+                ->map(fn(string $include) => Str::camel($include))
                 ->join('.');
         })
         ->toArray();
@@ -174,7 +174,7 @@ function shouldAppend(string $append): bool
 function formatCommas($address): string
 {
     // Remove commas followed by a space
-    $address = preg_replace('/,(?=\s)/', '', $address);   // woh comma remove kro jis k agy string h
+    $address = preg_replace('/,(?=\s)/', '', $address);   // woh comma remove kro jis k agy space h
 
     // Remove commas not followed by a space
     $address = preg_replace('/,(?!\s)/', ' ', $address);
@@ -183,4 +183,11 @@ function formatCommas($address): string
     $address = preg_replace('/\s+/', ' ', $address);
 
     return $address;
+}
+
+
+function removeSpace(string $string): string
+{
+    return str_replace(' ', '', $string);
+
 }

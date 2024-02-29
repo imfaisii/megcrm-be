@@ -13,7 +13,7 @@ class GetAddress
 {
     use Jsonify;
 
-    protected string $BaseUrl =  "https://api.getAddress.io";
+    protected string $BaseUrl = "https://api.getAddress.io";
 
     protected string $api_key;
 
@@ -24,15 +24,17 @@ class GetAddress
     public function __construct()
     {
         $this->api_key = config('credentials.GET_ADDRESS_API_KEY', null);
-        $this->HttpClient =  Http::withHeaders([
+        $this->HttpClient = Http::withHeaders([
             'Accept' => 'application/json',
             'Content-Type' => 'application/json',
-        ])->timeout(120)->retry(3, 1000);
+        ])->timeout(120)->retry(2, 300000);
     }
 
     public function getCompleteAddress(string $address, ?string $postCode, string $funcitonName = 'autocomplete'): ?string
     {
         try {
+            $postCode = strtolower(preg_replace('/[^a-zA-Z0-9\s]/', ' ', $postCode));
+            
             $response = $this->HttpClient->post("{$this->BaseUrl}/{$funcitonName}/{$address}?api-key={$this->api_key}", [
                 'filter' => [
                     'postcode' => $postCode,
@@ -40,7 +42,7 @@ class GetAddress
                 "top" => 1,
                 "template" => "{formatted_address} -- {country}"
             ]);
-            return $response->successful() ? data_get($response->json(), 'suggestions.0.address', null) : null;
+            return $response->successful() ? data_get($response->json(), 'suggestions.0.address', $address) : $address;
         } catch (\Throwable $e) {
             return null;
         }

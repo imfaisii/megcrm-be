@@ -11,6 +11,7 @@ use App\Filters\Leads\FilterBySurveyor;
 use App\Models\SurveyBooking;
 use App\Traits\Common\HasCalenderEvent;
 use App\Traits\Common\HasRecordCreator;
+use App\Traits\LeadAddressTrait;
 use BeyondCode\Comments\Traits\HasComments;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Imfaisii\ModelStatus\HasStatuses;
@@ -31,6 +32,7 @@ class Lead extends BaseModel
         'phone_no',
         'dob',
         'post_code',
+        'file_address',
         'address',
         'is_marked_as_job',
         'job_type_id',
@@ -150,9 +152,11 @@ class Lead extends BaseModel
                         ->where('subject_id', $lead->leadAdditional->id);
                 }
             })
-            ->with(['causer' => function ($query) {
-                $query->select('id', 'name', 'created_at', 'updated_at');
-            }])
+            ->with([
+                'causer' => function ($query) {
+                    $query->select('id', 'name', 'created_at', 'updated_at');
+                }
+            ])
             ->get();
     }
 
