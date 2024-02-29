@@ -45,6 +45,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     });
 
     Route::get('/user', [UserController::class, 'currentUser']);
+    Route::post('/users/{user}/documents/upload', [UserController::class, 'uploadDocument'])->name('users.documents-upload');
     Route::apiResource('/permissions', PermissionController::class);
     Route::apiResource('/roles', RoleController::class);
     Route::apiResource('/users', UserController::class);

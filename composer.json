@@ -26,6 +26,7 @@
         "spatie/laravel-activitylog": "^4.7",
         "spatie/laravel-backup": "^8.6",
         "spatie/laravel-deleted-models": "^1.0",
+        "spatie/laravel-medialibrary": "^11.4",
         "spatie/laravel-permission": "^6.3",
         "spatie/laravel-query-builder": "^5.7",
         "theanik/laravel-more-command": "^1.3",

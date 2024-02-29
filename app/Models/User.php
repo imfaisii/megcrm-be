@@ -25,8 +25,10 @@ use Spatie\Activitylog\Traits\CausesActivity;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\AllowedInclude;
 use Jenssegers\Agent\Agent;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 
-class User extends BaseModel implements AuthenticatableContract
+class User extends BaseModel implements AuthenticatableContract, HasMedia
 {
     use HasApiTokens,
         HasCalenderEvent,
@@ -36,6 +38,7 @@ class User extends BaseModel implements AuthenticatableContract
         HasRoles,
         LaravelPermissionToVueJS,
         AuthenticationLoggable,
+        InteractsWithMedia,
         CausesActivity;
 
     protected $guard_name = 'sanctum';
