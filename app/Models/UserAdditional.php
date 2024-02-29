@@ -15,8 +15,21 @@ class UserAdditional extends BaseModel
         'dob',
         'phone_no',
         'address',
+        'visa_expiry',
+        'account_number',
+        'nin',
+        'bank_id',
         'user_id'
     ];
+
+    protected array $allowedIncludes = [
+        'bank',
+    ];
+
+    public function bank()
+    {
+        return $this->belongsTo(Bank::class);
+    }
 
     public function user()
     {

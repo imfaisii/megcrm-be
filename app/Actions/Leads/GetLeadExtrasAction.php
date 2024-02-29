@@ -3,6 +3,7 @@
 namespace App\Actions\Leads;
 
 use App\Enums\Permissions\RoleEnum;
+use App\Models\Bank;
 use App\Models\BenefitType;
 use App\Models\CallCenterStatus;
 use App\Models\FuelType;
@@ -65,6 +66,7 @@ class GetLeadExtrasAction
             'measures' => Measure::all(),
             'benefit_types' => BenefitType::all(),
             'lead_sources' => LeadSource::all(),
+            'banks' => Bank::all(),
             'lead_generators' => $leadGenerators,
             'lead_statuses' => LeadStatus::oldest('name')->get(),
             'lead_table_filters' => LeadStatus::whereIn('name', [...$tableStatuses, ...$both])->oldest('name')->get(),

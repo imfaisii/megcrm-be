@@ -22,6 +22,10 @@ class StoreUserRequest extends BaseFormRequest
             'additional.gender' => ['nullable', 'string'],
             'additional.address' => ['nullable', 'string'],
             'additional.phone_no' => ['nullable', 'numeric'],
+            'additional.nin' => ['nullable', 'string'],
+            'additional.account_number' => ['nullable', 'string'],
+            'additional.visa_expiry' => ['nullable', 'date'],
+            'additional.bank' => ['nullable', 'string'],
             'installation_types' => ['nullable', 'array']
         ];
     }

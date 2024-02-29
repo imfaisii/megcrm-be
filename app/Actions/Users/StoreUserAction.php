@@ -3,8 +3,10 @@
 namespace App\Actions\Users;
 
 use App\Actions\Common\AbstractCreateAction;
+use App\Models\Bank;
 use App\Models\User;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
 
 class StoreUserAction extends AbstractCreateAction
 {
@@ -42,6 +44,16 @@ class StoreUserAction extends AbstractCreateAction
                     'user_id' => $user->id
                 ], $data[$relation]);
             }
+        }
+
+        if (Arr::get($data, 'additional.bank', null)) {
+            $bank = Bank::firstOrCreate([
+                'name' => Str::upper($data['additional']['bank'])
+            ]);
+
+            $user->additional->update([
+                'bank_id' => $bank->id
+            ]);
         }
     }
 }
