@@ -18,9 +18,10 @@ use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Concerns\ToCollection;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
+use Maatwebsite\Excel\Concerns\WithChunkReading;
 
 
-class LeadsImport implements ToCollection, WithHeadingRow, ShouldQueue
+class LeadsImport implements ToCollection, WithHeadingRow, WithChunkReading, ShouldQueue
 {
     public function __construct(public LeadResponseClass $classResponse)
     {
@@ -145,5 +146,10 @@ class LeadsImport implements ToCollection, WithHeadingRow, ShouldQueue
         $name['last_name'] = (isset($parts[2])) ? $parts[2] : (isset($parts[1]) ? $parts[1] : '');
 
         return $name;
+    }
+
+    public function chunkSize(): int
+    {
+        return 100;
     }
 }
