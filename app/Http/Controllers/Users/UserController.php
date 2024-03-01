@@ -12,6 +12,7 @@ use App\Actions\Users\UpdateUserProfileAction;
 use App\Enums\Users\MediaCollectionEnum;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Users\StoreUserRequest;
+use App\Http\Requests\Users\UpdateDocumentExpiryDate;
 use App\Http\Requests\Users\UpdateProfileRequest;
 use App\Http\Requests\Users\UpdateUserRequest;
 use App\Http\Requests\Users\UploadDocumentsToCollectionRequest;
@@ -19,6 +20,7 @@ use App\Http\Requests\Users\UploadDocumentRequest;
 use App\Models\User;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Http\Resources\Json\ResourceCollection;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 use function App\Helpers\null_resource;
 
@@ -60,12 +62,28 @@ class UserController extends Controller
         return null_resource();
     }
 
-    public function uploadDocumentToCollection(UploadDocumentsToCollectionRequest $request)
+    public function uploadDocumentToCollection(User $user, UploadDocumentsToCollectionRequest $request)
     {
-        auth()->user()->addMediaFromRequest('file')
+        $existingMedia = $user->getMedia($request->collection);
+
+        $existingMedia->each(function ($oldMedia) {
+            $fileName = pathinfo(request()->file('file')->getClientOriginalName(), PATHINFO_FILENAME);
+
+            if ($fileName === $oldMedia->name) {
+                $oldMedia->delete();
+            }
+        });
+
+        $user->addMediaFromRequest('file')
             ->withCustomProperties(['expiry' => $request->expiry])
             ->toMediaCollection($request->collection);
 
+        return null_resource();
+    }
+
+    public function updateDocumentExpiry(Media $media, UpdateDocumentExpiryDate $request)
+    {
+        $media->setCustomProperty('expiry', $request->expiry)->save();
         return null_resource();
     }
 

@@ -64,8 +64,9 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     });
 
     Route::get('/user', [UserController::class, 'currentUser']);
-    Route::post('/users/collections/docs/upload', [UserController::class, 'uploadDocumentToCollection'])->name('users.documents-to-collections');
+    Route::post('/users/{user}/collections/docs/upload', [UserController::class, 'uploadDocumentToCollection'])->name('users.documents-to-collections');
     Route::post('/users/{user}/documents/upload', [UserController::class, 'uploadDocument'])->name('users.documents-upload');
+    Route::post('/users/{media}/expiry/update', [UserController::class, 'updateDocumentExpiry'])->name('users.update-document-expiry');
     Route::apiResource('/permissions', PermissionController::class);
     Route::apiResource('/roles', RoleController::class);
     Route::apiResource('/users', UserController::class);

@@ -12,7 +12,7 @@ class StoreUserAction extends AbstractCreateAction
 {
     protected string $modelClass = User::class;
 
-    protected $relations = ['additional', 'installation_types'];
+    protected $relations = ['additional', 'installerCompany', 'installation_types'];
 
     public function create(array $data): User
     {
@@ -40,9 +40,13 @@ class StoreUserAction extends AbstractCreateAction
                     ]);
                 }
             } else {
-                $user->$relation()->updateOrCreate([
-                    'user_id' => $user->id
-                ], $data[$relation]);
+                $snakeCase = Str::snake($relation);
+
+                if (array_key_exists($snakeCase, $data)) {
+                    $user->$relation()->updateOrCreate([
+                        'user_id' => $user->id
+                    ], $data[$snakeCase]);
+                }
             }
         }
 
