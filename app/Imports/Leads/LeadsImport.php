@@ -80,8 +80,8 @@ class LeadsImport implements ToCollection, WithHeadingRow, WithChunkReading, Sho
                                     : $dob),
                             'phone_no' => $phoneNo ?? '00000',
                             'lead_generator_id' => $leadGenerator->id,
-                            'user_id' => auth()->id(),
-                            'created_by_id' => auth()->id(),
+                            'user_id' => 1,
+                            'created_by_id' => 1,
                             'plain_address' => $plainAddress,
                             'county' => $county,
                             'city' => $city,
@@ -94,7 +94,7 @@ class LeadsImport implements ToCollection, WithHeadingRow, WithChunkReading, Sho
                                 'name' => $row['status']
                             ], [
                                 'color' => 'warning',
-                                'created_by_id' => auth()->id()
+                                'created_by_id' => 1
                             ]);
 
                             $lead->setStatus($status->name, Arr::get($row, 'comments', 'Created via file upload, no comments found in file.'));
@@ -106,7 +106,7 @@ class LeadsImport implements ToCollection, WithHeadingRow, WithChunkReading, Sho
                         $lead->leadCustomerAdditionalDetail()->create();
 
                         $lead->benefits()->syncWithPivotValues($benefitTypes, [
-                            'created_by_id' => auth()->id()
+                            'created_by_id' => 1
                         ]);
                     } catch (Exception $exception) {
                         Log::channel('lead_file_read_log')->info(
