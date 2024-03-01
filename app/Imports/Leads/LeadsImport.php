@@ -60,7 +60,8 @@ class LeadsImport implements ToCollection, WithHeadingRow
                             ])->id;
                         }
 
-                        [$postCode, $address, $plainAddress, $city, $county, $country] = $apiClass->adressionApi($postCode, $address);
+                        
+                        [$postCode, $address, $plainAddress, $city, $county, $country] = $apiClass->adressionApi($postCode ?? '', $address);
 
                         $name = $this->split_name($row['name'] ?? '');
                         $lead = Lead::firstOrCreate([
@@ -89,7 +90,7 @@ class LeadsImport implements ToCollection, WithHeadingRow
                         // Set Status
                         if (array_key_exists('status', $row->toArray())) {
                             $status = LeadStatus::firstOrCreate([
-                                'name'
+                                'name' => $row['status']
                             ], [
                                 'color' => 'warning',
                                 'created_by_id' => auth()->id()
