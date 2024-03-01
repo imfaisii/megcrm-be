@@ -117,7 +117,7 @@ class LeadsImport implements ToCollection, WithHeadingRow
             }
         } catch (Exception $exception) {
             Log::channel('lead_file_read_log')->info(
-                "Error importing lead address:: " . $row['address'] . ' message:: ' . $exception->getMessage()
+                "Exception importing lead address:: " . $row['address'] . ' message:: ' . $exception->getMessage()
             );
 
             $this->classResponse->failedLeads[] = $row['address'];
