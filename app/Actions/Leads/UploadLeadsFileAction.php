@@ -46,9 +46,9 @@ class UploadLeadsFileAction
 
             throw_if(filled($headerDifference), new Exception('File has invalid header ( not matched ).' . json_encode($headerDifference)));
 
-            Excel::queueImport(new LeadsImport($this->leadResponseClass), $request->file('file'));
+            Excel::import(new LeadsImport($this->leadResponseClass), $request->file('file'));
 
-            return $this->success('File will be uploaded on server.');
+            return $this->success('File was uploaded successfully.', data: $this->leadResponseClass);
         } catch (Exception $e) {
             Log::channel('lead_file_read_log')->info(
                 "Error importing exception " . $e->getMessage()
