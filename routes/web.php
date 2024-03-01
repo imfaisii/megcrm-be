@@ -1,9 +1,16 @@
 <?php
 
+use App\Classes\GetAddress;
 use App\Fascade\AirCallFascade;
 use App\Http\Controllers\AirCallWebhookController;
+use App\Models\Lead;
+use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
+
+use function App\Helpers\formatCommas;
+use function App\Helpers\removeSpace;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,6 +23,14 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+if (app()->isLocal()) {
+    Route::get('test', function () {
+        dd(preg_replace('/[^a-zA-Z0-9\s]/', '', "15 Queen’s Road"));
+        $lead = Lead::first();
+
+        (new GetAddress)->adressionApi($lead->post_code, $lead->address);
+    });
+}
 
 
 Route::get('/', fn () => ['Laravel' => app()->version()]);
@@ -36,5 +51,5 @@ Route::get('/webhook/{name}', function ($name) {
 });
 
 Route::prefix('aircall')->as('aircall_')->group(function () {
-  Route::post('check/webhook', AirCallWebhookController::class)->name("webhook");
+    Route::post('check/webhook', AirCallWebhookController::class)->name("webhook");
 });
