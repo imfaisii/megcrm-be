@@ -149,6 +149,12 @@ return [
             'path' => storage_path('logs/lead_file_read.log'),
             'level' => 'debug',
         ],
+
+        'addresso_api' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/addresso.log'),
+            'level' => 'debug',
+        ],
     ],
 
 ];

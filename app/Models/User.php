@@ -25,8 +25,12 @@ use Spatie\Activitylog\Traits\CausesActivity;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\AllowedInclude;
 use Jenssegers\Agent\Agent;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 
-class User extends BaseModel implements AuthenticatableContract
+use function App\Helpers\is_append_present;
+
+class User extends BaseModel implements AuthenticatableContract, HasMedia
 {
     use HasApiTokens,
         HasCalenderEvent,
@@ -36,6 +40,7 @@ class User extends BaseModel implements AuthenticatableContract
         HasRoles,
         LaravelPermissionToVueJS,
         AuthenticationLoggable,
+        InteractsWithMedia,
         CausesActivity;
 
     protected $guard_name = 'sanctum';
@@ -44,14 +49,21 @@ class User extends BaseModel implements AuthenticatableContract
         'name',
         'email',
         'password',
+        'air_caller_id',
         'is_active',
+        'phone_number_aircall',
         'created_by_id'
     ];
 
     protected $hidden = [
         'password',
         'remember_token',
+        'phone_number_aircall',
+        'air_caller_id',
+        'aircall_email_address',
     ];
+
+    protected $with = ['additional'];
 
     protected $casts = [
         'email_verified_at' => 'datetime',
@@ -64,10 +76,11 @@ class User extends BaseModel implements AuthenticatableContract
         'leadGeneratorAssignments',
         'notifications',
         'authentications',
-        'installerCompany'
+        'installerCompany',
+        'additional.bank'
     ];
 
-    protected $appends = ['rights', 'top_role'];
+    protected $appends = ['rights', 'top_role', 'user_agents'];
 
     public function notifyAuthenticationLogVia()
     {
@@ -91,7 +104,11 @@ class User extends BaseModel implements AuthenticatableContract
 
     public function getRightsAttribute()
     {
-        return $this->getPermissions();
+        if (is_append_present('rights')) {
+            return $this->getPermissions();
+        }
+
+        return null;
     }
 
     public function getTopRoleAttribute()
@@ -101,21 +118,30 @@ class User extends BaseModel implements AuthenticatableContract
 
     public function getUserAgentsAttribute($count = 5)
     {
-        return $this->authentications->take($count)->map(function ($log) {
-            $agent = tap(new Agent, fn ($agent) => $agent->setUserAgent($log->user_agent));
+        if (is_append_present('authentications')) {
+            return $this->authentications->take($count)->map(function ($log) {
+                $agent = tap(new Agent, fn ($agent) => $agent->setUserAgent($log->user_agent));
 
-            return [
-                'is_mobile' => ($agent->isMobile() || $agent->isTablet()) ? true : false,
-                'device' => $agent->device() === false ? 'WebKit' : $agent->device(),
-                'platform' => $agent->platform() === false ? 'Windows' : $agent->platform(),
-                'browser' => $agent->browser() === false ? 'Chrome' : $agent->browser(),
-                'login_at' => Carbon::parse($log->login_at)->format('l M d g:i a'),
-                'country' => $log->location['country'],
-                'ip' => $log->location['ip'],
-                'timezone' => $log->location['timezone'],
-            ];
-        })
-            ->unique('login_at');
+                return [
+                    'is_mobile' => ($agent->isMobile() || $agent->isTablet()) ? true : false,
+                    'device' => $agent->device() === false ? 'WebKit' : $agent->device(),
+                    'platform' => $agent->platform() === false ? 'Windows' : $agent->platform(),
+                    'browser' => $agent->browser() === false ? 'Chrome' : $agent->browser(),
+                    'login_at' => Carbon::parse($log->login_at)->format('l M d g:i a'),
+                    'country' => $log->location['country'],
+                    'ip' => $log->location['ip'],
+                    'timezone' => $log->location['timezone'],
+                ];
+            })
+                ->unique('login_at');
+        }
+
+        return null;
+    }
+
+    public function additional()
+    {
+        return $this->hasOne(UserAdditional::class);
     }
 
     public function scopeActive(Builder $builder)
@@ -149,6 +175,14 @@ class User extends BaseModel implements AuthenticatableContract
     {
         return $this->hasOne(InstallerCompany::class);
     }
+
+    public function installationTypes()
+    {
+        return $this->belongsToMany(InstallationType::class, UserHasInstallationType::class)
+            ->withPivot('created_by_id')
+            ->withTimestamps();
+    }
+
     public function routeNotificationForSlack()
     {
         return data_get(config('logging.channels.slack-crm'), 'url');

@@ -14,7 +14,7 @@ class UpdateLeadRequest extends BaseFormRequest
             'first_name' => ['sometimes', 'required', 'string'],
             'middle_name' => ['nullable', 'string'],
             'last_name' => ['sometimes', 'required', 'string'],
-            'email' => ['sometimes', 'required', 'email'],
+            'email' => ['sometimes', 'nullable'],
             'phone_no' => ['sometimes', 'required', 'string'],
             'dob' => ['sometimes', 'required', 'string'],
             'address' => ['sometimes', 'required', 'string'],
@@ -29,7 +29,7 @@ class UpdateLeadRequest extends BaseFormRequest
             'lead_generator_id' => ['sometimes', 'nullable', 'exists:lead_generators,id'],
             'lead_source_id' => ['sometimes', 'nullable', 'exists:lead_sources,id'],
             'benefits' => ['sometimes', 'array'],
-            'comments' => ['sometimes', 'nullable'],
+            'notes' => ['sometimes', 'nullable'],
             'lead_customer_additional_detail' => ['required', 'array'],
             'lead_customer_additional_detail.contact_method' => ['nullable', 'string'],
             'lead_customer_additional_detail.priority_type' => ['nullable', 'string'],
@@ -42,6 +42,12 @@ class UpdateLeadRequest extends BaseFormRequest
             'lead_customer_additional_detail.datamatch_progress_date' => ['nullable', 'date'],
             'lead_customer_additional_detail.lead_id' => ['required', 'exists:leads,id'],
             'survey_booking' => ['required', 'array'],
+            'lead_additional' => ['required', 'array'],
+            'lead_additional.datamatch_confirmed' => ['nullable', 'boolean'],
+            'lead_additional.land_registry_confirmed' => ['nullable', 'boolean'],
+            'lead_additional.proof_of_address_confirmed' => ['nullable', 'boolean'],
+            'lead_additional.epr_report_confirmed' => ['nullable', 'boolean'],
+            'installation_bookings' => ['nullable', 'array'],
         ];
     }
 }

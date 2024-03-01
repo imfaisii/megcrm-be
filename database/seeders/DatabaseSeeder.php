@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
+use App\Models\InstallationEngineerType;
 use App\Models\Lead;
 use App\Models\User;
 use Illuminate\Database\Seeder;
@@ -31,6 +32,7 @@ class DatabaseSeeder extends Seeder
             SurveyorSeeder::class,
             CallCenterStatusSeeder::class,
             CalendarSeeder::class,
+            InstallationTypeSeeder::class,
 
             //! Always after adminseeder
             LeadStatusSeeder::class

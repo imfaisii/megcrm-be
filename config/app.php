@@ -61,6 +61,8 @@ return [
 
     'asset_url' => env('ASSET_URL'),
 
+    'get_address_api' => env('GET_ADDRESS_API_KEY', ''),
+
     /*
     |--------------------------------------------------------------------------
     | Application Timezone

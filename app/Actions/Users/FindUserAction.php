@@ -7,6 +7,7 @@ use App\Actions\Common\BaseModel;
 use App\Models\User;
 use Exception;
 use Illuminate\Support\Facades\Http;
+use App\Enums\Users\MediaCollectionEnum;
 
 class FindUserAction extends AbstractFindAction
 {
@@ -16,7 +17,10 @@ class FindUserAction extends AbstractFindAction
 
     public function findOrFail($primaryKey, array $columns = ['*']): BaseModel
     {
-        $user = $this->getQuery()->findOrFail($primaryKey, $columns);
+        $user = $this->getQuery()->findOrFail($primaryKey, $columns)->makeVisible(['air_caller_id','aircall_email_address']);
+
+        $user->load('installationTypes');
+        $user['documents'] = $user->getMedia(MediaCollectionEnum::DOCUMENTS);
         $user['installer_documents'] = $user->getMedia(MediaCollectionEnum::INSTALLER_DOCUMENTS);
 
         try {
@@ -31,6 +35,7 @@ class FindUserAction extends AbstractFindAction
                 'status' => true,
                 'data' => $response->json()['access_token']
             ];
+
         } catch (Exception $e) {
             $user['dropbox'] = [
                 'status' => false,

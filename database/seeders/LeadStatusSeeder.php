@@ -44,13 +44,16 @@ class LeadStatusSeeder extends Seeder
         'Job Submitted By Other Companies',
         'Awaiting Information',
         'Reschedule Jobs',
-        'Cancelled',
+        'Cancelled Lead',
         'Not Interested',
         'Waiting for Boiler Picture',
         'Called from ring central',
         'Called from second number',
         'No answer',
-        'Survey Pending'
+        'Survey Pending',
+        'Cancelled Survey',
+        'Cancelled Job',
+        'Condensing Boiler'
     ];
 
 
