@@ -4,7 +4,6 @@ namespace App\Actions\Leads;
 
 use App\Classes\LeadResponseClass;
 use App\Imports\Leads\LeadsImport;
-use App\Models\User;
 use App\traits\Jsonify;
 use Exception;
 use Illuminate\Http\JsonResponse;

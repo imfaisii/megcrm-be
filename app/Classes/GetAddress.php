@@ -18,7 +18,7 @@ class GetAddress
         $token = config('app.get_address_api');
 
         try {
-            $postCode = Str::upper(str_replace(" ", "", preg_replace('/[^a-zA-Z0-9\s]/', '', $postCode)));
+            $postCode = Str::upper(str_replace(" ", "", preg_replace('/[^a-zA-Z0-9\s]/', ' ', $postCode)));
 
             $request = Http::withHeaders([
                 'X-Api-Key' => $token
@@ -74,8 +74,8 @@ class GetAddress
         $token = config('app.get_address_api');
 
         try {
-            $postCode = Str::upper(str_replace(" ", "", preg_replace('/[^a-zA-Z0-9\s]/', '', $postCode)));
-            $query = preg_replace('/[^a-zA-Z0-9\s]/', '', $query);
+            $postCode = Str::upper(str_replace(" ", "", preg_replace('/[^a-zA-Z0-9\s]/', ' ', $postCode)));
+            $query = str_replace("\n", " ", str_replace("  ", " ", preg_replace('/[^a-zA-Z0-9\s]/', ' ', $query)));
 
             $request = Http::withHeaders([
                 'X-Api-Key' => $token

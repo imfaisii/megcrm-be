@@ -6,6 +6,7 @@ use App\Classes\GetAddress;
 use App\Classes\LeadResponseClass;
 
 ini_set('memory_limit', '-1');
+ini_set('max_execution_time', 0);
 
 use App\Models\BenefitType;
 use App\Models\Lead;
@@ -60,7 +61,7 @@ class LeadsImport implements ToCollection, WithHeadingRow
                             ])->id;
                         }
 
-                        
+
                         [$postCode, $address, $plainAddress, $city, $county, $country] = $apiClass->adressionApi($postCode ?? '', $address);
 
                         $name = $this->split_name($row['name'] ?? '');
@@ -116,7 +117,7 @@ class LeadsImport implements ToCollection, WithHeadingRow
             }
         } catch (Exception $exception) {
             Log::channel('lead_file_read_log')->info(
-                "Error importing lead address:: " . $row['address'] . ' message:: ' . $exception->getMessage()
+                "Exception importing lead address:: " . $row['address'] . ' message:: ' . $exception->getMessage()
             );
 
             $this->classResponse->failedLeads[] = $row['address'];
