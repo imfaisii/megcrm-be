@@ -63,7 +63,8 @@ class User extends BaseModel implements AuthenticatableContract
         'createdBy',
         'leadGeneratorAssignments',
         'notifications',
-        'authentications'
+        'authentications',
+        'installerCompany'
     ];
 
     protected $appends = ['rights', 'top_role'];
@@ -142,6 +143,11 @@ class User extends BaseModel implements AuthenticatableContract
         return $this->belongsToMany(LeadGenerator::class, LeadGeneratorAssignment::class)
             ->withPivot('created_by_id')
             ->withTimestamps();
+    }
+
+    public function installerCompany()
+    {
+        return $this->hasOne(InstallerCompany::class);
     }
     public function routeNotificationForSlack()
     {

@@ -13,6 +13,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Users\StoreUserRequest;
 use App\Http\Requests\Users\UpdateProfileRequest;
 use App\Http\Requests\Users\UpdateUserRequest;
+use App\Http\Requests\Users\UploadDocumentsToCollectionRequest;
 use App\Models\User;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Http\Resources\Json\ResourceCollection;
@@ -54,6 +55,15 @@ class UserController extends Controller
     public function destroy(User $user, DeleteUserAction $action): BaseJsonResource
     {
         $action->delete($user);
+        return null_resource();
+    }
+
+    public function uploadDocumentToCollection(UploadDocumentsToCollectionRequest $request)
+    {
+        auth()->user()->addMediaFromRequest('file')
+            ->withCustomProperties(['expiry' => $request->expiry])
+            ->toMediaCollection($request->collection);
+
         return null_resource();
     }
 
