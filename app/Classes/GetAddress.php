@@ -75,7 +75,7 @@ class GetAddress
 
         try {
             $postCode = Str::upper(str_replace(" ", "", preg_replace('/[^a-zA-Z0-9\s]/', ' ', $postCode)));
-            $query = str_replace("  ", " ", preg_replace('/[^a-zA-Z0-9\s]/', ' ', $query));
+            $query = str_replace("\n", " ", str_replace("  ", " ", preg_replace('/[^a-zA-Z0-9\s]/', ' ', $query)));
 
             $request = Http::withHeaders([
                 'X-Api-Key' => $token

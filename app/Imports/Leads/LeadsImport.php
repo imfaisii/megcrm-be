@@ -6,7 +6,7 @@ use App\Classes\GetAddress;
 use App\Classes\LeadResponseClass;
 
 ini_set('memory_limit', '-1');
-ini_set('max_execution_time', '-1');
+set_time_limit(0);
 
 use App\Models\BenefitType;
 use App\Models\Lead;
