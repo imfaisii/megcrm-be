@@ -6,7 +6,6 @@ use App\Classes\GetAddress;
 use App\Classes\LeadResponseClass;
 
 ini_set('memory_limit', '-1');
-set_time_limit(0);
 
 use App\Models\BenefitType;
 use App\Models\Lead;
@@ -17,11 +16,11 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Concerns\ToCollection;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 
 
-
-class LeadsImport implements ToCollection, WithHeadingRow
+class LeadsImport implements ToCollection, WithHeadingRow, ShouldQueue
 {
     public function __construct(public LeadResponseClass $classResponse)
     {

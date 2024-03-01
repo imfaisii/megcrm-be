@@ -4,7 +4,6 @@ namespace App\Actions\Leads;
 
 use App\Classes\LeadResponseClass;
 use App\Imports\Leads\LeadsImport;
-use App\Models\User;
 use App\traits\Jsonify;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -47,9 +46,9 @@ class UploadLeadsFileAction
 
             throw_if(filled($headerDifference), new Exception('File has invalid header ( not matched ).' . json_encode($headerDifference)));
 
-            Excel::import(new LeadsImport($this->leadResponseClass), $request->file('file'));
+            Excel::queueImport(new LeadsImport($this->leadResponseClass), $request->file('file'));
 
-            return $this->success('File was uploaded successfully.', data: $this->leadResponseClass);
+            return $this->success('File will be uploaded on server.');
         } catch (Exception $e) {
             Log::channel('lead_file_read_log')->info(
                 "Error importing exception " . $e->getMessage()
