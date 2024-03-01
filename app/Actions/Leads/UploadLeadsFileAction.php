@@ -16,12 +16,13 @@ use Maatwebsite\Excel\HeadingRowImport;
 class UploadLeadsFileAction
 {
     use Jsonify;
-    public function __construct(public LeadResponseClass $leadResponseClass){}
+    public function __construct(public LeadResponseClass $leadResponseClass)
+    {
+    }
 
     public function execute(Request $request): JsonResponse
     {
         try {
-            $matched = true;
             $exampleHeader = [
                 "website",
                 "name",
@@ -46,8 +47,9 @@ class UploadLeadsFileAction
 
             throw_if(filled($headerDifference), new Exception('File has invalid header ( not matched ).' . json_encode($headerDifference)));
 
-            $result = Excel::import(new LeadsImport($this->leadResponseClass), $request->file('file'));
-            return $this->success('File was uploaded successfully.',data:$this->leadResponseClass);
+            Excel::import(new LeadsImport($this->leadResponseClass), $request->file('file'));
+
+            return $this->success('File was uploaded successfully.', data: $this->leadResponseClass);
         } catch (Exception $e) {
             Log::channel('lead_file_read_log')->info(
                 "Error importing exception " . $e->getMessage()

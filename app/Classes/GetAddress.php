@@ -59,7 +59,7 @@ class GetAddress
                         'country' => $postCodeResponseCountry ?? null,
                     ];
                 }
-                
+
                 return $result;
             } else {
                 return [];
@@ -116,16 +116,13 @@ class GetAddress
                 Log::channel('addresso_api')
                     ->info("Error in postcode:: $postCode and address:: $query");
 
-                dump($query);
                 return [$postCode, $query, null, null, null, null];
             }
         } catch (Exception $e) {
             Log::channel('addresso_api')
                 ->info("Exception in postcode:: $postCode and address:: $query {$e->getMessage()}");
 
-            dump("1", $e->getMessage());
-
-            return [$postCode, $query, null, null, null, null];
+            return [$postCode, $query, $query, null, null, null];
         }
     }
 }
