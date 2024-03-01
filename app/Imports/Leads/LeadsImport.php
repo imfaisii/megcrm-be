@@ -33,7 +33,9 @@ class LeadsImport implements ToCollection, WithHeadingRow
             $apiClass = new GetAddress();
             $this->classResponse->failedLeads = [];
 
+
             foreach ($rows as $key => $row) {
+
                 if (isset($row['address']) && $row['address'] !== null) {
                     $benefitTypes = [];
 
@@ -58,7 +60,7 @@ class LeadsImport implements ToCollection, WithHeadingRow
                             ])->id;
                         }
 
-                        [$postCode, $address, $plainAddres, $city, $county, $country] = $apiClass->adressionApi($postCode, $address);
+                        [$postCode, $address, $plainAddress, $city, $county, $country] = $apiClass->adressionApi($postCode, $address);
 
                         $name = $this->split_name($row['name'] ?? '');
                         $lead = Lead::firstOrCreate([
@@ -78,14 +80,25 @@ class LeadsImport implements ToCollection, WithHeadingRow
                             'lead_generator_id' => $leadGenerator->id,
                             'user_id' => auth()->id(),
                             'created_by_id' => auth()->id(),
-                            'plain_address' => $plainAddres,
+                            'plain_address' => $plainAddress,
                             'county' => $county,
                             'city' => $city,
                             'country' => $country
                         ]);
 
                         // Set Status
-                        $lead->setStatus(LeadStatus::first()->name, 'Created via file upload');
+                        if (array_key_exists('status', $row->toArray())) {
+                            $status = LeadStatus::firstOrCreate([
+                                'name'
+                            ], [
+                                'color' => 'warning',
+                                'created_by_id' => auth()->id()
+                            ]);
+
+                            $lead->setStatus($status->name, Arr::get($row, 'comments', 'Created via file upload, no comments found in file.'));
+                        } else {
+                            $lead->setStatus(LeadStatus::first()->name, 'Created via file upload');
+                        }
 
                         // creating additional empty record for lead
                         $lead->leadCustomerAdditionalDetail()->create();
