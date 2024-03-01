@@ -89,6 +89,7 @@ class GetAddress
 
             if ($request->successful()) {
                 $postCodeResponseCountry = Arr::get($postCodeRequest->json(), 'country', null);
+                dd($request->json()[0]);
                 $address = $request->json()[0];
                 $transformedAddress = implode(" ", $address['address']);
 
