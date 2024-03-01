@@ -1,5 +1,6 @@
 <?php
 
+use App\Classes\GetAddress;
 use App\Http\Controllers\AirCall\AirCallController;
 use App\Http\Controllers\BenefitTypeController;
 use App\Http\Controllers\CalendarController;
@@ -39,16 +40,11 @@ use Illuminate\Support\Facades\Route;
 require __DIR__ . '/auth.php';
 
 Route::get('/getSuggestions', function (GetAddressRequest $request) {
-    $token = config('app.get_address_api');
+    $getAddress = new GetAddress();
 
     try {
-        $response = Http::post("https://api.getAddress.io/autocomplete/{$request->post_code}?api-key=$token", [
-            'all' => true,
-            'template' => '{formatted_address} -- {country}'
-        ]);
-
         return response()->json([
-            'data' => $response->json()['suggestions']
+            'data' => $getAddress->getSuggestions($request->post_code)
         ]);
     } catch (Exception $e) {
         return response()->json([
