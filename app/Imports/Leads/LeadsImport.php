@@ -6,6 +6,7 @@ use App\Classes\GetAddress;
 use App\Classes\LeadResponseClass;
 
 ini_set('memory_limit', '-1');
+ini_set('max_execution_time', '-1');
 
 use App\Models\BenefitType;
 use App\Models\Lead;
@@ -16,12 +17,11 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Concerns\ToCollection;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
-use Maatwebsite\Excel\Concerns\WithChunkReading;
 
 
-class LeadsImport implements ToCollection, WithHeadingRow, WithChunkReading, ShouldQueue
+
+class LeadsImport implements ToCollection, WithHeadingRow
 {
     public function __construct(public LeadResponseClass $classResponse)
     {
@@ -80,8 +80,8 @@ class LeadsImport implements ToCollection, WithHeadingRow, WithChunkReading, Sho
                                     : $dob),
                             'phone_no' => $phoneNo ?? '00000',
                             'lead_generator_id' => $leadGenerator->id,
-                            'user_id' => 1,
-                            'created_by_id' => 1,
+                            'user_id' => auth()->id(),
+                            'created_by_id' => auth()->id(),
                             'plain_address' => $plainAddress,
                             'county' => $county,
                             'city' => $city,
@@ -94,7 +94,7 @@ class LeadsImport implements ToCollection, WithHeadingRow, WithChunkReading, Sho
                                 'name' => $row['status']
                             ], [
                                 'color' => 'warning',
-                                'created_by_id' => 1
+                                'created_by_id' => auth()->id()
                             ]);
 
                             $lead->setStatus($status->name, Arr::get($row, 'comments', 'Created via file upload, no comments found in file.'));
@@ -106,7 +106,7 @@ class LeadsImport implements ToCollection, WithHeadingRow, WithChunkReading, Sho
                         $lead->leadCustomerAdditionalDetail()->create();
 
                         $lead->benefits()->syncWithPivotValues($benefitTypes, [
-                            'created_by_id' => 1
+                            'created_by_id' => auth()->id()
                         ]);
                     } catch (Exception $exception) {
                         Log::channel('lead_file_read_log')->info(
@@ -146,10 +146,5 @@ class LeadsImport implements ToCollection, WithHeadingRow, WithChunkReading, Sho
         $name['last_name'] = (isset($parts[2])) ? $parts[2] : (isset($parts[1]) ? $parts[1] : '');
 
         return $name;
-    }
-
-    public function chunkSize(): int
-    {
-        return 100;
     }
 }
