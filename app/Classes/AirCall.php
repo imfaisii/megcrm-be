@@ -212,13 +212,13 @@ class AirCall
 
     public function setDataForSeacrhCall(array &$queryParams): void
     {
-        $queryParams = Arr::add($queryParams, 'from', now()->subMonths(1)->timestamp);  // 1 saal tk search kro
+        $queryParams = Arr::add($queryParams, 'from', now()->subMonths(6)->timestamp);  // 6 months
         $queryParams = Arr::add($queryParams, 'to', now()->timestamp);
         $queryParams = Arr::add($queryParams, 'fetch_contact', true);
     }
 
     /**
-     * Search A Call
+ * Search A Call
      * @param string $callId
      * @return JsonResponse
      */

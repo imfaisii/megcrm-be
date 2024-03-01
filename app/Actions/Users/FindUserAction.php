@@ -17,7 +17,8 @@ class FindUserAction extends AbstractFindAction
 
     public function findOrFail($primaryKey, array $columns = ['*']): BaseModel
     {
-        $user = $this->getQuery()->findOrFail($primaryKey, $columns);
+        $user = $this->getQuery()->findOrFail($primaryKey, $columns)->makeVisible(['air_caller_id','aircall_email_address']);
+
         $user->load('installationTypes');
         $user['documents'] = $user->getMedia(MediaCollectionEnum::DOCUMENTS);
 

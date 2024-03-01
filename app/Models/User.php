@@ -52,7 +52,6 @@ class User extends BaseModel implements AuthenticatableContract, HasMedia
         'air_caller_id',
         'is_active',
         'phone_number_aircall',
-        'aircall_email_address',
         'created_by_id'
     ];
 
@@ -60,7 +59,8 @@ class User extends BaseModel implements AuthenticatableContract, HasMedia
         'password',
         'remember_token',
         'phone_number_aircall',
-        'air_caller_id'
+        'air_caller_id',
+        'aircall_email_address',
     ];
 
     protected $with = ['additional'];

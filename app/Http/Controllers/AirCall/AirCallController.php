@@ -19,7 +19,6 @@ class AirCallController extends Controller
 
     public function dialCall(AirCallRequest $request, DialAirCallAction $action)
     {
-
         return $action->dial($request->validated());
     }
 
