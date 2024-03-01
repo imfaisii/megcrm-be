@@ -8,12 +8,10 @@ use App\Listeners\Calendars\SendCalendarEventListener;
 use App\Listeners\Users\SendUserCredentialsListener;
 use App\Models\CalenderEvent;
 use App\Models\InstallationBooking;
-use App\Models\Lead;
 use App\Models\SurveyBooking;
 use App\Models\User;
 use App\Observers\Calendars\CalendarEventObserver;
 use App\Observers\Leads\InstallationBookingObserver;
-use App\Observers\Leads\LeadObserver;
 use App\Observers\Leads\SurveyBookingObserver;
 use App\Observers\Users\UserObserver;
 use Illuminate\Auth\Events\Registered;
@@ -52,7 +50,6 @@ class EventServiceProvider extends ServiceProvider
         InstallationBooking::observe(InstallationBookingObserver::class);
         CalenderEvent::observe(CalendarEventObserver::class);
         User::observe(UserObserver::class);
-        Lead::observe(LeadObserver::class);
     }
 
     /**

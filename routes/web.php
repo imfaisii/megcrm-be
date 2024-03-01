@@ -24,61 +24,17 @@ use function App\Helpers\removeSpace;
 */
 
 if (app()->isLocal()) {
-    Route::get('test', function (Request $request) {
+    Route::get('test', function () {
+        dd(preg_replace('/[^a-zA-Z0-9\s]/', '', "15 Queen’s Road"));
+        $lead = Lead::first();
 
-
-        $lastLead = Lead::latest()->first()->setAppends([]);
-       $answ = $lastLead->update([
-            'post_code'=>$lastLead->post_code,
-        ]);
-        dd($answ);
-
-    //     dd("asfsaf");
-        $postCodeAddress = $lastLead->only(['post_code','address']);
-        $Other = Arr::except($lastLead->toArray(),['post_code','address']);
- return            $lead =  Lead::firstOrCreate([...$postCodeAddress,'address'=>'test, Test13'],$Other);
-
-
-             $array2 = Lead::get(['post_code','address'])->transform(function($value){
-                    return [
-                        'post_code' => strtolower(removeSpace($value->post_code)),
-                        'address' => strtolower(formatCommas($value->address)),
-                    ];
-    })->groupBy('post_code')->transform(function($value){
-        return $value->pluck('address')->toArray();
-    })->toArray();
-        $array1 = [
-            "E12 5AH" => ["Flat 1 Oldham House 3a Grantham Road London -- England"],
-            "WA76JF" => ["57 Falmouth Place Murdishaw Runcorn Cheshire -- England"],
-            "g521dl" => ["flat 0/1 32 ulva street glasgow -- scotland"],
-            "B27 7aj" => ["330 Gospel Lane Birmingham West Midlands -- England"],
-            "ol9 9sb" => ["7 Dakin Road Norwich Norfolk -- England", "test address 9n 90"]
-        ];
-        // $array2 = [
-        //     "E12 5AH" => ["Flat 1 Oldham House 3a Grantham Road London -- England"],
-        //     "WA76JF" => ["57 Falmouth Place Murdishaw Runcorn Cheshire -- England"],
-        //     "G52 1DL" => ["Flat 0\/1 32 Ulva Street Glasgow -- Scotland"],
-        //     "B27 7aj" => ["330 Gospel Lane Birmingham West Midlands -- England"],
-        //     "ol9 9sc" => ["7 Dakin Road Norwich Norfolk -- England", "test address 9n 91"]
-        // ];
-
-        $diffKeys = Arr::map($array1, function ($val, $key) use ($array2) {
-            return array_filter($val, function ($value) use ($array2, $key) {
-                return !in_array($value, Arr::get($array2, $key, []));
-
-            });
-        });
-            $allowedPostCodes = array_keys($diffKeys);
-            $allwoedAddresses = Arr::flatten($diffKeys);
-            dd($allowedPostCodes,$allwoedAddresses);
-        (collect($diffKeys)->filter()->toArray());
+        (new GetAddress)->adressionApi($lead->post_code, $lead->address);
     });
-
 }
 
 
-Route::get('/', fn() => ['Laravel' => app()->version()]);
-Route::get('/dropbox/redirect', fn() => response()->json(response()->all()));
+Route::get('/', fn () => ['Laravel' => app()->version()]);
+Route::get('/dropbox/redirect', fn () => response()->json(response()->all()));
 
 Route::get('/dropbox', function () {
     $redirect = "http://localhost:8000/dropbox/redirect";
