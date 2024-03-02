@@ -3,7 +3,7 @@
         "prepare": "husky"
     },
     "lint-staged": {
-        "**/*.php": "./vendor/bin/pint"
+        "**/*.php": "./vendor/bin/pint --preset laravel"
     },
     "devDependencies": {
         "husky": "^9.0.11",
