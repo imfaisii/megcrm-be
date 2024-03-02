@@ -1,6 +1,6 @@
 {
     "scripts": {
-        "prepare": "husky install"
+        "prepare": "husky"
     },
     "lint-staged": {
         "**/*.php": "./vendor/bin/pint --preset laravel"
