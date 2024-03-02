@@ -52,6 +52,7 @@ class User extends BaseModel implements AuthenticatableContract, HasMedia
         'air_caller_id',
         'is_active',
         'phone_number_aircall',
+        'aircall_email_address',
         'created_by_id'
     ];
 
