@@ -10,7 +10,7 @@ class StoreLeadStatusRequest extends BaseFormRequest
     {
         return [
             'name' => ['required', 'string', 'max:255'],
-            'color' => ['required', 'string', 'max:255'],
+            'color' => ['required', 'string', 'max:255']
         ];
     }
 }
