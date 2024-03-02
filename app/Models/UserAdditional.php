@@ -16,6 +16,7 @@ class UserAdditional extends BaseModel
         'phone_no',
         'address',
         'visa_expiry',
+        'visa_expiry_email_sent_at',
         'account_number',
         'nin',
         'bank_id',

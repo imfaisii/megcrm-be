@@ -12,6 +12,7 @@
         "ahmedsaoud31/laravel-permission-to-vuejs": "dev-master",
         "bensampo/laravel-enum": "^6.8",
         "beyondcode/laravel-comments": "^1.4",
+        "binarcode/laravel-mailator": "^5.2",
         "guzzlehttp/guzzle": "^7.2",
         "imfaisii/laravel-model-status": "^1.3",
         "jenssegers/agent": "^2.6",
