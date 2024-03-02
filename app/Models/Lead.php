@@ -45,7 +45,10 @@ class Lead extends BaseModel
         'lead_source_id',
         'benefit_type_id',
         'notes',
-        'created_by_id'
+        'created_by_id',
+        'sub_building',
+        'building_number',
+
     ];
 
     protected $appends = ['full_name', 'status_details'];

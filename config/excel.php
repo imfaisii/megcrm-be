@@ -14,7 +14,7 @@ return [
         | Here you can specify how big the chunk should be.
         |
         */
-        'chunk_size'             => 1000,
+        'chunk_size'             => 5000,
 
         /*
         |--------------------------------------------------------------------------
@@ -61,15 +61,15 @@ return [
         |
         */
         'properties'             => [
-            'creator'        => '',
+            'creator'        => 'Muhammad Umar Riaz',
             'lastModifiedBy' => '',
-            'title'          => '',
+            'title'          => 'data-match-sent',
             'description'    => '',
             'subject'        => '',
             'keywords'       => '',
             'category'       => '',
             'manager'        => '',
-            'company'        => '',
+            'company'        => 'MEG',
         ],
     ],
 

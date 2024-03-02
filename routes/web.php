@@ -1,14 +1,18 @@
 <?php
 
 use App\Classes\GetAddress;
+use App\Enums\DataMatch\DataMatchEnum;
+use App\Exports\Leads\DatamatchExport;
 use App\Fascade\AirCallFascade;
 use App\Http\Controllers\AirCallWebhookController;
 use App\Models\Lead;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 
+use function App\Helpers\extractFirstNumericNumber;
 use function App\Helpers\formatCommas;
 use function App\Helpers\removeSpace;
 
@@ -25,16 +29,13 @@ use function App\Helpers\removeSpace;
 
 if (app()->isLocal()) {
     Route::get('test', function () {
-        dd(preg_replace('/[^a-zA-Z0-9\s]/', '', "15 Queen’s Road"));
-        $lead = Lead::first();
 
-        (new GetAddress)->adressionApi($lead->post_code, $lead->address);
     });
 }
 
 
-Route::get('/', fn () => ['Laravel' => app()->version()]);
-Route::get('/dropbox/redirect', fn () => response()->json(response()->all()));
+Route::get('/', fn() => ['Laravel' => app()->version()]);
+Route::get('/dropbox/redirect', fn() => response()->json(response()->all()));
 
 Route::get('/dropbox', function () {
     $redirect = "http://localhost:8000/dropbox/redirect";

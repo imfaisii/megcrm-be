@@ -110,7 +110,10 @@ class GetAddress
                     implode(" ", $address['address']),
                     $address['city'] ?? null,
                     $address['county'] ?? null,
-                    $postCodeResponseCountry ?? null
+                    $postCodeResponseCountry ?? null,
+                    $address['buildingnumber'] ?? null,
+                    $address['subbuilding'] ?? null,
+
                 ];
             } else {
                 Log::channel('addresso_api')
@@ -122,7 +125,7 @@ class GetAddress
             Log::channel('addresso_api')
                 ->info("Exception in postcode:: $postCode and address:: $query {$e->getMessage()}");
 
-            return [$postCode, $query, $query, null, null, null];
+            return [$postCode, $query, $query, null, null, null,null];
         }
     }
 }

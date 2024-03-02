@@ -191,3 +191,19 @@ function removeSpace(string $string): string
     return str_replace(' ', '', $string);
 
 }
+
+
+function extractFirstNumericNumber(string $input): ?string
+{
+    // Match the first numeric number followed by a space
+    preg_match('/(\d+\/\d+)[\s,]/', $input, $matches);
+
+    // Return the matched number or null if no match found
+    return $matches[1] ?? null;
+}
+
+
+function replaceFirst(string $search, string $replace, string $subject): string
+{
+    return preg_replace('/' . preg_quote($search, '/') . '/', $replace, $subject, 1);
+}
