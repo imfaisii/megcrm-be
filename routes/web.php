@@ -23,15 +23,13 @@ use function App\Helpers\removeSpace;
 |
 */
 
-if (app()->isLocal()) {
-    Route::get('test', function () {
-        throw new Exception("test");
-        // dd(preg_replace('/[^a-zA-Z0-9\s]/', '', "15 Queen’s Road"));
-        // $lead = Lead::first();
+Route::get('test', function () {
+    throw new Exception("test");
+    // dd(preg_replace('/[^a-zA-Z0-9\s]/', '', "15 Queen’s Road"));
+    // $lead = Lead::first();
 
-        // (new GetAddress)->adressionApi($lead->post_code, $lead->address);
-    });
-}
+    // (new GetAddress)->adressionApi($lead->post_code, $lead->address);
+});
 
 
 Route::get('/', fn () => ['Laravel' => app()->version()]);
