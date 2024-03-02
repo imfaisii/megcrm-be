@@ -10,7 +10,7 @@ class CalendarEventObserver
 {
     public function notification(CalenderEvent $calenderEvent)
     {
-        if (!is_null($calenderEvent->notification)) {
+        if (! is_null($calenderEvent->notification)) {
             try {
                 event(new NewCalendarEvent($calenderEvent));
             } catch (Exception $e) {

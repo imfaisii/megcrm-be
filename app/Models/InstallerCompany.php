@@ -15,7 +15,7 @@ class InstallerCompany extends BaseModel
         'address',
         'company_number',
         'vat_number',
-        'user_id'
+        'user_id',
     ];
 
     public function user()

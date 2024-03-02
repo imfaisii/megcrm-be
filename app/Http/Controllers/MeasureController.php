@@ -18,24 +18,28 @@ class MeasureController extends Controller
     public function index(ListMeasureAction $action): ResourceCollection
     {
         $action->enableQueryBuilder();
+
         return $action->resourceCollection($action->listOrPaginate());
     }
 
     public function store(StoreMeasureRequest $request, StoreMeasureAction $action)
     {
         $action->create($request->validated());
+
         return null_resource();
     }
 
-    public function update(Measure $measure, StoreMeasureRequest $request,  UpdateMeasureAction $action): BaseJsonResource
+    public function update(Measure $measure, StoreMeasureRequest $request, UpdateMeasureAction $action): BaseJsonResource
     {
         $action->enableQueryBuilder();
+
         return $action->individualResource($action->update($measure, $request->validated()));
     }
 
     public function destroy(Measure $Measure, DeleteMeasureAction $action): BaseJsonResource
     {
         $action->delete($Measure);
+
         return null_resource();
     }
 }

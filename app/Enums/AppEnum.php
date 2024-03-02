@@ -9,6 +9,7 @@ use BenSampo\Enum\Enum;
 final class AppEnum extends Enum
 {
     const MailQue = 'mail-que';
+
     const SlackQue = 'slack-que';
 
     public static function QueueOptions(): array

@@ -10,7 +10,7 @@ class StoreInstallationTypeRequest extends BaseFormRequest
     {
         return [
             'name' => ['required', 'string', 'max:255'],
-            'measures' => ['nullable', 'array']
+            'measures' => ['nullable', 'array'],
         ];
     }
 }

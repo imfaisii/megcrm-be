@@ -11,10 +11,10 @@ class CallCenterStatus extends BaseModel
     use HasFactory, HasRecordCreator;
 
     protected $fillable = [
-        'name'
+        'name',
     ];
 
     protected array $allowedIncludes = [
-        'createdBy'
+        'createdBy',
     ];
 }

@@ -9,12 +9,11 @@ use Spatie\Permission\Models\Role;
 
 class AbstractUpdateAction
 {
-    use NewQueryTrait;
     use HasApiResource;
+    use NewQueryTrait;
 
     /**
-     * @param BaseModel|Role|Permission $model
-     * @param array $data
+     * @param  BaseModel|Role|Permission  $model
      * @return BaseModel|Role|Permission
      */
     public function update(mixed $model, array $data): mixed

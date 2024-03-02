@@ -7,5 +7,5 @@ use App\Models\ExtendedRole;
 
 class ListRoleAction extends AbstractListAction
 {
-   protected string $modelClass = ExtendedRole::class;
+    protected string $modelClass = ExtendedRole::class;
 }

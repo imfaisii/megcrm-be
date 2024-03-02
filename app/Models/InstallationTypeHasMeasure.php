@@ -13,11 +13,11 @@ class InstallationTypeHasMeasure extends BaseModel
     protected $fillable = [
         'installation_type_id',
         'measure_id',
-        'created_by_id'
+        'created_by_id',
     ];
 
     protected array $allowedIncludes = [
-        'createdBy'
+        'createdBy',
     ];
 
     public function installationType()

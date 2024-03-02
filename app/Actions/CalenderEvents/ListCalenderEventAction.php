@@ -5,8 +5,8 @@ namespace App\Actions\CalenderEvents;
 use App\Actions\Common\AbstractListAction;
 use App\Models\CalenderEvent;
 use App\Models\User;
-use Spatie\QueryBuilder\QueryBuilder as SpatieQueryBuilder;
 use Illuminate\Database\Eloquent\Builder;
+use Spatie\QueryBuilder\QueryBuilder as SpatieQueryBuilder;
 
 class ListCalenderEventAction extends AbstractListAction
 {
@@ -17,6 +17,7 @@ class ListCalenderEventAction extends AbstractListAction
     public function setUser(?User $user): ListCalenderEventAction
     {
         $this->user = $user;
+
         return $this;
     }
 
@@ -24,7 +25,7 @@ class ListCalenderEventAction extends AbstractListAction
     {
         $query = parent::getQuery();
 
-        if (!is_null($this->user)) {
+        if (! is_null($this->user)) {
             $query->currentUser();
         }
 

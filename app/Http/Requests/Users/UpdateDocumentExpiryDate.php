@@ -9,7 +9,7 @@ class UpdateDocumentExpiryDate extends BaseFormRequest
     public function rules(): array
     {
         return [
-            'expiry' => ['required', 'date']
+            'expiry' => ['required', 'date'],
         ];
     }
 }

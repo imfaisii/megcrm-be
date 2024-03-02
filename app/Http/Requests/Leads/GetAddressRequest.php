@@ -9,7 +9,7 @@ class GetAddressRequest extends BaseFormRequest
     public function rules(): array
     {
         return [
-            'post_code' => ['required', 'string']
+            'post_code' => ['required', 'string'],
         ];
     }
 }

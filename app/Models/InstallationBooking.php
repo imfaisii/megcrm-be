@@ -15,7 +15,7 @@ class InstallationBooking extends BaseModel
         'installation_at',
         'measure_id',
         'comments',
-        'lead_id'
+        'lead_id',
     ];
 
     public function measure()

@@ -9,7 +9,7 @@ class UploadDocumentRequest extends BaseFormRequest
     public function rules(): array
     {
         return [
-            'file' => ['required', 'file']
+            'file' => ['required', 'file'],
         ];
     }
 }

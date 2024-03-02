@@ -19,8 +19,6 @@ use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Concerns\ToCollection;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 
-
-
 class LeadsImport implements ToCollection, WithHeadingRow
 {
     public function __construct(public LeadResponseClass $classResponse)
@@ -34,7 +32,6 @@ class LeadsImport implements ToCollection, WithHeadingRow
             $apiClass = new GetAddress();
             $this->classResponse->failedLeads = [];
 
-
             foreach ($rows as $key => $row) {
 
                 if (isset($row['address']) && $row['address'] !== null) {
@@ -44,7 +41,7 @@ class LeadsImport implements ToCollection, WithHeadingRow
                         // lead generator
                         $leadGenerator = LeadGenerator::firstOrCreate(
                             [
-                                'name' => $row['website'] ?? 'Lead Generator Default'
+                                'name' => $row['website'] ?? 'Lead Generator Default',
                             ],
                         );
                         $email = Arr::get($row, 'email', null);
@@ -57,10 +54,9 @@ class LeadsImport implements ToCollection, WithHeadingRow
 
                         foreach ($benefits as $key => $benefit) {
                             $benefitTypes[] = BenefitType::firstOrCreate([
-                                'name' => $benefit
+                                'name' => $benefit,
                             ])->id;
                         }
-
 
                         [$postCode, $address, $plainAddress, $city, $county, $country] = $apiClass->adressionApi($postCode ?? '', $address);
 
@@ -85,16 +81,16 @@ class LeadsImport implements ToCollection, WithHeadingRow
                             'plain_address' => $plainAddress,
                             'county' => $county,
                             'city' => $city,
-                            'country' => $country
+                            'country' => $country,
                         ]);
 
                         // Set Status
                         if (array_key_exists('status', $row->toArray())) {
                             $status = LeadStatus::firstOrCreate([
-                                'name' => $row['status']
+                                'name' => $row['status'],
                             ], [
                                 'color' => 'warning',
-                                'created_by_id' => auth()->id()
+                                'created_by_id' => auth()->id(),
                             ]);
 
                             $lead->setStatus($status->name, Arr::get($row, 'comments', 'Created via file upload, no comments found in file.'));
@@ -106,18 +102,18 @@ class LeadsImport implements ToCollection, WithHeadingRow
                         $lead->leadCustomerAdditionalDetail()->create();
 
                         $lead->benefits()->syncWithPivotValues($benefitTypes, [
-                            'created_by_id' => auth()->id()
+                            'created_by_id' => auth()->id(),
                         ]);
                     } catch (Exception $exception) {
                         Log::channel('lead_file_read_log')->info(
-                            "Error importing lead address: " . $address . ". " . $exception->getMessage()
+                            'Error importing lead address: '.$address.'. '.$exception->getMessage()
                         );
                     }
                 }
             }
         } catch (Exception $exception) {
             Log::channel('lead_file_read_log')->info(
-                "Exception importing lead address:: " . $row['address'] . ' message:: ' . $exception->getMessage()
+                'Exception importing lead address:: '.$row['address'].' message:: '.$exception->getMessage()
             );
 
             $this->classResponse->failedLeads[] = $row['address'];
@@ -126,13 +122,13 @@ class LeadsImport implements ToCollection, WithHeadingRow
 
     public function split_name($name)
     {
-        $parts = array();
+        $parts = [];
 
         while (strlen(trim($name)) > 0) {
             $name = trim($name);
             $string = preg_replace('#.*\s([\w-]*)$#', '$1', $name);
             $parts[] = $string;
-            $name = trim(preg_replace('#' . preg_quote($string, '#') . '#', '', $name));
+            $name = trim(preg_replace('#'.preg_quote($string, '#').'#', '', $name));
         }
 
         if (empty($parts)) {
@@ -140,7 +136,7 @@ class LeadsImport implements ToCollection, WithHeadingRow
         }
 
         $parts = array_reverse($parts);
-        $name = array();
+        $name = [];
         $name['first_name'] = $parts[0];
         $name['middle_name'] = (isset($parts[2])) ? $parts[1] : '';
         $name['last_name'] = (isset($parts[2])) ? $parts[2] : (isset($parts[1]) ? $parts[1] : '');

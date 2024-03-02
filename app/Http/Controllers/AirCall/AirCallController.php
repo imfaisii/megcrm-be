@@ -7,11 +7,9 @@ use App\Actions\AirCall\MakeAirCallAction;
 use App\Actions\AirCall\SearchAirCallAction;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AirCall\AirCallRequest;
-use Illuminate\Http\Request;
 
 class AirCallController extends Controller
 {
-
     public function searchCall(AirCallRequest $request, SearchAirCallAction $action)
     {
         return $action->search($request->validated());
@@ -25,6 +23,7 @@ class AirCallController extends Controller
     public function makeCall(AirCallRequest $request, MakeAirCallAction $action)
     {
         dd($request->validated());
+
         return $action->make($request->validated());
     }
 }

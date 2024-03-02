@@ -12,21 +12,18 @@ trait HasRecordCreator
     public static function bootHasRecordCreator(): void
     {
         static::creating(function (Model $model) {
-            if (!Auth::guest()) {
+            if (! Auth::guest()) {
                 $model->setAttribute('created_by_id', Auth::user()->id);
             }
         });
 
         static::updating(function (Model $model) {
-            if (!Auth::guest()) {
+            if (! Auth::guest()) {
                 $model->setAttribute('created_by_id', Auth::user()->id);
             }
         });
     }
 
-    /**
-     * @return BelongsTo
-     */
     public function createdBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by_id');

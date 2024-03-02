@@ -18,24 +18,28 @@ class InstallationTypeController extends Controller
     public function index(ListInstallationTypeAction $action): ResourceCollection
     {
         $action->enableQueryBuilder();
+
         return $action->resourceCollection($action->listOrPaginate());
     }
 
     public function store(StoreInstallationTypeRequest $request, StoreInstallationTypeAction $action)
     {
         $action->create($request->validated());
+
         return null_resource();
     }
 
-    public function update(InstallationType $installationType, StoreInstallationTypeRequest $request,  UpdateInstallationTypeAction $action): BaseJsonResource
+    public function update(InstallationType $installationType, StoreInstallationTypeRequest $request, UpdateInstallationTypeAction $action): BaseJsonResource
     {
         $action->enableQueryBuilder();
+
         return $action->individualResource($action->update($installationType, $request->validated()));
     }
 
     public function destroy(InstallationType $installationType, DeleteInstallationTypeAction $action): BaseJsonResource
     {
         $action->delete($installationType);
+
         return null_resource();
     }
 }

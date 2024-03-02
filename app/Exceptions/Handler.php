@@ -25,7 +25,11 @@ class Handler extends ExceptionHandler
     public function register(): void
     {
         $this->reportable(function (Throwable $e) {
-            Log::driver('slack_exceptions')->info($e->getMessage());
+            Log::driver('slack_exceptions')->error(json_encode([
+                'message' => $e->getMessage(),
+                'host' => request()->getHttpHost(),
+                'ip' => request()->ip(),
+            ]));
         });
     }
 }

@@ -27,36 +27,42 @@ class LeadController extends Controller
     public function index(ListLeadAction $action): ResourceCollection
     {
         $action->enableQueryBuilder();
+
         return $action->resourceCollection($action->listOrPaginate());
     }
 
     public function store(StoreLeadRequest $request, StoreLeadAction $action)
     {
         $lead = $action->create($request->validated());
+
         return $action->individualResource($lead);
     }
 
     public function show(int $lead, FindLeadAction $action)
     {
         $action->enableQueryBuilder();
+
         return $action->individualResource($action->findOrFail($lead));
     }
 
     public function update(Lead $lead, UpdateLeadRequest $request, UpdateLeadAction $action)
     {
         $action->enableQueryBuilder();
+
         return $action->individualResource($action->update($lead, $request->validated()));
     }
 
     public function destroy(Lead $lead, DeleteLeadAction $action)
     {
         $action->delete($lead);
+
         return null_resource();
     }
 
     public function storeComments(Lead $lead, StoreLeadCommentsRequest $request)
     {
         $lead->comment($request->comments);
+
         return null_resource();
     }
 
@@ -67,9 +73,9 @@ class LeadController extends Controller
 
     public function updateStatus(Lead $lead, UpdateLeadStatusRequest $request)
     {
-        if (str_contains(str()->lower($request->status), "survey booked")) {
+        if (str_contains(str()->lower($request->status), 'survey booked')) {
             $lead->update([
-                'is_marked_as_job' => true
+                'is_marked_as_job' => true,
             ]);
         }
 

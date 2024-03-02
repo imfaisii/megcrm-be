@@ -12,6 +12,6 @@ class Calendar extends BaseModel
 
     protected $fillable = [
         'name',
-        'color'
+        'color',
     ];
 }

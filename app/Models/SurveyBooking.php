@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use App\Actions\Common\BaseModel;
-use App\Models\Lead;
 use App\Traits\Common\HasRecordCreator;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -16,7 +15,7 @@ class SurveyBooking extends BaseModel
         'survey_at',
         'preffered_time',
         'comments',
-        'lead_id'
+        'lead_id',
     ];
 
     public function surveyor()

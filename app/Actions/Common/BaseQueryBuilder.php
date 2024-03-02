@@ -7,9 +7,6 @@ use Spatie\QueryBuilder\AllowedFilter;
 
 class BaseQueryBuilder extends \Spatie\QueryBuilder\QueryBuilder
 {
-    /**
-     * @var array
-     */
     protected array $orFilters = [];
 
     /**
@@ -32,7 +29,7 @@ class BaseQueryBuilder extends \Spatie\QueryBuilder\QueryBuilder
     /**
      * @return void
      */
-    protected function processFilters(Builder $query = null, bool $usingOr = false)
+    protected function processFilters(?Builder $query = null, bool $usingOr = false)
     {
         $this->allowedFilters->each(function (AllowedFilter $filter) use ($query, $usingOr) {
             if ($this->isFilterRequested($filter)) {
@@ -61,24 +58,18 @@ class BaseQueryBuilder extends \Spatie\QueryBuilder\QueryBuilder
         });
     }
 
-    /**
-     * @return bool
-     */
     protected function isFilterUsingOr(): bool
     {
         return strtoupper($this->request->input('filter_operation')) === 'OR' ||
-            !!$this->request->input('or_filters');
+            (bool) $this->request->input('or_filters');
     }
 
-    /**
-     * @param AllowedFilter $filter
-     * @return bool
-     */
     protected function isFilterAnOr(AllowedFilter $filter): bool
     {
         if (count($this->orFilters) === 0) {
             return true;
         }
+
         return in_array($filter->getInternalName(), $this->orFilters);
     }
 }

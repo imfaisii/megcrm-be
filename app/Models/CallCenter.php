@@ -15,11 +15,11 @@ class CallCenter extends BaseModel
         'call_scheduled_time',
         'comments',
         'lead_id',
-        'call_center_status_id'
+        'call_center_status_id',
     ];
 
     protected $casts = [
-        'is_call_scheduled' => 'boolean'
+        'is_call_scheduled' => 'boolean',
     ];
 
     public function lead()

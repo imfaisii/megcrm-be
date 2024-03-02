@@ -30,12 +30,12 @@ class StoreInstallationTypeAction extends AbstractCreateAction
             if ($relation === 'measures') {
                 if (Arr::has($data, 'measures') && count($data['measures']) > 0) {
                     $installationType->installationTypeHasMeasures()->syncWithPivotValues($data['measures'], [
-                        'created_by_id' => auth()->id()
+                        'created_by_id' => auth()->id(),
                     ]);
                 }
             } else {
                 $installationType->$relation()->updateOrCreate([
-                    'user_id' => $installationType->id
+                    'user_id' => $installationType->id,
                 ], $data[$relation]);
             }
         }

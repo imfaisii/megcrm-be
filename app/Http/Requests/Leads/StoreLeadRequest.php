@@ -30,7 +30,7 @@ class StoreLeadRequest extends BaseFormRequest
             'lead_generator_id' => ['nullable', 'exists:lead_generators,id'],
             'lead_source_id' => ['nullable', 'exists:lead_sources,id'],
             'benefits' => ['nullable', 'array'],
-            'notes' => ['nullable']
+            'notes' => ['nullable'],
         ];
     }
 }

@@ -18,24 +18,28 @@ class CallCenterController extends Controller
     public function index(ListCallCenterAction $action): ResourceCollection
     {
         $action->enableQueryBuilder();
+
         return $action->resourceCollection($action->listOrPaginate());
     }
 
     public function store(StoreCallCenterRequest $request, StoreCallCenterAction $action)
     {
         $action->create($request->validated());
+
         return null_resource();
     }
 
-    public function update(CallCenter $callCenter, StoreCallCenterRequest $request,  UpdateCallCenterAction $action): BaseJsonResource
+    public function update(CallCenter $callCenter, StoreCallCenterRequest $request, UpdateCallCenterAction $action): BaseJsonResource
     {
         $action->enableQueryBuilder();
+
         return $action->individualResource($action->update($callCenter, $request->validated()));
     }
 
     public function destroy(CallCenter $callCenter, DeleteCallCenterAction $action): BaseJsonResource
     {
         $action->delete($callCenter);
+
         return null_resource();
     }
 }

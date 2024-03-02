@@ -14,7 +14,7 @@ class E164NumberCheckRule implements ValidationRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        if (!preg_match('/^\+[1-9]\d{1,14}$/', $value)) {
+        if (! preg_match('/^\+[1-9]\d{1,14}$/', $value)) {
             $fail('The :attribute must be E.164 Format.');
         }
     }

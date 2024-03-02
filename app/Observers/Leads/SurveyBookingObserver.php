@@ -14,9 +14,9 @@ class SurveyBookingObserver
         $updatedProperties = $surveyBooking->getDirty();
 
         if (
-            key_exists('surveyor_id', $updatedProperties)
-            || key_exists('survey_at', $updatedProperties)
-            || key_exists('preffered_time', $updatedProperties)
+            array_key_exists('surveyor_id', $updatedProperties)
+            || array_key_exists('survey_at', $updatedProperties)
+            || array_key_exists('preffered_time', $updatedProperties)
         ) {
 
             if ($surveyBooking->survey_at && $surveyBooking->surveyor_id) {
@@ -26,7 +26,7 @@ class SurveyBookingObserver
                 $surveyBooking->load(['surveyor', 'lead']);
                 $prefferedTime = ($surveyBooking->preffered_time ? "( {$surveyBooking->preffered_time} )" : '');
 
-                $title = SurveyBookedEnum::TITLE . ' with ' . $surveyBooking->lead->full_name . $prefferedTime;
+                $title = SurveyBookedEnum::TITLE.' with '.$surveyBooking->lead->full_name.$prefferedTime;
                 $surveyAt = $surveyBooking->survey_at;
 
                 CalenderEvent::updateOrCreate(
@@ -46,9 +46,9 @@ class SurveyBookingObserver
                             'title' => SurveyBookedEnum::NOTIFICATION_TITLE,
                             'subtitle' => SurveyBookedEnum::getDescriptionMessage($surveyBooking->lead->full_name, $surveyBooking->lead->address, Carbon::parse($surveyAt)->format(config('app.date_time_format'))),
                             'module' => 'surveys',
-                            'link' => '/calendar'
+                            'link' => '/calendar',
                         ],
-                        'created_by_id' => auth()->user()
+                        'created_by_id' => auth()->user(),
                     ]
                 );
             }

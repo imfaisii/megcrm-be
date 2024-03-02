@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\JobType;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class JobTypeSeeder extends Seeder
@@ -11,7 +10,7 @@ class JobTypeSeeder extends Seeder
     protected array $entries = [
         'LAD',
         'ECO4',
-        'GBIS'
+        'GBIS',
     ];
 
     /**
@@ -21,7 +20,7 @@ class JobTypeSeeder extends Seeder
     {
         foreach ($this->entries as $key => $jobType) {
             JobType::firstOrCreate([
-                'name' => $jobType
+                'name' => $jobType,
             ]);
         }
     }

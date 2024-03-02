@@ -8,20 +8,17 @@ use App\Filters\Leads\FilterByName;
 use App\Filters\Leads\FilterByPostcode;
 use App\Filters\Leads\FilterByStatus;
 use App\Filters\Leads\FilterBySurveyor;
-use App\Models\SurveyBooking;
 use App\Traits\Common\HasCalenderEvent;
 use App\Traits\Common\HasRecordCreator;
-use App\Traits\LeadAddressTrait;
 use BeyondCode\Comments\Traits\HasComments;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Imfaisii\ModelStatus\HasStatuses;
 use Spatie\Activitylog\Models\Activity;
 use Spatie\QueryBuilder\AllowedFilter;
 
-
 class Lead extends BaseModel
 {
-    use HasFactory, HasRecordCreator, HasStatuses, HasCalenderEvent, HasComments;
+    use HasCalenderEvent, HasComments, HasFactory, HasRecordCreator, HasStatuses;
 
     protected $fillable = [
         'title',
@@ -45,13 +42,13 @@ class Lead extends BaseModel
         'lead_source_id',
         'benefit_type_id',
         'notes',
-        'created_by_id'
+        'created_by_id',
     ];
 
     protected $appends = ['full_name', 'status_details'];
 
     protected $casts = [
-        'is_marked_as_job' => 'boolean'
+        'is_marked_as_job' => 'boolean',
     ];
 
     protected array $allowedIncludes = [
@@ -67,11 +64,11 @@ class Lead extends BaseModel
         'callCenters.createdBy',
         'callCenters.callCenterStatus',
         'comments.commentator',
-        'leadAdditional'
+        'leadAdditional',
     ];
 
     protected array $discardedFieldsInFilter = [
-        'post_code'
+        'post_code',
     ];
 
     public function scopeByRole($query, string $role, ?User $user = null)
@@ -93,7 +90,7 @@ class Lead extends BaseModel
 
     protected function getFullNameAttribute()
     {
-        return $this->first_name . ' ' . $this->middle_name . ' ' . $this->last_name;
+        return $this->first_name.' '.$this->middle_name.' '.$this->last_name;
     }
 
     protected function getStatusesAttribute()
@@ -110,7 +107,7 @@ class Lead extends BaseModel
     {
         $latest = $this->latestStatus();
 
-        if (!is_null($latest)) {
+        if (! is_null($latest)) {
             $latest['lead_status_model'] = LeadStatus::where('name', $latest->name)->first();
         } else {
             $latest['lead_status_model'] = null;
@@ -135,21 +132,21 @@ class Lead extends BaseModel
 
         return Activity::forSubject($this)
             ->orWhere(function ($query) use ($lead) {
-                if (!is_null($lead->leadCustomerAdditionalDetail)) {
+                if (! is_null($lead->leadCustomerAdditionalDetail)) {
                     $query
                         ->where('subject_type', (new LeadCustomerAdditionalDetail())->getMorphClass())
                         ->where('subject_id', $lead->leadCustomerAdditionalDetail->id);
                 }
             })
             ->orWhere(function ($query) use ($lead) {
-                if (!is_null($lead->surveyBooking)) {
+                if (! is_null($lead->surveyBooking)) {
                     $query
                         ->where('subject_type', (new SurveyBooking())->getMorphClass())
                         ->where('subject_id', $lead->surveyBooking->id);
                 }
             })
             ->orWhere(function ($query) use ($lead) {
-                if (!is_null($lead->leadAdditional)) {
+                if (! is_null($lead->leadAdditional)) {
                     $query
                         ->where('subject_type', (new LeadAdditional())->getMorphClass())
                         ->where('subject_id', $lead->leadAdditional->id);
@@ -158,7 +155,7 @@ class Lead extends BaseModel
             ->with([
                 'causer' => function ($query) {
                     $query->select('id', 'name', 'created_at', 'updated_at');
-                }
+                },
             ])
             ->get();
     }

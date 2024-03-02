@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\FuelType;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class FuelTypeSeeder extends Seeder
@@ -18,7 +17,7 @@ class FuelTypeSeeder extends Seeder
         'ASHP',
         'Biomass',
         'DHS',
-        'GSHP'
+        'GSHP',
     ];
 
     /**
@@ -28,7 +27,7 @@ class FuelTypeSeeder extends Seeder
     {
         foreach ($this->entries as $key => $fuelType) {
             FuelType::firstOrCreate([
-                'name' => $fuelType
+                'name' => $fuelType,
             ]);
         }
     }

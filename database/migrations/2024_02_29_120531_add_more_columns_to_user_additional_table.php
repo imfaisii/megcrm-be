@@ -29,7 +29,7 @@ return new class extends Migration
             $table->dropColumn([
                 'visa_expiry',
                 'nin',
-                'account_number'
+                'account_number',
             ]);
         });
     }

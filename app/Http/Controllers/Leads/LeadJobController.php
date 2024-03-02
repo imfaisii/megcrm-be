@@ -11,6 +11,7 @@ class LeadJobController extends Controller
     public function index(ListLeadJobAction $action): ResourceCollection
     {
         $action->enableQueryBuilder();
+
         return $action->resourceCollection($action->listOrPaginate());
     }
 }

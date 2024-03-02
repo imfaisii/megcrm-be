@@ -18,24 +18,28 @@ class BenefitTypeController extends Controller
     public function index(ListBenefitTypeAction $action): ResourceCollection
     {
         $action->enableQueryBuilder();
+
         return $action->resourceCollection($action->listOrPaginate());
     }
 
     public function store(StoreBenefitTypeRequest $request, StoreBenefitTypeAction $action)
     {
         $action->create($request->validated());
+
         return null_resource();
     }
 
-    public function update(BenefitType $benefitType, StoreBenefitTypeRequest $request,  UpdateBenefitTypeAction $action): BaseJsonResource
+    public function update(BenefitType $benefitType, StoreBenefitTypeRequest $request, UpdateBenefitTypeAction $action): BaseJsonResource
     {
         $action->enableQueryBuilder();
+
         return $action->individualResource($action->update($benefitType, $request->validated()));
     }
 
     public function destroy(BenefitType $BenefitType, DeleteBenefitTypeAction $action): BaseJsonResource
     {
         $action->delete($BenefitType);
+
         return null_resource();
     }
 }

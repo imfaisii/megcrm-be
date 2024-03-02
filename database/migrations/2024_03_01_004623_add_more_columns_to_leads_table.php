@@ -29,7 +29,7 @@ return new class extends Migration
                 'plain_address',
                 'city',
                 'county',
-                'country'
+                'country',
             ]);
         });
     }
