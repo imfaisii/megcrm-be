@@ -81,6 +81,7 @@ return [
             'level' => env('LOG_LEVEL', 'critical'),
             'replace_placeholders' => true,
         ],
+
         'slack-crm' => [
             'driver' => 'slack',
             'url' => "https://hooks.slack.com/services/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",
@@ -97,6 +98,15 @@ return [
             'emoji' => ':boom:',
             'level' => env('LOG_LEVEL', 'info'),
             'replace_placeholders' => true,
+        ],
+
+        'slack_exceptions' => [
+            'driver' => 'slack',
+            'url' => env('LOG_SLACK_EXCEPTIONS_CHANNEL_URL'),
+            'username' => 'Laravel Log',
+            'emoji' => ':boom:',
+            'level' => env('LOG_LEVEL', 'critical'),
+            'ignore_exceptions' => false,
         ],
 
         'papertrail' => [
