@@ -18,7 +18,7 @@ class StoreLeadRequest extends BaseFormRequest
             'dob' => ['required', 'string'],
             'address' => ['required', 'array'],
             'address.address' => ['required', 'string', 'unique:leads,address'],
-            'address.*' => ['string'],
+            'address.*' => ['nullable, 'string'],
             'post_code' => ['required', 'string'],
             'measures' => ['array'],
             'has_second_receipent' => ['required', 'boolean'],
