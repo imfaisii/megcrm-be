@@ -31,6 +31,7 @@ jobs:
           git stash
           git pull
           composer i
+          pnpm install
           php artisan migrate --force
           php artisan optimize:clear
           php artisan config:cache
