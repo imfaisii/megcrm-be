@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Route;
 use function App\Helpers\extractFirstNumericNumber;
 use function App\Helpers\formatCommas;
 use function App\Helpers\removeSpace;
+use function App\Helpers\replaceFirst;
 
 /*
 |--------------------------------------------------------------------------
@@ -29,6 +30,37 @@ use function App\Helpers\removeSpace;
 
 if (app()->isLocal()) {
     Route::get('test', function () {
+        $geeks = 'Welcome 2,1/2 Geeks 4.8 Geeks.';
+
+        function cleanString($s) {
+            // Remove all characters other than numbers, '.', ',', '/', and '-'
+            $cleanedString = preg_replace('/[^0-9.,\/-]/', ' ', $s);
+
+            // Remove extra spaces at the end
+            $cleanedString = rtrim($cleanedString);
+
+            return $cleanedString;
+        }
+
+        // Example usage
+        $s = "The price is $12.50, and the quantity is 3.5 and 2,1/2.";
+        return cleanString($geeks);  // Output: 12.50 3.5 2,1/2
+
+        // Use preg_match_all() function to check match
+        preg_match_all('/\b(\d+(?:\.\d+)?(?:\/\d+)?(?:-\d+)?)(?=[a-zA-Z ]|$)/', $geeks, $matches);
+
+
+
+        
+
+        return $matches;
+        $lead = Lead::find(11);
+        return extractFirstNumericNumber("flat 2.5");
+      $answer =  $lead->sub_building ? extractFirstNumericNumber($lead->sub_building) : ($lead->building_number ? extractFirstNumericNumber($lead->building_number) : extractFirstNumericNumber($lead->addres));
+        dd($lead->sub_building ? 'sub' : ($lead->building_number ? 'bulding' : 'nothging') );
+      replaceFirst($lead->sub_building ? extractFirstNumericNumber($lead->sub_building) : ($lead->building_number ? extractFirstNumericNumber($lead->building_number) : extractFirstNumericNumber($lead->addres)), '', $lead->address);
+
+        return new DatamatchExport;
 
     });
 }

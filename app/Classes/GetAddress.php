@@ -119,13 +119,14 @@ class GetAddress
                 Log::channel('addresso_api')
                     ->info("Error in postcode:: $postCode and address:: $query");
 
-                return [$postCode, $query, null, null, null, null];
+                return [$postCode, $query, $query, null, null, null, null, null];
+
             }
         } catch (Exception $e) {
             Log::channel('addresso_api')
                 ->info("Exception in postcode:: $postCode and address:: $query {$e->getMessage()}");
 
-            return [$postCode, $query, $query, null, null, null,null];
+            return [$postCode, $query, $query, null, null, null, null, null];
         }
     }
 }

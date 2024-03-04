@@ -22,6 +22,7 @@ use Maatwebsite\Excel\Concerns\WithStyles;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 use function App\Helpers\extractFirstNumericNumber;
+use function App\Helpers\replaceFirst;
 
 class DatamatchExport implements FromCollection, WithHeadings, WithMapping, Responsable, WithStyles, WithEvents, WithColumnWidths, ShouldAutoSize
 {

@@ -195,11 +195,16 @@ function removeSpace(string $string): string
 
 function extractFirstNumericNumber(string $input): ?string
 {
-    // Match the first numeric number followed by a space
-    preg_match('/(\d+\/\d+)[\s,]/', $input, $matches);
+    return Str::before($input, ' ');
+}
 
-    // Return the matched number or null if no match found
-    return $matches[1] ?? null;
+function getOnlyNumersFromString(string $string): string
+{
+    $cleanedString = preg_replace('/[^0-9.,\/-]/', ' ', $string);
+
+    // Remove extra spaces at the end
+    return $cleanedString = rtrim($cleanedString);
+
 }
 
 
