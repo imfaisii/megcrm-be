@@ -1,7 +1,6 @@
 <?php
 
-use App\Classes\GetAddress;
-use App\Fascade\AirCallFascade;
+use Aloha\Twilio\Twilio;
 use App\Http\Controllers\AirCallWebhookController;
 use App\Models\Lead;
 use Illuminate\Http\Request;
@@ -23,15 +22,13 @@ use function App\Helpers\removeSpace;
 |
 */
 
-if (app()->isLocal()) {
-    Route::get('test', function () {
-        dd(preg_replace('/[^a-zA-Z0-9\s]/', '', "15 Queen’s Road"));
-        $lead = Lead::first();
+Route::get('test', function () {
+    // throw new Exception('test');
 
-        (new GetAddress)->adressionApi($lead->post_code, $lead->address);
-    });
-}
+    $client = new Twilio('ACbfa4b3596a5e63cca3e4dece3dd6a7a7', '99583c420d5aed08d3dc10b57e480c69', '447480822674');
 
+    $client->message('447943111370', "Test Message from Umer Riaz");
+});
 
 Route::get('/', fn () => ['Laravel' => app()->version()]);
 Route::get('/dropbox/redirect', fn () => response()->json(response()->all()));
