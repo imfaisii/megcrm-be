@@ -6,16 +6,21 @@ use App\Exports\Leads\DatamatchExport;
 use App\Fascade\AirCallFascade;
 use App\Http\Controllers\AirCallWebhookController;
 use App\Models\Lead;
+use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 
+use function App\Helpers\removeStringFromString;
 use function App\Helpers\extractFirstNumericNumber;
-use function App\Helpers\formatCommas;
 use function App\Helpers\removeSpace;
 use function App\Helpers\replaceFirst;
+use function App\Helpers\getOnlyNumersFromString;
+
+
 
 /*
 |--------------------------------------------------------------------------
@@ -30,36 +35,25 @@ use function App\Helpers\replaceFirst;
 
 if (app()->isLocal()) {
     Route::get('test', function () {
-        $geeks = 'Welcome 2,1/2 Geeks 4.8 Geeks.';
-
-        function cleanString($s) {
-            // Remove all characters other than numbers, '.', ',', '/', and '-'
-            $cleanedString = preg_replace('/[^0-9.,\/-]/', ' ', $s);
-
-            // Remove extra spaces at the end
-            $cleanedString = rtrim($cleanedString);
-
-            return $cleanedString;
-        }
-
-        // Example usage
-        $s = "The price is $12.50, and the quantity is 3.5 and 2,1/2.";
-        return cleanString($geeks);  // Output: 12.50 3.5 2,1/2
-
-        // Use preg_match_all() function to check match
-        preg_match_all('/\b(\d+(?:\.\d+)?(?:\/\d+)?(?:-\d+)?)(?=[a-zA-Z ]|$)/', $geeks, $matches);
 
 
 
-        
+// $lead = Lead::withWhereHas('leadCustomerAdditionalDetail', function ($query) {
 
-        return $matches;
-        $lead = Lead::find(11);
-        return extractFirstNumericNumber("flat 2.5");
-      $answer =  $lead->sub_building ? extractFirstNumericNumber($lead->sub_building) : ($lead->building_number ? extractFirstNumericNumber($lead->building_number) : extractFirstNumericNumber($lead->addres));
-        dd($lead->sub_building ? 'sub' : ($lead->building_number ? 'bulding' : 'nothging') );
-      replaceFirst($lead->sub_building ? extractFirstNumericNumber($lead->sub_building) : ($lead->building_number ? extractFirstNumericNumber($lead->building_number) : extractFirstNumericNumber($lead->addres)), '', $lead->address);
+//             $query->where('is_datamatch_required', true);
+//         })->get()->each(function($lead){
+//             dump($lead->id);
+//            $res1 = $lead->sub_building ? extractFirstNumericNumber(getOnlyNumersFromString($lead->sub_building)) : ($lead->building_number ? extractFirstNumericNumber(getOnlyNumersFromString($lead->building_number)) : extractFirstNumericNumber(getOnlyNumersFromString($lead->address)));
+//             $res2 = $lead->sub_building ? removeStringFromString($lead->sub_building, $lead->address) : ($lead->building_number ? removeStringFromString($lead->building_number, $lead->address) : removeStringFromString(extractFirstNumericNumber(getOnlyNumersFromString($lead->address)), $lead->address));
+//             dump($res1,$res2);
+//         });
 
+//         dd("asfs");
+        //  return $lead  = Lead::where('address','like','%Oldham House 3A Grantham Road, London, Greater London -- England%')->get();
+      $string  = 'Oldham House 3A Grantham Road, London, Greater London -- England';
+        return  $lead = Lead::find([341,342])->filter(function ($item) use ($string) {
+        return stripos($item, $string) !== false;
+    });;
         return new DatamatchExport;
 
     });

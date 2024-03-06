@@ -22,6 +22,8 @@ use Maatwebsite\Excel\Concerns\WithStyles;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 use function App\Helpers\extractFirstNumericNumber;
+use function App\Helpers\getOnlyNumersFromString;
+use function App\Helpers\removeStringFromString;
 use function App\Helpers\replaceFirst;
 
 class DatamatchExport implements FromCollection, WithHeadings, WithMapping, Responsable, WithStyles, WithEvents, WithColumnWidths, ShouldAutoSize
@@ -118,8 +120,8 @@ class DatamatchExport implements FromCollection, WithHeadings, WithMapping, Resp
             $lead->first_name,
             $lead->last_name,
             Carbon::parse($lead->dob)->format('m/d/Y'),
-            $lead->sub_building ? extractFirstNumericNumber($lead->sub_building) : ($lead->building_number ? extractFirstNumericNumber($lead->building_number) : extractFirstNumericNumber($lead->addres)),
-            replaceFirst($lead->sub_building ? extractFirstNumericNumber($lead->sub_building) : ($lead->building_number ? extractFirstNumericNumber($lead->building_number) : extractFirstNumericNumber($lead->addres)), '', $lead->address),
+            $lead->sub_building ? extractFirstNumericNumber(getOnlyNumersFromString($lead->sub_building)) : ($lead->building_number ? extractFirstNumericNumber(getOnlyNumersFromString($lead->building_number)) : extractFirstNumericNumber(getOnlyNumersFromString($lead->address))),
+            $lead->sub_building ? removeStringFromString($lead->sub_building, $lead->address) : ($lead->building_number ? removeStringFromString($lead->building_number, $lead->address) : removeStringFromString(extractFirstNumericNumber(getOnlyNumersFromString($lead->address)), $lead->address)),
             '',
             '',
             $lead->city,
@@ -139,6 +141,8 @@ class DatamatchExport implements FromCollection, WithHeadings, WithMapping, Resp
         })->get()->each(function ($lead) {
             $lead->leadCustomerAdditionalDetail->update([
                 'datamatch_progress' => DataMatchEnum::StatusSent,
+                // 'is_datamatch_required' => false,
+
             ]);
         });
 

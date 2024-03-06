@@ -27,6 +27,7 @@ use Spatie\QueryBuilder\AllowedInclude;
 use Jenssegers\Agent\Agent;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\Permission\Traits\HasPermissions;
 
 use function App\Helpers\is_append_present;
 
@@ -41,8 +42,8 @@ class User extends BaseModel implements AuthenticatableContract, HasMedia
         LaravelPermissionToVueJS,
         AuthenticationLoggable,
         InteractsWithMedia,
-        CausesActivity;
-
+        CausesActivity,
+        HasPermissions;
     protected $guard_name = 'sanctum';
 
     protected $fillable = [

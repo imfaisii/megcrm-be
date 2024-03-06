@@ -73,6 +73,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::apiResource('/leads', LeadController::class);
     Route::post('/leads/{lead}/comments', [LeadController::class, 'storeComments'])->name('leads.add-comments');
     Route::get('/leads-datamatch-download', [LeadController::class, 'downloadDatamatch'])->name('leads.download-datamatch');
+    Route::post('/leads-datamatch-upload', [LeadController::class, 'uploadDatamatch'])->name('leads.upload-datamatch');
     Route::get('/lead-jobs', [LeadJobController::class, 'index'])->name('lead-jobs.index');
     Route::apiResource('/lead-statuses', StatusController::class);
     Route::apiResource('/lead-generator-assignments', LeadGeneratorAssignmentController::class);
