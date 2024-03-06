@@ -29,6 +29,6 @@ final class InstallationBookedEnum extends Enum
 
     public static function getNotificationSubtitle(string $name, string $time)
     {
-        return "You have an installation booked with {$name} at {$time}.";
+        return "You have an installation booked with {$name} at { $time }.";
     }
 }

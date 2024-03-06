@@ -29,6 +29,6 @@ final class SurveyBookedEnum extends Enum
 
     public static function getNotificationSubtitle(string $name, string $time)
     {
-        return "You have a survey booked with {$name} at {$time}.";
+        return "You have a survey booked with {$name} at { $time }.";
     }
 }
