@@ -27,7 +27,7 @@ class SurveyBookingObserver
                     'is_marked_as_job' => true,
                 ]);
 
-                $surveyBooking->load(['surveyor', 'lead']);
+                $surveyBooking->load(['user', 'lead']);
                 $prefferedTime = ($surveyBooking->preffered_time ? "( {$surveyBooking->preffered_time} )" : '');
 
                 $title = SurveyBookedEnum::TITLE . ' with ' . $surveyBooking->lead->full_name . $prefferedTime;
@@ -36,7 +36,7 @@ class SurveyBookingObserver
 
                 CalenderEvent::updateOrCreate(
                     [
-                        'user_id' => $surveyBooking->surveyor->id,
+                        'user_id' => $surveyBooking->user->id,
                         'calendar_id' => SurveyBookedEnum::getCalendarId(),
                         'eventable_type' => SurveyBooking::class,
                         'eventable_id' => $surveyBooking->id,
