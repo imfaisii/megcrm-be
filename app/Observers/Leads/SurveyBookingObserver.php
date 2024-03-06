@@ -14,11 +14,10 @@ class SurveyBookingObserver
         $updatedProperties = $surveyBooking->getDirty();
 
         if (
-        true
-            //array_key_exists('surveyor_id', $updatedProperties)
-            //|| array_key_exists('survey_at', $updatedProperties)
-           // || array_key_exists('survey_to', $updatedProperties)
-          //  || array_key_exists('preffered_time', $updatedProperties)
+            array_key_exists('surveyor_id', $updatedProperties)
+            || array_key_exists('survey_at', $updatedProperties)
+            || array_key_exists('survey_to', $updatedProperties)
+            || array_key_exists('preffered_time', $updatedProperties)
         ) {
 
             if ($surveyBooking->survey_at && $surveyBooking->surveyor_id) {
