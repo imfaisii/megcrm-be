@@ -122,7 +122,7 @@ class User extends BaseModel implements AuthenticatableContract, HasMedia
     {
         if (is_append_present('authentications')) {
             return $this->authentications->take($count)->map(function ($log) {
-                $agent = tap(new Agent, fn ($agent) => $agent->setUserAgent($log->user_agent));
+                $agent = tap(new Agent, fn($agent) => $agent->setUserAgent($log->user_agent));
 
                 return [
                     'is_mobile' => ($agent->isMobile() || $agent->isTablet()) ? true : false,
@@ -192,7 +192,7 @@ class User extends BaseModel implements AuthenticatableContract, HasMedia
 
     public function teams(): BelongsToMany
     {
-        return $this->belongsToMany(Team::class, TeamUsers::class, 'user_id', 'team_id');
+        return $this->belongsToMany(Team::class, TeamUsers::class, 'user_id', 'team_id')->withPivot(['role_id'])->withTimestamps();
     }
 
 }
