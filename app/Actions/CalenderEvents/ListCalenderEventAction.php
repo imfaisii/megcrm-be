@@ -26,7 +26,7 @@ class ListCalenderEventAction extends AbstractListAction
     {
         $query = parent::getQuery();
 
-        $query->with(['eventable.surveyor']);
+        $query->with(['eventable.user']);
 
         if (!is_null($this->user) && !auth()->user()->hasRole(RoleEnum::SUPER_ADMIN)) {
             $query->currentUser();

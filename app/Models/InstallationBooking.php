@@ -23,7 +23,7 @@ class InstallationBooking extends BaseModel
         return $this->belongsTo(Measure::class);
     }
 
-    public function installer()
+    public function user()
     {
         return $this->belongsTo(User::class, 'installer_id', 'id');
     }

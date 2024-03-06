@@ -20,7 +20,7 @@ class SurveyBooking extends BaseModel
         'lead_id',
     ];
 
-    public function surveyor()
+    public function user()
     {
         return $this->belongsTo(User::class, 'surveyor_id', 'id');
     }
