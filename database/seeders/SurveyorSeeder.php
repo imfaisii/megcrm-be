@@ -14,18 +14,18 @@ class SurveyorSeeder extends Seeder
     {
         for ($i = 1; $i < $this->total; $i++) {
             $name = "Surveyor $i";
-            $email = str_replace(" ", "", str()->lower($name)) . "@megcrm.co.uk";
-            $password = "12345678";
+            $email = str_replace(' ', '', str()->lower($name)).'@megcrm.co.uk';
+            $password = '12345678';
 
             User::firstOrCreate(
                 [
                     'name' => $name,
-                    'email' => $email
+                    'email' => $email,
                 ],
                 [
                     'email_verified_at' => now(),
                     'password' => $password,
-                    'created_by_id' => 1
+                    'created_by_id' => 1,
                 ]
             )->assignRole(RoleEnum::SURVEYOR);
         }

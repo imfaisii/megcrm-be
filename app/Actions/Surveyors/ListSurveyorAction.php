@@ -7,7 +7,6 @@ use App\Enums\Permissions\RoleEnum;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 
-
 class ListSurveyorAction extends AbstractListAction
 {
     protected string $modelClass = User::class;

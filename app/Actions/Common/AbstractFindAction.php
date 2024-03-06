@@ -7,12 +7,10 @@ use App\Traits\Common\NewQueryTrait;
 
 abstract class AbstractFindAction
 {
-    use NewQueryTrait, HasApiResource;
+    use HasApiResource, NewQueryTrait;
 
     /**
-     * @param $primaryKey
-     * @param array|string[] $columns
-     * @return BaseModel|null
+     * @param  array|string[]  $columns
      */
     public function find($primaryKey, array $columns = ['*']): ?BaseModel
     {
@@ -20,9 +18,7 @@ abstract class AbstractFindAction
     }
 
     /**
-     * @param $primaryKey
-     * @param array|string[] $columns
-     * @return BaseModel
+     * @param  array|string[]  $columns
      */
     public function findOrFail($primaryKey, array $columns = ['*']): BaseModel
     {
@@ -30,19 +26,13 @@ abstract class AbstractFindAction
     }
 
     /**
-     * @param $primaryKey
-     * @param array|string[] $columns
-     * @return BaseModel
+     * @param  array|string[]  $columns
      */
     public function findOrNew($primaryKey, array $columns = ['*']): BaseModel
     {
         return $this->getQuery()->findOrNew($primaryKey, $columns);
     }
 
-    /**
-     * @param BaseModel $model
-     * @return BaseModel
-     */
     public function findByModel(BaseModel $model): BaseModel
     {
         return $model->applyQueryBuilder();

@@ -31,7 +31,7 @@ class CreateCustomerAdditionalDetails extends Command
 
         foreach ($leads as $key => $lead) {
             LeadCustomerAdditionalDetail::firstOrCreate([
-                'lead_id' => $lead->id
+                'lead_id' => $lead->id,
             ]);
         }
     }

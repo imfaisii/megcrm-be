@@ -9,36 +9,28 @@ use Illuminate\Database\Eloquent\Collection;
 
 abstract class AbstractListAction
 {
-    use NewQueryTrait;
     use HasApiResource;
+    use NewQueryTrait;
 
     protected int $defaultPagination = 10;
 
     public function setPaginationLength(int $length)
     {
         $this->defaultPagination = $length;
+
         return $this;
     }
 
-    /**
-     * @return Collection
-     */
     public function get(): Collection
     {
         return $this->getQuery()->get();
     }
 
-    /**
-     * @return Paginator
-     */
     public function paginate(): Paginator
     {
         return $this->getQuery()->latest()->paginate(request()->get('per_page', $this->defaultPagination));
     }
 
-    /**
-     * @return Paginator|Collection
-     */
     public function listOrPaginate(): Paginator|Collection
     {
         if (request()->has('all')) {

@@ -6,70 +6,34 @@ use App\Classes\GetAddress;
 use App\Classes\LeadResponseClass;
 
 ini_set('memory_limit', '-1');
+ini_set('max_execution_time', 0);
 
 use App\Models\BenefitType;
 use App\Models\Lead;
 use App\Models\LeadGenerator;
 use App\Models\LeadStatus;
 use Exception;
-use Illuminate\Support\Str;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Concerns\ToCollection;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
-use function App\Helpers\formatCommas;
-use Maatwebsite\Excel\Concerns\WithEvents;
-use Maatwebsite\Excel\Events\BeforeImport;
-use Maatwebsite\Excel\Events\AfterImport;
 
-
-
-class LeadsImport implements ToCollection, WithHeadingRow, WithEvents
+class LeadsImport implements ToCollection, WithHeadingRow
 {
-
     public function __construct(public LeadResponseClass $classResponse)
     {
-
-    }
-    protected $class = GetAddress::class;
-    public $name = 'LeadsImport';
-    public function registerEvents(): array
-    {
-        return [
-                // Handle by a closure.
-            BeforeImport::class => function (BeforeImport $event) {
-                $reader = $event->reader;
-                $creator = $reader->getProperties()->getCreator();
-                $totalRows = array_sum($reader->getTotalRows());
-                $fileName = request()->file('file')->getClientOriginalName();
-                // Log::driver('slack')->info("{$creator} has uploaded Leads file named as  {$fileName} with {$totalRows} rows.");
-            },
-        ];
+        //
     }
 
     public function collection(Collection $rows)
     {
         try {
+            $apiClass = new GetAddress();
+            $this->classResponse->failedLeads = [];
 
-            DB::beginTransaction();
-            $arrayPostCodesAddresses = $rows->pluck('address', 'postcode')?->filter()?->map(function ($collection) {
-                return formatCommas(trim($collection));
-            })->toArray();
-            $lead = Lead::pluck('address', 'post_code')->toArray();
-            $addressToInclude = (array_diff_assoc($arrayPostCodesAddresses ?? [], $lead));
+            foreach ($rows as $key => $row) {
 
-            $rows = $rows?->filter(function ($row) {
-                return $row['address'] ?? false;
-            })?->transform(function ($item, int $key) {
-                return [
-                    ...$item,
-                    'address' => formatCommas(trim(data_get($item, 'address', '')))
-                ];
-            });
-            $this->classResponse->alreadyFoundEnteries = $rows->whereNotIn('address', $addressToInclude)->all();
-            foreach ($rows->whereIn('address', $addressToInclude) as $key => $row) {
                 if (isset($row['address']) && $row['address'] !== null) {
                     $benefitTypes = [];
 
@@ -77,7 +41,7 @@ class LeadsImport implements ToCollection, WithHeadingRow, WithEvents
                         // lead generator
                         $leadGenerator = LeadGenerator::firstOrCreate(
                             [
-                                'name' => $row['website'] ?? 'Lead Generator Default'
+                                'name' => $row['website'] ?? 'Lead Generator Default',
                             ],
                         );
                         $email = Arr::get($row, 'email', null);
@@ -90,20 +54,16 @@ class LeadsImport implements ToCollection, WithHeadingRow, WithEvents
 
                         foreach ($benefits as $key => $benefit) {
                             $benefitTypes[] = BenefitType::firstOrCreate([
-                                'name' => $benefit
+                                'name' => $benefit,
                             ])->id;
                         }
 
-                        if (filled($address)) {
-                            // $address = formatCommas($address);
-                            $address = resolve($this->class)->getCompleteAddress($address, $postCode, 'autocomplete') ?: $address;
-                            $address = formatCommas(trim($address));
-                        }
+                        [$postCode, $address, $plainAddress, $city, $county, $country] = $apiClass->adressionApi($postCode ?? '', $address);
 
                         $name = $this->split_name($row['name'] ?? '');
                         $lead = Lead::firstOrCreate([
                             'post_code' => $postCode,
-                            'address' => (string) $address,
+                            'address' => $address,
                         ], [
                             'title' => 'Mr',
                             'first_name' => $name['first_name'] ?? '',
@@ -117,47 +77,58 @@ class LeadsImport implements ToCollection, WithHeadingRow, WithEvents
                             'phone_no' => $phoneNo ?? '00000',
                             'lead_generator_id' => $leadGenerator->id,
                             'user_id' => auth()->id(),
-                            'created_by_id' => auth()->id()
+                            'created_by_id' => auth()->id(),
+                            'plain_address' => $plainAddress,
+                            'county' => $county,
+                            'city' => $city,
+                            'country' => $country,
                         ]);
-                        if ($lead->wasRecentlyCreated) {
-                            $this->classResponse->totalUploadedRows += 1;
+
+                        // Set Status
+                        if (array_key_exists('status', $row->toArray())) {
+                            $status = LeadStatus::firstOrCreate([
+                                'name' => $row['status'],
+                            ], [
+                                'color' => 'warning',
+                                'created_by_id' => auth()->id(),
+                            ]);
+
+                            $lead->setStatus($status->name, Arr::get($row, 'comments', 'Created via file upload, no comments found in file.'));
                         } else {
-                            $this->classResponse->alreadyFoundEnteries[] = [...$row,'isDataBase'=>true,'id'=>$lead->id];
+                            $lead->setStatus(LeadStatus::first()->name, 'Created via file upload');
                         }
-                        $lead->setStatus(LeadStatus::first()->name, 'Created via file upload');
 
                         // creating additional empty record for lead
                         $lead->leadCustomerAdditionalDetail()->create();
 
                         $lead->benefits()->syncWithPivotValues($benefitTypes, [
-                            'created_by_id' => auth()->id()
+                            'created_by_id' => auth()->id(),
                         ]);
                     } catch (Exception $exception) {
                         Log::channel('lead_file_read_log')->info(
-                            "Error importing lead address: " . $address . ". " . $exception->getMessage()
+                            'Error importing lead address: '.$address.'. '.$exception->getMessage()
                         );
                     }
-                } else {
-                    //Log::channel('lead_file_read_log')->info(
-                    //"Error importing lead address else: " . $row['address']
-                    //);
                 }
             }
-            DB::commit();
         } catch (Exception $exception) {
-            DB::rollBack();
+            Log::channel('lead_file_read_log')->info(
+                'Exception importing lead address:: '.$row['address'].' message:: '.$exception->getMessage()
+            );
+
+            $this->classResponse->failedLeads[] = $row['address'];
         }
     }
 
     public function split_name($name)
     {
-        $parts = array();
+        $parts = [];
 
         while (strlen(trim($name)) > 0) {
             $name = trim($name);
             $string = preg_replace('#.*\s([\w-]*)$#', '$1', $name);
             $parts[] = $string;
-            $name = trim(preg_replace('#' . preg_quote($string, '#') . '#', '', $name));
+            $name = trim(preg_replace('#'.preg_quote($string, '#').'#', '', $name));
         }
 
         if (empty($parts)) {
@@ -165,7 +136,7 @@ class LeadsImport implements ToCollection, WithHeadingRow, WithEvents
         }
 
         $parts = array_reverse($parts);
-        $name = array();
+        $name = [];
         $name['first_name'] = $parts[0];
         $name['middle_name'] = (isset($parts[2])) ? $parts[1] : '';
         $name['last_name'] = (isset($parts[2])) ? $parts[2] : (isset($parts[1]) ? $parts[1] : '');

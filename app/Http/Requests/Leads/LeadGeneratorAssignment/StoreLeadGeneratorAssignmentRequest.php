@@ -10,7 +10,7 @@ class StoreLeadGeneratorAssignmentRequest extends BaseFormRequest
     {
         return [
             'user_id' => ['required', 'exists:users,id'],
-            'lead_generator_assignments' => ['required', 'array']
+            'lead_generator_assignments' => ['required', 'array'],
         ];
     }
 }

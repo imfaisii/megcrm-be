@@ -2,7 +2,6 @@
 
 namespace App\Actions\Common;
 
-use App\Actions\Common\BaseRelationshipFilter;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use Spatie\QueryBuilder\AllowedFilter;
@@ -10,9 +9,6 @@ use Spatie\QueryBuilder\AllowedSort;
 
 trait BaseQueryBuilderConfig
 {
-    /**
-     * @return array
-     */
     public function getTableFields(): array
     {
         return array_merge($this->getFillable(), [
@@ -22,9 +18,6 @@ trait BaseQueryBuilderConfig
         ]);
     }
 
-    /**
-     * @return array
-     */
     public function getAllowedFilters(): array
     {
         $exactFilters = $this->getExactFilters();
@@ -46,9 +39,6 @@ trait BaseQueryBuilderConfig
             ->toArray();
     }
 
-    /**
-     * @return array
-     */
     protected function getRelationshipFilters(): array
     {
         $relationshipFilters = [];
@@ -57,7 +47,7 @@ trait BaseQueryBuilderConfig
             $relationship = $chunks[0];
 
             $fields = [];
-            if (count($chunks) === 2 && !!$chunks[1]) {
+            if (count($chunks) === 2 && (bool) $chunks[1]) {
                 $fields = explode(',', $chunks[1]);
             }
 
@@ -73,7 +63,7 @@ trait BaseQueryBuilderConfig
 
             foreach ($fields as $field) {
                 $relationshipFilters[] = AllowedFilter::custom(
-                    $relationship . '.' . $field,
+                    $relationship.'.'.$field,
                     new BaseRelationshipFilter(
                         $relationship,
                         $field,
@@ -82,13 +72,10 @@ trait BaseQueryBuilderConfig
                 );
             }
         }
+
         return $relationshipFilters;
     }
 
-    /**
-     * @param string $relationship
-     * @return array
-     */
     private function getRelationshipFields(string $relationship): array
     {
         if (str_contains($relationship, '.')) {
@@ -111,17 +98,11 @@ trait BaseQueryBuilderConfig
         ];
     }
 
-    /**
-     * @return array
-     */
     protected function getExtraFilters(): array
     {
         return [];
     }
 
-    /**
-     * @return array
-     */
     public function getAllowedSorts(): array
     {
         return Collection::make($this->getTableFields())
@@ -132,41 +113,26 @@ trait BaseQueryBuilderConfig
             ->toArray();
     }
 
-    /**
-     * @return array
-     */
     protected function getExtraSorts(): array
     {
         return [];
     }
 
-    /**
-     * @return array
-     */
     public function getAllowedFields(): array
     {
         return $this->getTableFields();
     }
 
-    /**
-     * @return array
-     */
     public function getAllowedAppends(): array
     {
         return $this->allowedAppends;
     }
 
-    /**
-     * @return array
-     */
     public function getAllowedIncludes(): array
     {
         return array_merge($this->allowedIncludes, $this->getExtraIncludes());
     }
 
-    /**
-     * @return array
-     */
     protected function getExtraIncludes(): array
     {
         return [];

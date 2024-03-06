@@ -4,7 +4,7 @@ namespace App\Actions\Common;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use \Illuminate\Support\Str;
+use Illuminate\Support\Str;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
@@ -18,8 +18,7 @@ class BaseJsonResource extends JsonResource
     ];
 
     /**
-     * @param \Illuminate\Http\Request $request
-     * @return array
+     * @param  \Illuminate\Http\Request  $request
      */
     public function toArray($request): array
     {
@@ -30,9 +29,6 @@ class BaseJsonResource extends JsonResource
         ];
     }
 
-    /**
-     * @return string
-     */
     protected function guessResourceKey(): string
     {
         if ($this->resource instanceof Role) {
@@ -46,10 +42,6 @@ class BaseJsonResource extends JsonResource
         return $this->resource->guessResourceKey();
     }
 
-    /**
-     * @param Request $request
-     * @return array
-     */
     protected function resourceToArray(Request $request): array
     {
         return parent::toArray($request);

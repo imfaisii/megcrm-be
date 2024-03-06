@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\LeadGenerator;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class LeadGeneratorSeeder extends Seeder
@@ -17,7 +16,7 @@ class LeadGeneratorSeeder extends Seeder
     {
         for ($i = 1; $i < $this->total; $i++) {
             LeadGenerator::firstOrCreate([
-                'name' => "Lead Generator $i"
+                'name' => "Lead Generator $i",
             ]);
         }
     }

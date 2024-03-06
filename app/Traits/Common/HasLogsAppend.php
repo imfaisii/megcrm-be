@@ -15,17 +15,17 @@ trait HasLogsAppend
         //! TABLE IS REQUIRED TO AVOID GETTING RECURSIVE LOGS
         static::retrieved(function ($model) {
 
-            $appends = get_all_appends();
+            // $appends = get_all_appends();
 
             if (is_append_present("{$model->getTable()}_logs")) {
                 $model->append('logs');
             }
 
-            foreach ($appends as $append) {
-                if (!Str::endsWith($append, ['_logs'])) {
-                    $model->append($append);
-                }
-            }
+            // foreach ($appends as $append) {
+            //     if (!Str::endsWith($append, ['_logs'])) {
+            //         $model->append($append);
+            //     }
+            // }
         });
     }
 

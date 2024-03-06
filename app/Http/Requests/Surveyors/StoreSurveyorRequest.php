@@ -12,10 +12,10 @@ class StoreSurveyorRequest extends BaseFormRequest
     {
         return [
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:' . User::class],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Password::defaults()],
             'roles' => ['array'],
-            'is_active' => ['boolean']
+            'is_active' => ['boolean'],
         ];
     }
 }

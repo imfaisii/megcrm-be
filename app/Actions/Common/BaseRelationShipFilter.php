@@ -8,33 +8,22 @@ use Spatie\QueryBuilder\Filters\Filter;
 
 class BaseRelationshipFilter implements Filter
 {
-    /**
-     * @var bool
-     */
     private bool $nestedRelationship;
 
-    /**
-     * @param string $relationship
-     * @param string $column
-     * @param bool $exact
-     */
     public function __construct(
         private string $relationship,
         private readonly string $column,
         private readonly bool $exact
     ) {
         $this->nestedRelationship = str_contains($this->relationship, '.');
-        if (!$this->nestedRelationship) {
+        if (! $this->nestedRelationship) {
             $this->relationship = Str::camel($this->relationship);
         }
     }
 
     /**
-     * @param Builder $query
-     * @param $value
-     * @param string $property
-     * @return void
      * @phpcs:disable Generic.CodeAnalysis.UnusedFunctionParameter
+     *
      * @phpcs:disable VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable
      */
     public function __invoke(Builder $query, $value, string $property): void
@@ -47,13 +36,6 @@ class BaseRelationshipFilter implements Filter
         }
     }
 
-    /**
-     * @param Builder $query
-     * @param array $relationships
-     * @param int $position
-     * @param $value
-     * @return void
-     */
     private function digRelationship(Builder $query, array $relationships, int $position, $value): void
     {
         $relationship = Str::camel($relationships[$position]);
@@ -66,12 +48,6 @@ class BaseRelationshipFilter implements Filter
         }
     }
 
-    /**
-     * @param Builder $query
-     * @param string $relationship
-     * @param $value
-     * @return void
-     */
     private function applyRelationshipFilter(Builder $query, string $relationship, $value): void
     {
         $query->whereHas($relationship, function (Builder $query) use ($value) {

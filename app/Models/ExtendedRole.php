@@ -22,7 +22,7 @@ class ExtendedRole extends BaseModel implements Role
     public function getFormattedPermissionsAttribute(): array
     {
         //! TO AVOID N+1
-        if (!is_include_present('permissions')) {
+        if (! is_include_present('permissions')) {
             return [];
         }
 
@@ -31,7 +31,7 @@ class ExtendedRole extends BaseModel implements Role
 
     public function getFormattedNameAttribute(): string
     {
-        return Str::ucfirst(Str::replace("_", " ", $this->name));
+        return Str::ucfirst(Str::replace('_', ' ', $this->name));
     }
 
     public function getUsersAttribute(): mixed

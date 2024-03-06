@@ -12,6 +12,6 @@ class LeadStatus extends BaseModel
 
     protected $fillable = [
         'name',
-        'color'
+        'color',
     ];
 }

@@ -25,8 +25,7 @@ class AssignUserIdsOfAirCallToUser extends Command
      */
     protected $description = 'This command is responsible for assigning user ids of air calls to users';
 
-    protected $help = "For this command to work, your email must match with the email of the air call";
-
+    protected $help = 'For this command to work, your email must match with the email of the air call';
 
     /**
      * Execute the console command.
@@ -43,11 +42,11 @@ class AssignUserIdsOfAirCallToUser extends Command
 
                 $user = User::query()->whereHas('roles', function ($query) {
                     return $query->whereIn('name', [RoleEnum::SUPER_ADMIN, RoleEnum::CSR]);
-                })->where('email', $eachuser['email'])->first();
+                })->where('aircall_email_address', $eachuser['email'])->first();
                 if ($user) {
                     $this->info("Found User: {$user->email} with ID: {$user->id}...");
-                    $this->info("Getting Assigned Numbers");
-                    $getNumber = AirCallFascade::getUsers(userId:$eachuser['id']);
+                    $this->info('Getting Assigned Numbers');
+                    $getNumber = AirCallFascade::getUsers(userId: $eachuser['id']);
                     $number = $getNumber->getData(true);
 
                     $numberArray = data_get($number, 'data.0.numbers.*.id');
@@ -58,7 +57,8 @@ class AssignUserIdsOfAirCallToUser extends Command
                 }
             });
         } catch (Exception $e) {
-            Log::driver('slack-crm')->error('Error: ' . $e->getMessage());
+            Log::driver('slack-crm')->error('Error: '.$e->getMessage());
+
             return 1;
         }
     }

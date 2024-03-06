@@ -8,9 +8,8 @@ use Illuminate\Support\Arr;
 
 class DialAirCallAction
 {
-
     public function dial(array $data): JsonResponse
     {
-        return AirCallFascade::dialCall(userId:Arr::get($data,'user_id'),queryParams:Arr::except($data,['user_id']));
+        return AirCallFascade::dialCall(userId: Arr::get($data, 'user_id'), queryParams: Arr::except($data, ['user_id']));
     }
 }

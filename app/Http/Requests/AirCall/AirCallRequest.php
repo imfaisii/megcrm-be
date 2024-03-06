@@ -4,13 +4,13 @@ namespace App\Http\Requests\AirCall;
 
 use App\Actions\Common\BaseFormRequest;
 use App\Rules\E164NumberCheckRule;
-use Illuminate\Support\Str;
-use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
 
 class AirCallRequest extends BaseFormRequest
 {
     protected $stopOnFirstFailure = true;
+
     /**
      * Get the validation rules that apply to the request.
      *
@@ -27,7 +27,7 @@ class AirCallRequest extends BaseFormRequest
     public function passedValidation()
     {
         $this->merge([
-            'user_id' => auth()?->user()?->air_caller_id
+            'user_id' => auth()?->user()?->air_caller_id,
         ]);
     }
 
@@ -37,7 +37,6 @@ class AirCallRequest extends BaseFormRequest
     {
 
         $routeName = Str::between($this->route()->getName(), '.', '-');
-
 
         switch ($routeName) {
             case 'search':
@@ -56,7 +55,6 @@ class AirCallRequest extends BaseFormRequest
 
     }
 
-
     private function FinalRequestForCallSearch()
     {
         return filled($this->specific_agent) ? [...$this->validator->validated(), 'user_id' => auth()?->user()?->air_caller_id]
@@ -65,9 +63,7 @@ class AirCallRequest extends BaseFormRequest
 
     private function FinalRequestForCallMake()
     {
-        $array = [...$this->validator->validated(),  'to' => $this->phone_number,'user_id' => auth()?->user()?->air_caller_id, 'number_id' => Arr::random(auth()?->user()?->phone_number_aircall ?? config("credentials.AIRCALL_PHONE_NUMBER"))];
-
-
+        $array = [...$this->validator->validated(),  'to' => $this->phone_number, 'user_id' => auth()?->user()?->air_caller_id, 'number_id' => Arr::random(auth()?->user()?->phone_number_aircall ?? config('credentials.AIRCALL_PHONE_NUMBER'))];
 
         return Arr::except($array, 'phone_number');
     }
@@ -75,7 +71,6 @@ class AirCallRequest extends BaseFormRequest
     private function FinalRequestForCallDial()
     {
         $array = [...$this->validator->validated(), 'user_id' => auth()?->user()?->air_caller_id, 'to' => $this->phone_number];
-
 
         return Arr::except($array, 'phone_number');
 

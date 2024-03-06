@@ -13,6 +13,7 @@ class DeleteRoleAction extends AbstractDeleteAction
     {
         /** @var Role $role */
         $role->syncPermissions([]);
+
         return parent::delete($role);
     }
 }

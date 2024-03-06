@@ -12,11 +12,11 @@ class BenefitType extends BaseModel
 
     protected $fillable = [
         'name',
-        'created_by_id'
+        'created_by_id',
     ];
 
     protected array $allowedIncludes = [
-        'createdBy'
+        'createdBy',
     ];
 
     public function leads()

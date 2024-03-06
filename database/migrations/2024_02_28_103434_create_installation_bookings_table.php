@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Lead;
+use App\Models\Measure;
 use App\Models\User;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -17,6 +18,7 @@ return new class extends Migration
             $table->id();
             $table->timestamp('installation_at')->nullable();
             $table->text('comments')->nullable();
+            $table->foreignIdFor(Measure::class);
             $table->foreignIdFor(User::class, 'installer_id')->nullable();
             $table->foreignIdFor(Lead::class)->nullable();
             $table->foreignIdFor(User::class, 'created_by_id')->nullable();

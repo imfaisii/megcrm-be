@@ -12,6 +12,18 @@ class InstallationType extends BaseModel
 
     protected $fillable = [
         'name',
-        'created_by_id'
+        'created_by_id',
     ];
+
+    protected array $allowedIncludes = [
+        'installationTypeHasMeasures',
+        'createdBy',
+    ];
+
+    public function installationTypeHasMeasures()
+    {
+        return $this->belongsToMany(Measure::class, InstallationTypeHasMeasure::class)
+            ->withPivot('created_by_id')
+            ->withTimestamps();
+    }
 }

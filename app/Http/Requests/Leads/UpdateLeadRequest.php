@@ -3,7 +3,6 @@
 namespace App\Http\Requests\Leads;
 
 use App\Actions\Common\BaseFormRequest;
-use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateLeadRequest extends BaseFormRequest
 {
@@ -47,7 +46,7 @@ class UpdateLeadRequest extends BaseFormRequest
             'lead_additional.land_registry_confirmed' => ['nullable', 'boolean'],
             'lead_additional.proof_of_address_confirmed' => ['nullable', 'boolean'],
             'lead_additional.epr_report_confirmed' => ['nullable', 'boolean'],
-            'installation_booking' => ['required', 'array'],
+            'installation_bookings' => ['nullable', 'array'],
         ];
     }
 }

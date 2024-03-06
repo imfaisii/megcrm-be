@@ -13,9 +13,15 @@ class InstallationBooking extends BaseModel
     protected $fillable = [
         'installer_id',
         'installation_at',
+        'measure_id',
         'comments',
-        'lead_id'
+        'lead_id',
     ];
+
+    public function measure()
+    {
+        return $this->belongsTo(Measure::class);
+    }
 
     public function installer()
     {

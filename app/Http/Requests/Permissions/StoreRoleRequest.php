@@ -10,7 +10,7 @@ class StoreRoleRequest extends BaseFormRequest
     {
         return [
             'name' => ['required', 'string', 'unique:roles,name'],
-            'permissions' => ['array']
+            'permissions' => ['array'],
         ];
     }
 }

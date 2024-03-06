@@ -10,11 +10,14 @@ use BenSampo\Enum\Enum;
 final class SurveyBookedEnum extends Enum
 {
     const TITLE = 'Survey Booked';
+
     const NOTIFICATION_TITLE = 'Survey Booking Notification';
+
     const CALENDAR_NAME = 'Surveys';
+
     const IS_FULL_DAY = true;
 
-    public static function getCalendarId(): int|null
+    public static function getCalendarId(): ?int
     {
         return Calendar::where('name', self::CALENDAR_NAME)->first()?->id;
     }

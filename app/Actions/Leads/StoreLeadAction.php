@@ -13,14 +13,19 @@ class StoreLeadAction extends AbstractCreateAction
 
     public function create(array $data): Lead
     {
-        $data['created_by_id'] = auth()->id() ?? 1;
+        $data = [
+            ...$data,
+            ...$data['address'],
+        ];
 
-        /** @var Lead $lead */
-        $lead = parent::create(Arr::except($data, [
+        $fillables = Arr::except($data, [
             'has_second_receipent',
             'second_receipent',
-            'measures'
-        ]));
+            'measures',
+        ]);
+
+        /** @var Lead $lead */
+        $lead = parent::create($fillables);
 
         if ($data['has_second_receipent']) {
             $lead->secondReceipent()->firstOrCreate($data['second_receipent']);
@@ -33,7 +38,7 @@ class StoreLeadAction extends AbstractCreateAction
 
         // adding benefits
         $lead->benefits()->syncWithPivotValues($data['benefits'], [
-            'created_by_id' => auth()->id()
+            'created_by_id' => auth()->id(),
         ]);
 
         return $lead;

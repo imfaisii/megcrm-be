@@ -12,11 +12,11 @@ class LeadGenerator extends BaseModel
 
     protected $fillable = [
         'name',
-        'mask_name'
+        'mask_name',
     ];
 
     protected array $allowedIncludes = [
-        'createdBy'
+        'createdBy',
     ];
 
     public function leadGeneratorAssignments()

@@ -12,32 +12,37 @@ use App\Traits\Common\HasCalenderEvent;
 use Carbon\Carbon;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Support\Str;
 use Illuminate\Support\Arr;
+use Jenssegers\Agent\Agent;
 use LaravelAndVueJS\Traits\LaravelPermissionToVueJS;
 use Rappasoft\LaravelAuthenticationLog\Traits\AuthenticationLoggable;
 use Spatie\Activitylog\Traits\CausesActivity;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\AllowedInclude;
-use Jenssegers\Agent\Agent;
 
-class User extends BaseModel implements AuthenticatableContract
+use function App\Helpers\is_append_present;
+
+class User extends BaseModel implements AuthenticatableContract, HasMedia
 {
-    use HasApiTokens,
+    use Authenticatable,
+        AuthenticationLoggable,
+        CausesActivity,
+        HasApiTokens,
         HasCalenderEvent,
         HasFactory,
-        Authenticatable,
-        Notifiable,
         HasRoles,
+        InteractsWithMedia,
         LaravelPermissionToVueJS,
-        AuthenticationLoggable,
-        CausesActivity;
+        Notifiable;
 
     protected $guard_name = 'sanctum';
 
@@ -49,14 +54,15 @@ class User extends BaseModel implements AuthenticatableContract
         'is_active',
         'phone_number_aircall',
         'aircall_email_address',
-        'created_by_id'
+        'created_by_id',
     ];
 
     protected $hidden = [
         'password',
         'remember_token',
         'phone_number_aircall',
-        'air_caller_id'
+        'air_caller_id',
+        'aircall_email_address',
     ];
 
     protected $with = ['additional'];
@@ -64,14 +70,16 @@ class User extends BaseModel implements AuthenticatableContract
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
-        'is_active' => 'boolean'
+        'is_active' => 'boolean',
     ];
 
     protected array $allowedIncludes = [
         'createdBy',
         'leadGeneratorAssignments',
         'notifications',
-        'authentications'
+        'authentications',
+        'installerCompany',
+        'additional.bank',
     ];
 
     protected $appends = ['rights', 'top_role', 'user_agents'];
@@ -98,31 +106,39 @@ class User extends BaseModel implements AuthenticatableContract
 
     public function getRightsAttribute()
     {
-        return $this->getPermissions();
+        if (is_append_present('rights')) {
+            return $this->getPermissions();
+        }
+
+        return null;
     }
 
     public function getTopRoleAttribute()
     {
-        return Str::ucfirst(Str::replace("_", " ", Arr::first($this->getRoleNames())));
+        return Str::ucfirst(Str::replace('_', ' ', Arr::first($this->getRoleNames())));
     }
 
     public function getUserAgentsAttribute($count = 5)
     {
-        return $this->authentications->take($count)->map(function ($log) {
-            $agent = tap(new Agent, fn($agent) => $agent->setUserAgent($log->user_agent));
+        if (is_append_present('authentications')) {
+            return $this->authentications->take($count)->map(function ($log) {
+                $agent = tap(new Agent, fn ($agent) => $agent->setUserAgent($log->user_agent));
 
-            return [
-                'is_mobile' => ($agent->isMobile() || $agent->isTablet()) ? true : false,
-                'device' => $agent->device() === false ? 'WebKit' : $agent->device(),
-                'platform' => $agent->platform() === false ? 'Windows' : $agent->platform(),
-                'browser' => $agent->browser() === false ? 'Chrome' : $agent->browser(),
-                'login_at' => Carbon::parse($log->login_at)->format('l M d g:i a'),
-                'country' => $log->location['country'],
-                'ip' => $log->location['ip'],
-                'timezone' => $log->location['timezone'],
-            ];
-        })
-            ->unique('login_at');
+                return [
+                    'is_mobile' => ($agent->isMobile() || $agent->isTablet()) ? true : false,
+                    'device' => $agent->device() === false ? 'WebKit' : $agent->device(),
+                    'platform' => $agent->platform() === false ? 'Windows' : $agent->platform(),
+                    'browser' => $agent->browser() === false ? 'Chrome' : $agent->browser(),
+                    'login_at' => Carbon::parse($log->login_at)->format('l M d g:i a'),
+                    'country' => $log->location['country'],
+                    'ip' => $log->location['ip'],
+                    'timezone' => $log->location['timezone'],
+                ];
+            })
+                ->unique('login_at');
+        }
+
+        return null;
     }
 
     public function additional()
@@ -155,6 +171,11 @@ class User extends BaseModel implements AuthenticatableContract
         return $this->belongsToMany(LeadGenerator::class, LeadGeneratorAssignment::class)
             ->withPivot('created_by_id')
             ->withTimestamps();
+    }
+
+    public function installerCompany()
+    {
+        return $this->hasOne(InstallerCompany::class);
     }
 
     public function installationTypes()
