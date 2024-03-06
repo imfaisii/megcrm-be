@@ -22,14 +22,14 @@ class InstallationBookingObserver
 
                 $installationBooking->lead->setStatus('Installation Booked', 'Assigned by system.');
 
-                $installationBooking->load(['installer', 'lead']);
+                $installationBooking->load(['user', 'lead']);
 
                 $title = InstallationBookedEnum::TITLE.' with '.$installationBooking->lead->full_name;
                 $installationAt = $installationBooking->installation_at;
 
                 CalenderEvent::updateOrCreate(
                     [
-                        'user_id' => $installationBooking->installer->id,
+                        'user_id' => $installationBooking->user->id,
                         'calendar_id' => InstallationBookedEnum::getCalendarId(),
                         'eventable_type' => InstallationBooking::class,
                         'eventable_id' => $installationBooking->id,
