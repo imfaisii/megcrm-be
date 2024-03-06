@@ -66,6 +66,11 @@ class LeadController extends Controller
         return null_resource();
     }
 
+    public function getCouncilTaxLink(): JsonResponse
+    {
+        return $this->success(data: (new GetLeadExtrasAction(auth()->user()))->execute());
+    }
+
     public function getExtras(): JsonResponse
     {
         return $this->success(data: (new GetLeadExtrasAction(auth()->user()))->execute());

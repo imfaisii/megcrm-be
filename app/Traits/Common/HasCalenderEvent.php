@@ -19,11 +19,6 @@ trait HasCalenderEvent
         return $this->hasMany(CalenderEvent::class, 'user_id');
     }
 
-    /**
-     * Get all of latest event added
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
-     */
     public function latestEvent(): MorphOne
     {
         return $this->morphOne(CalenderEvent::class, 'eventable')->latestOfMany();

@@ -3,12 +3,13 @@
 namespace App\Models;
 
 use App\Actions\Common\BaseModel;
+use App\Traits\Common\HasCalenderEvent;
 use App\Traits\Common\HasRecordCreator;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class SurveyBooking extends BaseModel
 {
-    use HasFactory, HasRecordCreator;
+    use HasFactory, HasRecordCreator, HasCalenderEvent;
 
     protected $fillable = [
         'surveyor_id',

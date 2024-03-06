@@ -25,7 +25,9 @@ class ListCalenderEventAction extends AbstractListAction
     {
         $query = parent::getQuery();
 
-        if (! is_null($this->user)) {
+        $query->with('eventable');
+
+        if (!is_null($this->user)) {
             $query->currentUser();
         }
 
