@@ -73,7 +73,11 @@ class LeadController extends Controller
 
     public function updateStatus(Lead $lead, UpdateLeadStatusRequest $request)
     {
-        if (str_contains(str()->lower($request->status), 'survey booked')) {
+        if (
+            str_contains(str()->lower($request->status), 'survey booked')
+            ||
+            str_contains(str()->lower($request->status), 'survey done')
+        ) {
             $lead->update([
                 'is_marked_as_job' => true,
             ]);
