@@ -20,7 +20,7 @@ class Team extends BaseModel
 
     public function users(): BelongsToMany
     {
-        return $this->belongsToMany(User::class, TeamUsers::class, 'team_id', 'user_id')->withPivot(['role_id'])->withTimestamps();
+        return $this->belongsToMany(User::class, TeamUsers::class, 'team_id', 'user_id')->withPivot(['role_id'])->as('team_detail')->withTimestamps();
     }
 
 

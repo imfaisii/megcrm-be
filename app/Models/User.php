@@ -192,7 +192,7 @@ class User extends BaseModel implements AuthenticatableContract, HasMedia
 
     public function teams(): BelongsToMany
     {
-        return $this->belongsToMany(Team::class, TeamUsers::class, 'user_id', 'team_id')->withPivot(['role_id'])->withTimestamps();
+        return $this->belongsToMany(Team::class, TeamUsers::class, 'user_id', 'team_id')->withPivot(['role_id'])->as('team_detail')->withTimestamps();
     }
 
 }
