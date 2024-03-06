@@ -36,7 +36,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
 
 Route::get('/getSuggestions', function (GetAddressRequest $request) {
     $getAddress = new GetAddress();
@@ -53,6 +53,8 @@ Route::get('/getSuggestions', function (GetAddressRequest $request) {
         ]);
     }
 });
+
+Route::get('/leads-links/council-tax/{postcode}', [LeadController::class, 'getCouncilTaxLink'])->name('leads.council-tax-link');
 
 Route::group(['middleware' => 'auth:sanctum'], function () {
 

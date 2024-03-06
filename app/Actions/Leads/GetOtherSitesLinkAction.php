@@ -2,18 +2,21 @@
 
 namespace App\Actions\Leads;
 
-use App\Models\User;
-use Http;
+use Goutte\Client;
 
 class GetOtherSitesLinkAction
 {
-    public function __construct(protected ?User $user = null)
-    {
-        $this->user = $user ?? auth()->user();
-    }
-
     public function councilTax(string $postCode)
     {
-        // Http::get()
+        $client = new Client();
+
+        $crawler = $client->request('GET', 'https://www.tax.service.gov.uk/check-council-tax-band/search');
+
+        $form = $crawler->selectButton('Search')->form();
+        $form['postcode'] = $postCode;
+
+        $crawler = $client->submit($form);
+
+        return $crawler->getUri();
     }
 }

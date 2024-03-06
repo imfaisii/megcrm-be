@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Leads;
 use App\Actions\Leads\DeleteLeadAction;
 use App\Actions\Leads\FindLeadAction;
 use App\Actions\Leads\GetLeadExtrasAction;
+use App\Actions\Leads\GetOtherSitesLinkAction;
 use App\Actions\Leads\ListLeadAction;
 use App\Actions\Leads\StoreLeadAction;
 use App\Actions\Leads\UpdateLeadAction;
@@ -18,6 +19,7 @@ use App\Http\Requests\Leads\UpdateLeadStatusRequest;
 use App\Http\Requests\Leads\UploadLeadFileRequest;
 use App\Models\Lead;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 
 use function App\Helpers\null_resource;
@@ -66,9 +68,9 @@ class LeadController extends Controller
         return null_resource();
     }
 
-    public function getCouncilTaxLink(): JsonResponse
+    public function getCouncilTaxLink(string $postCode): RedirectResponse
     {
-        return $this->success(data: (new GetLeadExtrasAction(auth()->user()))->execute());
+        return redirect((new GetOtherSitesLinkAction())->councilTax($postCode));
     }
 
     public function getExtras(): JsonResponse
