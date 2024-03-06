@@ -14,6 +14,7 @@ class SurveyBooking extends BaseModel
     protected $fillable = [
         'surveyor_id',
         'survey_at',
+        'survey_to',
         'preffered_time',
         'comments',
         'lead_id',

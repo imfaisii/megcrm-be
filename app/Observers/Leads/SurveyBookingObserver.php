@@ -16,6 +16,7 @@ class SurveyBookingObserver
         if (
             array_key_exists('surveyor_id', $updatedProperties)
             || array_key_exists('survey_at', $updatedProperties)
+            || array_key_exists('survey_to', $updatedProperties)
             || array_key_exists('preffered_time', $updatedProperties)
         ) {
 
@@ -29,8 +30,9 @@ class SurveyBookingObserver
                 $surveyBooking->load(['surveyor', 'lead']);
                 $prefferedTime = ($surveyBooking->preffered_time ? "( {$surveyBooking->preffered_time} )" : '');
 
-                $title = SurveyBookedEnum::TITLE.' with '.$surveyBooking->lead->full_name.$prefferedTime;
+                $title = SurveyBookedEnum::TITLE . ' with ' . $surveyBooking->lead->full_name . $prefferedTime;
                 $surveyAt = $surveyBooking->survey_at;
+                $surveyTo = $surveyBooking->survey_to;
 
                 CalenderEvent::updateOrCreate(
                     [
@@ -42,12 +44,12 @@ class SurveyBookingObserver
                     [
                         'title' => $title,
                         'start_date' => Carbon::parse($surveyAt),
-                        'end_date' => Carbon::parse($surveyAt)->addHours(),
+                        'end_date' => Carbon::parse($surveyTo),
                         'all_day' => SurveyBookedEnum::IS_FULL_DAY,
-                        'description' => SurveyBookedEnum::getDescriptionMessage($surveyBooking->lead->full_name, $surveyBooking->lead->address, Carbon::parse($surveyAt)->format(config('app.date_time_format'))),
+                        'description' => SurveyBookedEnum::getDescriptionMessage($surveyBooking->lead->full_name, $surveyBooking->lead->address, Carbon::parse($surveyAt)->format(config('app.date_time_format')) . ' - ' . Carbon::parse($surveyTo)->format(config('app.date_time_format'))),
                         'notification' => [
                             'title' => SurveyBookedEnum::NOTIFICATION_TITLE,
-                            'subtitle' => SurveyBookedEnum::getDescriptionMessage($surveyBooking->lead->full_name, $surveyBooking->lead->address, Carbon::parse($surveyAt)->format(config('app.date_time_format'))),
+                            'subtitle' => SurveyBookedEnum::getDescriptionMessage($surveyBooking->lead->full_name, $surveyBooking->lead->address, Carbon::parse($surveyAt)->format(config('app.date_time_format')) . ' - ' . Carbon::parse($surveyTo)->format(config('app.date_time_format'))),
                             'module' => 'surveys',
                             'link' => '/calendar',
                         ],
