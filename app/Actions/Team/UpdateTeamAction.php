@@ -5,6 +5,7 @@ namespace App\Actions\Team;
 use App\Actions\Common\AbstractUpdateAction;
 use App\Enums\Permissions\RoleEnum;
 use App\Models\Team;
+use App\Models\User;
 use DB;
 use Exception;
 use Illuminate\Support\Arr;
@@ -36,7 +37,10 @@ class UpdateTeamAction extends AbstractUpdateAction
                 ]; // setting the admin
                 $team->users()->sync($preapredArray);
 
-
+                //Assign roles to that given users
+                $team->users->each(function (User $user) use ($data) {
+                    $data['admin_id'] == $user->id ? $user->assignRole(RoleEnum::TEAM_ADMIN) : $user->assignRole(RoleEnum::TEAM_MEMBER);
+                });
                 return $team;
             });
         } catch (Exception $e) {

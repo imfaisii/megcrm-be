@@ -40,6 +40,11 @@ class StoreTeamAction extends AbstractCreateAction
                     ]
                 ]);    // setting the admin for the team
 
+                //Assign roles to that given users
+                $team->users->each(function (User $user) use ($data) {
+                    $data['admin_id'] == $user->id ? $user->assignRole(RoleEnum::TEAM_ADMIN) : $user->assignRole(RoleEnum::TEAM_MEMBER);
+                });
+
             }
             return $team;
         });
