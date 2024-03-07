@@ -1,6 +1,9 @@
 <?php
 
+use App\Classes\LeadResponseClass;
 use App\Http\Controllers\AirCallWebhookController;
+use App\Imports\Leads\LeadsImport;
+use App\Models\Team;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -18,10 +21,7 @@ use Illuminate\Support\Facades\Route;
 */
 if (app()->isLocal()) {
     Route::get('test', function (Request $request) {
-        // $user = User::find(1);
-        //  echo $user->roles()->where('name','super_admin')->pluck('id');
-        // echo "welcome to test";
-
+         Team::with(['users.pivot.role'])->first();
     });
 
 }

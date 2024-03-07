@@ -16,10 +16,10 @@ class ListTeamAction extends AbstractListAction
     public function newQuery(): Builder
     {
         $query = parent::newQuery();
-
-        $query->whereHas('roles', function ($query) {
-            $query->where('name', RoleEnum::SURVEYOR);
-        });
+        $query->with([
+            'users.pivot.role',
+            'admin'
+        ])->withCount(['users as members_count']);
 
         return $query;
     }

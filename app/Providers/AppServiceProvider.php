@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Classes\AirCall;
 use App\Classes\LeadResponseClass;
+use App\Imports\Leads\LeadsImport;
 use Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider;
 use Illuminate\Support\ServiceProvider;
 
@@ -20,6 +21,10 @@ class AppServiceProvider extends ServiceProvider
 
         app()->bind(LeadResponseClass::class, function ($app, $parameters) {
             return new LeadResponseClass();
+        });
+
+        app()->bind(LeadsImport::class, function ($app, $parameters) {
+            return new LeadsImport(new LeadResponseClass());
         });
 
         $this->app->bind(AirCall::class, function () {

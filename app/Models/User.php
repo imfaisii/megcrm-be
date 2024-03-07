@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
+use AjCastro\EagerLoadPivotRelations\EagerLoadPivotTrait;
 use App\Actions\Common\BaseModel;
 use App\Filters\Users\FilterByGivenRole;
 use App\Filters\Users\FilterByRole;
@@ -44,6 +45,7 @@ class User extends BaseModel implements AuthenticatableContract, HasMedia
         LaravelPermissionToVueJS,
         Notifiable;
 
+    use EagerLoadPivotTrait;        // the table second table we are  in many-to-many relationships has this trait, like if we are geting user with roles then roles would have this trait
     protected $guard_name = 'sanctum';
 
     protected $fillable = [
@@ -192,7 +194,7 @@ class User extends BaseModel implements AuthenticatableContract, HasMedia
 
     public function teams(): BelongsToMany
     {
-        return $this->belongsToMany(Team::class, TeamUsers::class, 'user_id', 'team_id')->withPivot(['role_id'])->as('team_detail')->withTimestamps();
+        return $this->belongsToMany(Team::class, TeamUsers::class, 'user_id', 'team_id')->withPivot(['role_id'])->withTimestamps();
     }
 
 }
