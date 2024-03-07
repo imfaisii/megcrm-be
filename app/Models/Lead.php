@@ -45,7 +45,7 @@ class Lead extends BaseModel
         'created_by_id',
     ];
 
-    protected $appends = ['full_name', 'status_details'];
+    protected $appends = ['full_name', 'status_details', 'phone_number_formatted'];
 
     protected $casts = [
         'is_marked_as_job' => 'boolean',
@@ -88,9 +88,19 @@ class Lead extends BaseModel
         return $query;
     }
 
+    protected function getPhoneNumberFormattedAttribute()
+    {
+        if (!$this->phone_no && str()->length($this->phone_no) < 10) {
+            return null;
+        }
+
+        return '+44' . substr($this->phone_no, -10);
+    }
+
+
     protected function getFullNameAttribute()
     {
-        return $this->first_name.' '.$this->middle_name.' '.$this->last_name;
+        return str_replace("  ", " ", $this->first_name . ' ' . $this->middle_name . ' ' . $this->last_name);
     }
 
     protected function getStatusesAttribute()
@@ -107,7 +117,7 @@ class Lead extends BaseModel
     {
         $latest = $this->latestStatus();
 
-        if (! is_null($latest)) {
+        if (!is_null($latest)) {
             $latest['lead_status_model'] = LeadStatus::where('name', $latest->name)->first();
         } else {
             $latest['lead_status_model'] = null;
@@ -132,21 +142,21 @@ class Lead extends BaseModel
 
         return Activity::forSubject($this)
             ->orWhere(function ($query) use ($lead) {
-                if (! is_null($lead->leadCustomerAdditionalDetail)) {
+                if (!is_null($lead->leadCustomerAdditionalDetail)) {
                     $query
                         ->where('subject_type', (new LeadCustomerAdditionalDetail())->getMorphClass())
                         ->where('subject_id', $lead->leadCustomerAdditionalDetail->id);
                 }
             })
             ->orWhere(function ($query) use ($lead) {
-                if (! is_null($lead->surveyBooking)) {
+                if (!is_null($lead->surveyBooking)) {
                     $query
                         ->where('subject_type', (new SurveyBooking())->getMorphClass())
                         ->where('subject_id', $lead->surveyBooking->id);
                 }
             })
             ->orWhere(function ($query) use ($lead) {
-                if (! is_null($lead->leadAdditional)) {
+                if (!is_null($lead->leadAdditional)) {
                     $query
                         ->where('subject_type', (new LeadAdditional())->getMorphClass())
                         ->where('subject_id', $lead->leadAdditional->id);

@@ -12,12 +12,18 @@ class LeadGenerator extends BaseModel
 
     protected $fillable = [
         'name',
+        'sender_id',
         'mask_name',
     ];
 
     protected array $allowedIncludes = [
         'createdBy',
     ];
+
+    public function leads()
+    {
+        return $this->hasMany(Lead::class);
+    }
 
     public function leadGeneratorAssignments()
     {

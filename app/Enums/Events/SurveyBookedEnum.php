@@ -31,4 +31,9 @@ final class SurveyBookedEnum extends Enum
     {
         return "You have a survey booked with {$name} at { $time }.";
     }
+
+    public static function getTwilioMessage(string $name, string $time, string $from): string
+    {
+        return "Hi {$name},\n\nDomestic energy survey has been booked at {$time}.\n\nRegards,\n{$from}.";
+    }
 }

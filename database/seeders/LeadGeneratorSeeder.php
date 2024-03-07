@@ -17,6 +17,7 @@ class LeadGeneratorSeeder extends Seeder
         for ($i = 1; $i < $this->total; $i++) {
             LeadGenerator::firstOrCreate([
                 'name' => "Lead Generator $i",
+                'sender_id' => "Lead Gen $i"
             ]);
         }
     }
