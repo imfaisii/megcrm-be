@@ -18,6 +18,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Support\Str;
 use Illuminate\Support\Arr;
@@ -44,7 +45,6 @@ class User extends BaseModel implements AuthenticatableContract, HasMedia
         InteractsWithMedia,
         LaravelPermissionToVueJS,
         Notifiable;
-
     use EagerLoadPivotTrait;        // the table second table we are  in many-to-many relationships has this trait, like if we are geting user with roles then roles would have this trait
     protected $guard_name = 'sanctum';
 
@@ -192,9 +192,18 @@ class User extends BaseModel implements AuthenticatableContract, HasMedia
         return data_get(config('logging.channels.slack-crm'), 'url');
     }
 
+    /* which team i am part of */
     public function teams(): BelongsToMany
     {
         return $this->belongsToMany(Team::class, TeamUsers::class, 'user_id', 'team_id')->withPivot(['role_id'])->withTimestamps();
     }
+
+    /* which team i am admin of */
+    public function myteams(): HasMany
+    {
+        return $this->hasMany(Team::class, 'admin_id');
+    }
+
+
 
 }

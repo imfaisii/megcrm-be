@@ -15,14 +15,17 @@ class ListLeadAction extends AbstractListAction
     public function getQuery(): SpatieQueryBuilder|Builder
     {
         $query = parent::getQuery();
-        $user = auth()->user();
-
-        if (
-            !$user->hasRole(RoleEnum::SUPER_ADMIN)
-            && $user->hasRole(RoleEnum::SURVEYOR)
-        ) {
-            $query->byRole(RoleEnum::SURVEYOR);
+        if (method_exists($this->modelClass, 'scopeTeamScope')) {
+            $query->TeamScope();
         }
+        // $user = auth()->user();
+
+        // if (
+        //     !$user->hasRole(RoleEnum::SUPER_ADMIN)
+        //     && $user->hasRole(RoleEnum::SURVEYOR)
+        // ) {
+        //     $query->byRole(RoleEnum::SURVEYOR);
+        // }
 
         return $query;
     }

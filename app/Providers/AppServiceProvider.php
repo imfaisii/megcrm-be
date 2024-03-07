@@ -4,6 +4,8 @@ namespace App\Providers;
 
 use App\Classes\AirCall;
 use App\Classes\LeadResponseClass;
+use App\Enums\Permissions\RoleEnum;
+use Illuminate\Support\Facades\Gate;
 use App\Imports\Leads\LeadsImport;
 use Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider;
 use Illuminate\Support\ServiceProvider;
@@ -29,6 +31,10 @@ class AppServiceProvider extends ServiceProvider
 
         $this->app->bind(AirCall::class, function () {
             return new AirCall();
+        });
+
+        Gate::before(function ($user, $ability) {
+            return $user->hasRole(RoleEnum::SUPER_ADMIN) ? true : null;
         });
     }
 

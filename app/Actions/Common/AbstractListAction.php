@@ -33,6 +33,7 @@ abstract class AbstractListAction
 
     public function listOrPaginate(): Paginator|Collection
     {
+
         if (request()->has('all')) {
             return $this->get();
         } else {

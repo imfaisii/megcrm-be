@@ -13,6 +13,8 @@ use Spatie\QueryBuilder\AllowedFilter;
 
 class Team extends BaseModel
 {
+    use EagerLoadPivotTrait;        // the table second table we are  in many-to-many relationships has this trait, like if we are geting user with roles then roles would have this trait
+
     use HasFactory;
 
     protected $fillable = [

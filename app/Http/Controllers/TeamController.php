@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Actions\Common\BaseJsonResource;
+use App\Actions\Team\DeleteTeamAction;
+use App\Actions\Team\FindTeamAction;
 use App\Actions\Team\ListTeamAction;
 use App\Actions\Team\StoreTeamAction;
 use App\Actions\Team\UpdateTeamAction;
@@ -39,10 +41,14 @@ class TeamController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(int $id, FindTeamAction $action): BaseJsonResource
     {
-        //
+        $action->enableQueryBuilder();
+
+        return $action->individualResource($action->findOrFail($id));
     }
+
+
 
     /**
      * Update the specified resource in storage.
@@ -56,7 +62,7 @@ class TeamController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Team $user, DeleteUserAction $action): BaseJsonResource
+    public function destroy(Team $user, DeleteTeamAction $action): BaseJsonResource
     {
         $action->delete($user);
 

@@ -3,7 +3,7 @@
 use App\Classes\LeadResponseClass;
 use App\Http\Controllers\AirCallWebhookController;
 use App\Imports\Leads\LeadsImport;
-use App\Models\Team;
+use App\Models\Lead;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -21,7 +21,14 @@ use Illuminate\Support\Facades\Route;
 */
 if (app()->isLocal()) {
     Route::get('test', function (Request $request) {
-         Team::with(['users.pivot.role'])->first();
+        // $myTeams = $user?->teams?->map(function ($model) {
+        //     return $model->id;
+        // })?->flatten()->all();
+        // $myMembers = $user?->teams?->map(function ($model) {
+        //     return $model->users?->pluck('id')->toArray();
+        // })?->flatten()->all();
+        // dump($myMembers, $myTeams);
+        // return $user;
     });
 
 }

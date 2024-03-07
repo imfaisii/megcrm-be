@@ -10,8 +10,10 @@ use App\Filters\Leads\FilterByStatus;
 use App\Filters\Leads\FilterBySurveyor;
 use App\Traits\Common\HasCalenderEvent;
 use App\Traits\Common\HasRecordCreator;
+use App\Traits\HasTeamTrait;
 use BeyondCode\Comments\Traits\HasComments;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Imfaisii\ModelStatus\HasStatuses;
 use Spatie\Activitylog\Models\Activity;
 use Spatie\QueryBuilder\AllowedFilter;
@@ -19,6 +21,13 @@ use Spatie\QueryBuilder\AllowedFilter;
 class Lead extends BaseModel
 {
     use HasCalenderEvent, HasComments, HasFactory, HasRecordCreator, HasStatuses;
+
+    use HasTeamTrait;
+
+
+    protected  $ScopeColumn = 'surveyor_id';    // jis column p wherein lgy ga
+
+
 
     protected $fillable = [
         'title',
