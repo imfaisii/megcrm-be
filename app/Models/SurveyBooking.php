@@ -17,7 +17,12 @@ class SurveyBooking extends BaseModel
         'survey_to',
         'preffered_time',
         'comments',
+        'is_sms_alert_enabled',
         'lead_id',
+    ];
+
+    protected $casts = [
+        'is_sms_alert_enabled' => 'boolean'
     ];
 
     public function user()

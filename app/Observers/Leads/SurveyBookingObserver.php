@@ -5,10 +5,11 @@ namespace App\Observers\Leads;
 use App\Enums\Events\SurveyBookedEnum;
 use App\Models\CalenderEvent;
 use App\Models\SurveyBooking;
+use App\Notifications\Sms\SurveyBookedNotification;
 use App\Services\TwilioService;
 use Carbon\Carbon;
 use Exception;
-use Log;
+use Illuminate\Support\Facades\Log;
 
 class SurveyBookingObserver
 {
@@ -21,6 +22,7 @@ class SurveyBookingObserver
             || array_key_exists('survey_at', $updatedProperties)
             || array_key_exists('survey_to', $updatedProperties)
             || array_key_exists('preffered_time', $updatedProperties)
+            || array_key_exists('is_sms_alert_enabled', $updatedProperties)
         ) {
 
             if ($surveyBooking->survey_at && $surveyBooking->surveyor_id) {
@@ -35,23 +37,22 @@ class SurveyBookingObserver
 
                 $surveyBooking->lead->setStatus('Survey Booked', 'Assigned by system.');
 
-                // try {
+                try {
+                    if ($surveyBooking->is_sms_alert_enabled) {
 
-                //     $twilioService = new TwilioService($surveyBooking->lead->leadGenerator->sender_id);
+                        $surveyBooking
+                            ->lead
+                            ->notify(new SurveyBookedNotification());
+                    }
+                } catch (Exception $e) {
+                    Log::driver('slack_exceptions')->error(json_encode([
+                        'message' => $e->getMessage(),
+                        'host' => request()->getHttpHost(),
+                        'ip' => request()->ip(),
+                    ]));
 
-                //     if ($surveyBooking->lead->phone_number_formatted) {
-                //         $twilioService->message(
-                //             $surveyBooking->lead->phone_number_formatted,
-                //             SurveyBookedEnum::getTwilioMessage(
-                //                 $surveyBooking->lead->full_name,
-                //                 $time,
-                //                 $surveyBooking->lead->leadGenerator->name
-                //             ),
-                //         );
-                //     }
-                // } catch (Exception $e) {
-                //     Log::channel('twilio')->error("Failed to send message on: {$surveyBooking->lead->phone_number_formatted}. {$e->getMessage()}");
-                // }
+                    Log::channel('twilio')->error("Failed to send message on: {$surveyBooking->lead->phone_number_formatted}. {$e->getMessage()}");
+                }
 
                 $surveyBooking->lead->update([
                     'is_marked_as_job' => true,

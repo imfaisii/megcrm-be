@@ -13,6 +13,7 @@ class LeadGenerator extends BaseModel
     protected $fillable = [
         'name',
         'sender_id',
+        'email',
         'mask_name',
     ];
 

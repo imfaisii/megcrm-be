@@ -12,13 +12,14 @@ use App\Traits\Common\HasCalenderEvent;
 use App\Traits\Common\HasRecordCreator;
 use BeyondCode\Comments\Traits\HasComments;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Notifications\Notifiable;
 use Imfaisii\ModelStatus\HasStatuses;
 use Spatie\Activitylog\Models\Activity;
 use Spatie\QueryBuilder\AllowedFilter;
 
 class Lead extends BaseModel
 {
-    use HasCalenderEvent, HasComments, HasFactory, HasRecordCreator, HasStatuses;
+    use HasCalenderEvent, HasComments, HasFactory, HasRecordCreator, HasStatuses, Notifiable;
 
     protected $fillable = [
         'title',
@@ -65,11 +66,17 @@ class Lead extends BaseModel
         'callCenters.callCenterStatus',
         'comments.commentator',
         'leadAdditional',
+        'notifications'
     ];
 
     protected array $discardedFieldsInFilter = [
         'post_code',
     ];
+
+    protected function routeNotificationForTwilio()
+    {
+        return $this->phone_number_formatted;
+    }
 
     public function scopeByRole($query, string $role, ?User $user = null)
     {
@@ -90,7 +97,7 @@ class Lead extends BaseModel
 
     protected function getPhoneNumberFormattedAttribute()
     {
-        if (!$this->phone_no && str()->length($this->phone_no) < 10) {
+        if (!$this->phone_no || str()->length($this->phone_no) < 10) {
             return null;
         }
 

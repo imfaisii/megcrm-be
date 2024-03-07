@@ -3,6 +3,8 @@
 namespace App\Services;
 
 use Aloha\Twilio\Twilio;
+use Exception;
+use Illuminate\Support\Facades\Log;
 
 class TwilioService
 {
@@ -18,6 +20,12 @@ class TwilioService
 
     public function message(string $to, string $message)
     {
-        return $this->client->message($to, $message);
+        try {
+            $this->client->message($to, $message);
+        } catch (Exception $e) {
+            Log::channel('twilio')->error("Failed to send sms to: $to, exception: " . $e->getMessage());
+
+            throw new Exception($e->getMessage());
+        }
     }
 }

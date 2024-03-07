@@ -32,8 +32,18 @@ final class SurveyBookedEnum extends Enum
         return "You have a survey booked with {$name} at { $time }.";
     }
 
-    public static function getTwilioMessage(string $name, string $time, string $from): string
+    public static function getTwilioMessage($lead, string $time, string $from): string
     {
-        return "Hi {$name},\n\nDomestic energy survey has been booked at {$time}.\n\nRegards,\n{$from}.";
+        $message = "Hi {$lead['full_name']},\n\nDomestic Energy Survey has been booked for:\n\n{$lead['plain_address']} at\n\n{$time}.\n\n";
+
+        if (isset($lead['lead_generator']['email'])) {
+            $message .= "If you have any query, please contact us via email at: {$lead['lead_generator']['email']} or ";
+        } else {
+            $message .= "If you have any query, ";
+        }
+
+        $message .= "call us at: +412312312321\n\nRegards,\n{$from}";
+
+        return $message;
     }
 }

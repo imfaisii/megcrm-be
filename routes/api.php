@@ -20,6 +20,7 @@ use App\Http\Controllers\MeasureController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\Permissions\PermissionController;
 use App\Http\Controllers\Permissions\RoleController;
+use App\Http\Controllers\SmsController;
 use App\Http\Controllers\SurveyorController;
 use App\Http\Controllers\Users\UserController;
 use App\Http\Requests\Leads\GetAddressRequest;
@@ -76,6 +77,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::post('/leads/{lead}/comments', [LeadController::class, 'storeComments'])->name('leads.add-comments');
     Route::get('/leads-datamatch-download', [LeadController::class, 'downloadDatamatch'])->name('leads.download-datamatch');
     Route::get('/lead-jobs', [LeadJobController::class, 'index'])->name('lead-jobs.index');
+    Route::post('/send-sms/{lead}', [SmsController::class, 'sendSmsToLead'])->name('leads.send-sms-to-lead');
     Route::apiResource('/lead-statuses', StatusController::class);
     Route::apiResource('/lead-generator-assignments', LeadGeneratorAssignmentController::class);
 
