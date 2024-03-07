@@ -17,10 +17,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        if ($this->app->isLocal()) {
-            $this->app->register(IdeHelperServiceProvider::class);
-        }
-
         app()->bind(LeadResponseClass::class, function ($app, $parameters) {
             return new LeadResponseClass();
         });

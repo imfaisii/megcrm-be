@@ -10,6 +10,8 @@ class StoreLeadGeneratorRequest extends BaseFormRequest
     {
         return [
             'name' => ['required', 'string', 'max:255'],
+            'sender_id' => ['required', 'string', 'max:11'],
+            'email' => ['nullable', 'email'],
         ];
     }
 }

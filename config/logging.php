@@ -116,7 +116,7 @@ return [
             'handler_with' => [
                 'host' => env('PAPERTRAIL_URL'),
                 'port' => env('PAPERTRAIL_PORT'),
-                'connectionString' => 'tls://'.env('PAPERTRAIL_URL').':'.env('PAPERTRAIL_PORT'),
+                'connectionString' => 'tls://' . env('PAPERTRAIL_URL') . ':' . env('PAPERTRAIL_PORT'),
             ],
             'processors' => [PsrLogMessageProcessor::class],
         ],
@@ -163,6 +163,12 @@ return [
         'addresso_api' => [
             'driver' => 'daily',
             'path' => storage_path('logs/addresso.log'),
+            'level' => 'debug',
+        ],
+
+        'twilio' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/twilio.log'),
             'level' => 'debug',
         ],
     ],
