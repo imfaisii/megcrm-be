@@ -17213,6 +17213,9 @@ namespace App\Fascade {
                     /**
          * Get details of the users associated with the account or if the user id is provided then get the specific user's details
          *
+         * @param array $queryParams
+         * @param string|null $userId
+         * @return \Illuminate\Http\JsonResponse 
          * @static 
          */        public static function getUsers($queryParams = [], $userId = null)
         {
@@ -17222,6 +17225,8 @@ namespace App\Fascade {
                     /**
          * Get details of the users availablities
          *
+         * @param array $queryParams
+         * @return \Illuminate\Http\JsonResponse 
          * @static 
          */        public static function getAvailablities($queryParams = [])
         {
@@ -17231,6 +17236,8 @@ namespace App\Fascade {
                     /**
          * Get details of the users availablities
          *
+         * @param string $userId
+         * @return \Illuminate\Http\JsonResponse 
          * @static 
          */        public static function getAvailablityOfAUser($userId)
         {
@@ -17240,6 +17247,9 @@ namespace App\Fascade {
                     /**
          * Start An Outbound Call
          *
+         * @param string $userId
+         * @param array $queryParams
+         * @return \Illuminate\Http\JsonResponse 
          * @static 
          */        public static function startACall($userId, $queryParams = [])
         {
@@ -17249,6 +17259,9 @@ namespace App\Fascade {
                     /**
          * set the dial number on the app for user
          *
+         * @param string $userId
+         * @param array $queryParams
+         * @return \Illuminate\Http\JsonResponse 
          * @static 
          */        public static function dialCall($userId, $queryParams = [])
         {
@@ -17268,6 +17281,8 @@ namespace App\Fascade {
          * Get details of calls associated with the company account
          *
          * @description By default it goes one month back
+         * @param array $queryParams
+         * @return \Illuminate\Http\JsonResponse 
          * @static 
          */        public static function getCalls($queryParams = [])
         {
@@ -17287,6 +17302,7 @@ namespace App\Fascade {
          * Search A Call
          *
          * @param string $callId
+         * @return \Illuminate\Http\JsonResponse 
          * @static 
          */        public static function searchCall($queryParams, $defaultParams = [])
         {
@@ -17296,6 +17312,8 @@ namespace App\Fascade {
                     /**
          * Get details of calls
          *
+         * @param string $callId
+         * @return \Illuminate\Http\JsonResponse 
          * @static 
          */        public static function getDetailOfACall($callId)
         {
@@ -17305,6 +17323,8 @@ namespace App\Fascade {
                     /**
          * Add comment to a Call
          *
+         * @param string $callId
+         * @return \Illuminate\Http\JsonResponse 
          * @static 
          */        public static function addCommentToCall($callId, $queryParams = [])
         {
@@ -17314,6 +17334,8 @@ namespace App\Fascade {
                     /**
          * Pause Recording of a Call
          *
+         * @param string $callId
+         * @return \Illuminate\Http\JsonResponse 
          * @static 
          */        public static function pauseRecordingOfCall($callId)
         {
@@ -17323,6 +17345,8 @@ namespace App\Fascade {
                     /**
          * Resume Recording of a Call
          *
+         * @param string $callId
+         * @return \Illuminate\Http\JsonResponse 
          * @static 
          */        public static function resumeRecordingOfCall($callId)
         {
@@ -17332,6 +17356,8 @@ namespace App\Fascade {
                     /**
          * Resume Recording of a Call
          *
+         * @param string $callId
+         * @return \Illuminate\Http\JsonResponse 
          * @static 
          */        public static function deleteVoiceMailOfACall($callId)
         {
@@ -17341,6 +17367,8 @@ namespace App\Fascade {
                     /**
          * Get Contact Shared By Company
          *
+         * @param array $queryParams
+         * @return \Illuminate\Http\JsonResponse 
          * @static 
          */        public static function getContactOfComapny($queryParams = [])
         {
@@ -17350,6 +17378,8 @@ namespace App\Fascade {
                     /**
          * Get Details of a Contact
          *
+         * @param string $contactId
+         * @return \Illuminate\Http\JsonResponse 
          * @static 
          */        public static function getDetailsOfAContact($contactId)
         {

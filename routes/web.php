@@ -2,14 +2,8 @@
 
 use Aloha\Twilio\Twilio;
 use App\Http\Controllers\AirCallWebhookController;
-use App\Models\Lead;
-use Illuminate\Http\Request;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
-
-use function App\Helpers\formatCommas;
-use function App\Helpers\removeSpace;
 
 /*
 |--------------------------------------------------------------------------

@@ -54,7 +54,7 @@ class SurveyBookingObserver
             }
         }
     }
-
+ 
     public function created(SurveyBooking $surveyBooking): void
     {
         $this->notification($surveyBooking);
