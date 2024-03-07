@@ -2,6 +2,7 @@
 
 namespace App\Filters\Leads;
 
+use App\Classes\LeadResponseClass;
 use App\Imports\Leads\LeadsImport;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Str;
@@ -17,22 +18,22 @@ class FilterByName implements Filter
     public function __invoke(Builder $query, $value, string $property): void
     {
         if (Str::contains($value, ' ')) {
-            $name = (new LeadsImport)->split_name($value);
+            $name = (new LeadsImport(new LeadResponseClass()))->split_name($value);
 
             $query->where(function ($query) use ($name) {
-                $query->where('first_name', 'like', '%'.$name['first_name'].'%')
+                $query->where('first_name', 'like', '%' . $name['first_name'] . '%')
                     ->when($name['middle_name'] !== '', function ($query) use ($name) {
-                        $query->orWhere('middle_name', 'like', '%'.$name['middle_name'].'%');
+                        $query->orWhere('middle_name', 'like', '%' . $name['middle_name'] . '%');
                     })
                     ->when($name['last_name'] !== '', function ($query) use ($name) {
-                        $query->orWhere('last_name', 'like', '%'.$name['last_name'].'%');
+                        $query->orWhere('last_name', 'like', '%' . $name['last_name'] . '%');
                     });
             });
         } else {
             $query->where(function ($query) use ($value) {
-                $query->where('first_name', 'like', '%'.$value.'%')
-                    ->orWhere('middle_name', 'like', '%'.$value.'%')
-                    ->orWhere('last_name', 'like', '%'.$value.'%');
+                $query->where('first_name', 'like', '%' . $value . '%')
+                    ->orWhere('middle_name', 'like', '%' . $value . '%')
+                    ->orWhere('last_name', 'like', '%' . $value . '%');
             });
         }
     }
