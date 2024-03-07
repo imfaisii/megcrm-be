@@ -19,7 +19,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('test', function () {
     // throw new Exception('test');
 
-    $client = new Twilio('ACbfa4b3596a5e63cca3e4dece3dd6a7a7', '99583c420d5aed08d3dc10b57e480c69', '447480822674');
+    $client = new Twilio(config('services.twilio.sid'), config('services.twilio.token'), 'ECO Free Boiler Scheme');
 
     $client->message('447943111370', "Test Message from Umer Riaz");
 });
