@@ -12,6 +12,7 @@ class LeadGeneratorAssignmentController extends Controller
     public function store(StoreLeadGeneratorAssignmentRequest $request, StoreLeadGeneratorAssignmentAction $action)
     {
         $action->create($request->validated());
+
         return null_resource();
     }
 }

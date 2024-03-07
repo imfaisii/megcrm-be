@@ -20,7 +20,7 @@ class UserAdditional extends BaseModel
         'account_number',
         'nin',
         'bank_id',
-        'user_id'
+        'user_id',
     ];
 
     protected array $allowedIncludes = [

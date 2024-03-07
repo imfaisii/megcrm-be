@@ -16,7 +16,7 @@ class LeadAdditional extends BaseModel
         'proof_of_address_confirmed',
         'epr_report_confirmed',
         'created_by_id',
-        'lead_id'
+        'lead_id',
     ];
 
     protected $casts = [

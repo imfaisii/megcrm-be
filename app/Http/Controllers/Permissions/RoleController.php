@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Permissions;
 
-use App\Actions\Permissions\DeleteRoleAction;
 use App\Actions\Permissions\ListRoleAction;
 use App\Actions\Permissions\StoreRoleAction;
 use App\Actions\Permissions\UpdateRoleAction;
@@ -21,18 +20,21 @@ class RoleController extends Controller
     public function index(ListRoleAction $action)
     {
         $action->enableQueryBuilder();
+
         return $action->resourceCollection($action->listOrPaginate());
     }
 
     public function store(StoreRoleRequest $request, StoreRoleAction $action): JsonResource
     {
         $role = $action->create($request->validated());
+
         return $action->individualResource($role->load('permissions'));
     }
 
     public function update(Role $role, UpdateRoleAction $action, UpdateRoleRequest $request): JsonResource
     {
         $role = $action->update($role, $request->validated());
+
         return $action->individualResource($role->load('permissions'));
     }
 
@@ -43,6 +45,7 @@ class RoleController extends Controller
         }
 
         DB::table('roles')->where('id', $role->id)->delete();
+
         return null_resource();
     }
 }

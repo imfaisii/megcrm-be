@@ -37,8 +37,8 @@ class EventServiceProvider extends ServiceProvider
 
         // calendar events
         NewCalendarEvent::class => [
-            SendCalendarEventListener::class
-        ]
+            SendCalendarEventListener::class,
+        ],
     ];
 
     /**

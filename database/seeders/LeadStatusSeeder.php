@@ -53,9 +53,8 @@ class LeadStatusSeeder extends Seeder
         'Survey Pending',
         'Cancelled Survey',
         'Cancelled Job',
-        'Condensing Boiler'
+        'Condensing Boiler',
     ];
-
 
     /**
      * Run the database seeds.
@@ -66,7 +65,7 @@ class LeadStatusSeeder extends Seeder
             LeadStatus::firstOrCreate([
                 'name' => $leadStatus,
                 'color' => $key < count($this->entries) / 2 ? 'warning' : 'success',
-                'created_by_id' => 1
+                'created_by_id' => 1,
             ]);
         }
     }

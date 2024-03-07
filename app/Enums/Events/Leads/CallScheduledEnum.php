@@ -10,11 +10,14 @@ use BenSampo\Enum\Enum;
 final class CallScheduledEnum extends Enum
 {
     const CALENDAR_NAME = 'Scheduled Calls';
+
     const TITLE = 'Call Scheduled';
+
     const NOTIFICATION_TITLE = 'New call scheduled.';
+
     const IS_FULL_DAY = false;
 
-    public static function getCalendarId(): int|null
+    public static function getCalendarId(): ?int
     {
         return Calendar::where('name', self::CALENDAR_NAME)->first()?->id;
     }

@@ -7,7 +7,6 @@ use Illuminate\Database\Seeder;
 
 class CallCenterStatusSeeder extends Seeder
 {
-
     protected $entries = [
         'Condensing Boiler',
         'No Answers',
@@ -43,7 +42,7 @@ class CallCenterStatusSeeder extends Seeder
         'Combi Condensing',
         'Cancelled',
         'Sent Text|Email',
-        'Waiting documents'
+        'Waiting documents',
     ];
 
     /**
@@ -54,7 +53,7 @@ class CallCenterStatusSeeder extends Seeder
         foreach ($this->entries as $key => $callCenterStatus) {
             CallCenterStatus::firstOrCreate([
                 'name' => $callCenterStatus,
-                'created_by_id' => 1
+                'created_by_id' => 1,
             ]);
         }
     }

@@ -14,12 +14,14 @@ class CalenderEventsController extends Controller
         $action
             ->setUser(auth()->user())
             ->enableQueryBuilder();
+
         return $action->resourceCollection($action->listOrPaginate());
     }
 
     public function store(Request $request, StoreCalenderEventAction $action)
     {
         $lead = $action->create($request->validated());
+
         return $action->individualResource($lead);
     }
 }

@@ -11,7 +11,7 @@ class UploadDocumentsToCollectionRequest extends BaseFormRequest
         return [
             'file' => ['required', 'file'],
             'collection' => ['required', 'string'],
-            'expiry' => ['nullable', 'date']
+            'expiry' => ['nullable', 'date'],
         ];
     }
 }

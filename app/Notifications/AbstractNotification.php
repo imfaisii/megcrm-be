@@ -31,16 +31,12 @@ abstract class AbstractNotification extends Notification implements ShouldQueue
 
     /**
      * Get the mail representation of the notification.
-     *
-     * @param object $notifiable
-     * @return MailMessage
      */
     abstract public function toMail(object $notifiable): MailMessage;
 
     /**
      * Get the array representation of the notification.
      *
-     * @param object $notifiable
      * @return array<string, mixed>
      */
     public function toArray(object $notifiable): array

@@ -14,22 +14,22 @@ class InstallationBookingObserver
         $updatedProperties = $installationBooking->getDirty();
 
         if (
-            key_exists('installer_id', $updatedProperties)
-            || key_exists('installation_at', $updatedProperties)
+            array_key_exists('installer_id', $updatedProperties)
+            || array_key_exists('installation_at', $updatedProperties)
         ) {
 
             if ($installationBooking->installation_at && $installationBooking->installer_id) {
 
                 $installationBooking->lead->setStatus('Installation Booked', 'Assigned by system.');
 
-                $installationBooking->load(['installer', 'lead']);
+                $installationBooking->load(['user', 'lead']);
 
-                $title = InstallationBookedEnum::TITLE . ' with ' . $installationBooking->lead->full_name;
+                $title = InstallationBookedEnum::TITLE.' with '.$installationBooking->lead->full_name;
                 $installationAt = $installationBooking->installation_at;
 
                 CalenderEvent::updateOrCreate(
                     [
-                        'user_id' => $installationBooking->installer->id,
+                        'user_id' => $installationBooking->user->id,
                         'calendar_id' => InstallationBookedEnum::getCalendarId(),
                         'eventable_type' => InstallationBooking::class,
                         'eventable_id' => $installationBooking->id,
@@ -44,9 +44,9 @@ class InstallationBookingObserver
                             'title' => InstallationBookedEnum::NOTIFICATION_TITLE,
                             'subtitle' => InstallationBookedEnum::getDescriptionMessage($installationBooking->lead->full_name, $installationBooking->lead->address, Carbon::parse($installationAt)->format(config('app.date_time_format'))),
                             'module' => 'installations',
-                            'link' => '/calendar'
+                            'link' => '/calendar',
                         ],
-                        'created_by_id' => auth()->user()
+                        'created_by_id' => auth()->user(),
                     ]
                 );
             }

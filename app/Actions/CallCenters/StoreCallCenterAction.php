@@ -34,17 +34,17 @@ class StoreCallCenterAction extends AbstractCreateAction
                         'title' => CallScheduledEnum::NOTIFICATION_TITLE,
                         'subtitle' => CallScheduledEnum::getNotificationSubtitle($lead->full_name, Carbon::parse($data['call_scheduled_time'])->format(config('app.date_time_format'))),
                         'module' => 'leads',
-                        'link' => '/calendar'
+                        'link' => '/calendar',
                     ],
                     'user_id' => $user->id,
-                    'created_by_id' => $user->id
+                    'created_by_id' => $user->id,
                 ]);
 
                 activity()
                     ->causedBy(auth()->user())
                     ->performedOn($lead)
                     ->event('updated')
-                    ->log("A call is scheduled {$lead->full_name} at " . Carbon::parse($data['call_scheduled_time'])->format(config('app.date_time_format')));
+                    ->log("A call is scheduled {$lead->full_name} at ".Carbon::parse($data['call_scheduled_time'])->format(config('app.date_time_format')));
             }
         }
 

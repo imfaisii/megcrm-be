@@ -7,10 +7,10 @@ use Illuminate\Support\Facades\Facade;
 
 class AirCallFascade extends Facade
 {
-  protected static function getFacadeAccessor()
-  {
-    self::clearResolvedInstance(AirCall::class);
+    protected static function getFacadeAccessor()
+    {
+        self::clearResolvedInstance(AirCall::class);
 
-    return AirCall::class;
-  }
+        return AirCall::class;
+    }
 }

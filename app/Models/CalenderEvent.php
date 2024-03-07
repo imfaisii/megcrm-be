@@ -40,9 +40,8 @@ class CalenderEvent extends BaseModel
 
     protected array $allowedIncludes = [
         'calendar',
-        'createdBy'
+        'createdBy',
     ];
-
 
     protected function getExtraFilters(): array
     {

@@ -1,0 +1,13 @@
+{
+  "scripts": {
+    "husky:install": "pnpm exec husky init",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "**/*.php": "./vendor/bin/pint --preset laravel"
+  },
+  "devDependencies": {
+    "husky": "^9.0.11",
+    "lint-staged": "^15.2.2"
+  }
+}

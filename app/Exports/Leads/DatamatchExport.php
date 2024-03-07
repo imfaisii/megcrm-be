@@ -10,7 +10,7 @@ use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
 use Maatwebsite\Excel\Excel;
 
-class DatamatchExport implements FromCollection, WithHeadings, WithMapping, Responsable
+class DatamatchExport implements FromCollection, Responsable, WithHeadings, WithMapping
 {
     use Exportable;
 
@@ -18,7 +18,7 @@ class DatamatchExport implements FromCollection, WithHeadings, WithMapping, Resp
      * It's required to define the fileName within
      * the export class when making use of Responsable.
      */
-    private $fileName = "datamatch-required.xlsx";
+    private $fileName = 'datamatch-required.xlsx';
 
     /**
      * Optional Writer Type
@@ -40,12 +40,12 @@ class DatamatchExport implements FromCollection, WithHeadings, WithMapping, Resp
             'Last Name',
             'Date of birth',
             'Post Code',
-            'Address'
+            'Address',
         ];
     }
 
     /**
-     * @param Lead $lead
+     * @param  Lead  $lead
      */
     public function map($lead): array
     {

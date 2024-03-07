@@ -45,9 +45,8 @@ class GetLeadExtrasAction
             'Cancelled Job',
             'Cancelled Lead',
             'Cancelled (old)',
-            'Condensing Boiler'
+            'Condensing Boiler',
         ];
-
 
         if ($this->user->hasRole(RoleEnum::SURVEYOR)) {
             $leadGenerators = LeadGenerator::whereIn(

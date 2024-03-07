@@ -36,7 +36,7 @@ class StoreUserAction extends AbstractCreateAction
             if ($relation === 'installation_types') {
                 if (Arr::has($data, 'installation_types') && count($data['installation_types']) > 0) {
                     $user->installationTypes()->syncWithPivotValues($data['installation_types'], [
-                        'created_by_id' => auth()->id()
+                        'created_by_id' => auth()->id(),
                     ]);
                 }
             } else {
@@ -44,7 +44,7 @@ class StoreUserAction extends AbstractCreateAction
 
                 if (array_key_exists($snakeCase, $data)) {
                     $user->$relation()->updateOrCreate([
-                        'user_id' => $user->id
+                        'user_id' => $user->id,
                     ], $data[$snakeCase]);
                 }
             }
@@ -52,11 +52,11 @@ class StoreUserAction extends AbstractCreateAction
 
         if (Arr::get($data, 'additional.bank', null)) {
             $bank = Bank::firstOrCreate([
-                'name' => Str::upper($data['additional']['bank'])
+                'name' => Str::upper($data['additional']['bank']),
             ]);
 
             $user->additional->update([
-                'bank_id' => $bank->id
+                'bank_id' => $bank->id,
             ]);
         }
     }

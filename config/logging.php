@@ -81,9 +81,10 @@ return [
             'level' => env('LOG_LEVEL', 'critical'),
             'replace_placeholders' => true,
         ],
+
         'slack-crm' => [
             'driver' => 'slack',
-            'url' => "https://hooks.slack.com/services/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",
+            'url' => 'https://hooks.slack.com/services/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',
             'username' => 'MEG CRM',
             'emoji' => ':boom:',
             'level' => env('LOG_LEVEL', 'info'),
@@ -92,11 +93,20 @@ return [
 
         'slack-meg-crm-webhook' => [
             'driver' => 'slack',
-            'url' => "https://hooks.slack.com/services/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",
+            'url' => 'https://hooks.slack.com/services/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',
             'username' => 'AirCall Webhook',
             'emoji' => ':boom:',
             'level' => env('LOG_LEVEL', 'info'),
             'replace_placeholders' => true,
+        ],
+
+        'slack_exceptions' => [
+            'driver' => 'slack',
+            'url' => env('LOG_SLACK_EXCEPTIONS_CHANNEL_URL'),
+            'username' => 'Slack Application Logs',
+            'emoji' => ':boom:',
+            'level' => env('LOG_LEVEL', 'critical'),
+            'ignore_exceptions' => false,
         ],
 
         'papertrail' => [
@@ -106,7 +116,7 @@ return [
             'handler_with' => [
                 'host' => env('PAPERTRAIL_URL'),
                 'port' => env('PAPERTRAIL_PORT'),
-                'connectionString' => 'tls://' . env('PAPERTRAIL_URL') . ':' . env('PAPERTRAIL_PORT'),
+                'connectionString' => 'tls://'.env('PAPERTRAIL_URL').':'.env('PAPERTRAIL_PORT'),
             ],
             'processors' => [PsrLogMessageProcessor::class],
         ],

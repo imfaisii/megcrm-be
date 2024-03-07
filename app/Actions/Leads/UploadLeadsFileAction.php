@@ -15,6 +15,7 @@ use Maatwebsite\Excel\HeadingRowImport;
 class UploadLeadsFileAction
 {
     use Jsonify;
+
     public function __construct(public LeadResponseClass $leadResponseClass)
     {
     }
@@ -23,36 +24,37 @@ class UploadLeadsFileAction
     {
         try {
             $exampleHeader = [
-                "website",
-                "name",
-                "email",
-                "contact_number",
-                "dob",
-                "postcode",
-                "address",
-                "what_is_your_home_ownership_status",
-                "benefits",
+                'website',
+                'name',
+                'email',
+                'contact_number',
+                'dob',
+                'postcode',
+                'address',
+                'what_is_your_home_ownership_status',
+                'benefits',
             ];
 
             $headings = (new HeadingRowImport())->toArray($request->file('file'))[0][0];
 
             if (count($headings) < 8) {
-                throw new Exception('File has invalid header. (less headings)' . json_encode($headings));
+                throw new Exception('File has invalid header. (less headings)'.json_encode($headings));
             }
 
             $headings = array_map('strtolower', $headings);
 
             $headerDifference = array_diff($exampleHeader, $headings);
 
-            throw_if(filled($headerDifference), new Exception('File has invalid header ( not matched ).' . json_encode($headerDifference)));
+            throw_if(filled($headerDifference), new Exception('File has invalid header ( not matched ).'.json_encode($headerDifference)));
 
             Excel::import(new LeadsImport($this->leadResponseClass), $request->file('file'));
 
             return $this->success('File was uploaded successfully.', data: $this->leadResponseClass);
         } catch (Exception $e) {
             Log::channel('lead_file_read_log')->info(
-                "Error importing exception " . $e->getMessage()
+                'Error importing exception '.$e->getMessage()
             );
+
             return $this->error($e->getMessage());
         }
     }

@@ -13,7 +13,6 @@ class UpdateUserAction extends AbstractUpdateAction
     public function update(mixed $user, array $data): mixed
     {
         /** @var User $user */
-
         $data = array_filter($data, function ($value) {
             // Remove null values and empty strings
             return $value !== null && $value !== '';
@@ -42,7 +41,7 @@ class UpdateUserAction extends AbstractUpdateAction
                 ->performedOn($user)
                 ->withProperties([
                     'attributes' => $attributes,
-                    'old' => $old
+                    'old' => $old,
                 ])
                 ->event('updated')
                 ->log('This record has been updated');

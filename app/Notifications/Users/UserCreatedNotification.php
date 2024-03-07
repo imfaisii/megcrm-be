@@ -18,9 +18,9 @@ class UserCreatedNotification extends AbstractNotification
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-            ->line("Email: " . $this->data['email'])
-            ->line("Password: " . $this->data['password'])
-            ->action('Go to website', config('app.frontend_url') . '/login')
+            ->line('Email: '.$this->data['email'])
+            ->line('Password: '.$this->data['password'])
+            ->action('Go to website', config('app.frontend_url').'/login')
             ->line('Thank you for using our application!');
     }
 }

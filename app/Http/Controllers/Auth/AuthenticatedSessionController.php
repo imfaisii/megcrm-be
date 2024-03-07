@@ -23,7 +23,7 @@ class AuthenticatedSessionController extends Controller
             return $this->success(data: [
                 'access_token' => $token,
                 'token_type' => 'Bearer',
-                'user' => $request->user()
+                'user' => $request->user(),
             ]);
         }
 

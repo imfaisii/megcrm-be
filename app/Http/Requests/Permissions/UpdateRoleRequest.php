@@ -3,7 +3,6 @@
 namespace App\Http\Requests\Permissions;
 
 use App\Actions\Common\BaseFormRequest;
-use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
 class UpdateRoleRequest extends BaseFormRequest
@@ -15,7 +14,7 @@ class UpdateRoleRequest extends BaseFormRequest
                 'required',
                 Rule::unique('roles')->ignore($this->route('role')),
             ],
-            'permissions' => ['array']
+            'permissions' => ['array'],
         ];
     }
 }

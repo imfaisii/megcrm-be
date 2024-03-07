@@ -14,12 +14,14 @@ class SurveyorController extends Controller
     public function index(ListSurveyorAction $action): ResourceCollection
     {
         $action->enableQueryBuilder();
+
         return $action->resourceCollection($action->listOrPaginate());
     }
 
     public function store(StoreSurveyorRequest $request, StoreSurveyorAction $action)
     {
         $action->create($request->validated());
+
         return null_resource();
     }
 }

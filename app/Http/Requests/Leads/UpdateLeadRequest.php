@@ -3,7 +3,6 @@
 namespace App\Http\Requests\Leads;
 
 use App\Actions\Common\BaseFormRequest;
-use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateLeadRequest extends BaseFormRequest
 {

@@ -3,8 +3,8 @@
 namespace App\Http\Requests\Users;
 
 use App\Actions\Common\BaseFormRequest;
-use Illuminate\Validation\Rules\Password;
 use App\Models\User;
+use Illuminate\Validation\Rules\Password;
 
 class StoreUserRequest extends BaseFormRequest
 {
@@ -12,7 +12,7 @@ class StoreUserRequest extends BaseFormRequest
     {
         return [
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:' . User::class],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Password::defaults()],
             'roles' => ['array'],
             'is_active' => ['boolean'],
@@ -26,7 +26,7 @@ class StoreUserRequest extends BaseFormRequest
             'additional.account_number' => ['nullable', 'string'],
             'additional.visa_expiry' => ['nullable', 'date'],
             'additional.bank' => ['nullable', 'string'],
-            'installation_types' => ['nullable', 'array']
+            'installation_types' => ['nullable', 'array'],
         ];
     }
 }

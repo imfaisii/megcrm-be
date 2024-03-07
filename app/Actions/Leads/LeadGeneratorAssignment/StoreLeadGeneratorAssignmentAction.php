@@ -15,7 +15,7 @@ class StoreLeadGeneratorAssignmentAction extends AbstractCreateAction
         $user = User::where('id', $data['user_id'])->first();
 
         $user->leadGeneratorAssignments()->syncWithPivotValues($data['lead_generator_assignments'], [
-            'created_by_id' => auth()->id()
+            'created_by_id' => auth()->id(),
         ]);
 
         return LeadGeneratorAssignment::make();

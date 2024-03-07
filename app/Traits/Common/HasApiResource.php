@@ -3,15 +3,12 @@
 namespace App\Traits\Common;
 
 use App\Actions\Common\BaseJsonResource;
-use App\Actions\Common\BaseModel;
 use App\Actions\Common\BaseResourceCollection;
 use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 use Illuminate\Support\Collection as IlluminateSupportCollection;
-use Spatie\Permission\Models\Permission;
-use Spatie\Permission\Models\Role;
 
 /**
  * @property string $modelClass
@@ -19,8 +16,7 @@ use Spatie\Permission\Models\Role;
 trait HasApiResource
 {
     /**
-     * @param Collection|Paginator $collection
-     * @return ResourceCollection
+     * @param  Collection|Paginator  $collection
      */
     public function resourceCollection(Paginator|Collection|IlluminateSupportCollection $collection): ResourceCollection
     {
@@ -28,8 +24,7 @@ trait HasApiResource
     }
 
     /**
-     * @param \App\Actions\Common\BaseModel $model
-     * @return JsonResource
+     * @param  \App\Actions\Common\BaseModel  $model
      */
     public function individualResource($model): JsonResource
     {

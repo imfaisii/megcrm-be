@@ -9,7 +9,7 @@ class StoreLeadCommentsRequest extends BaseFormRequest
     public function rules(): array
     {
         return [
-            'comments' => ['required', 'string']
+            'comments' => ['required', 'string'],
         ];
     }
 }

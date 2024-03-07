@@ -18,15 +18,15 @@ class GetAddress
         $token = config('app.get_address_api');
 
         try {
-            $postCode = Str::upper(str_replace(" ", "", preg_replace('/[^a-zA-Z0-9\s]/', ' ', $postCode)));
+            $postCode = Str::upper(str_replace(' ', '', preg_replace('/[^a-zA-Z0-9\s]/', ' ', $postCode)));
 
             $request = Http::withHeaders([
-                'X-Api-Key' => $token
+                'X-Api-Key' => $token,
             ])
                 ->get("https://api.addressian.co.uk/v2/autocomplete/$postCode");
 
             $postCodeRequest = Http::withHeaders([
-                'X-Api-Key' => $token
+                'X-Api-Key' => $token,
             ])
                 ->get("https://api.addressian.co.uk/v1/postcode/$postCode");
 
@@ -36,14 +36,14 @@ class GetAddress
                 $result = [];
 
                 foreach ($addresses as $key => $address) {
-                    $transformedAddress = implode(" ", $address['address']);
+                    $transformedAddress = implode(' ', $address['address']);
 
                     if (isset($address['city'])) {
-                        $transformedAddress .= ', ' . $address['city'];
+                        $transformedAddress .= ', '.$address['city'];
                     }
 
                     if (isset($address['county'])) {
-                        $transformedAddress .= ', ' . $address['county'];
+                        $transformedAddress .= ', '.$address['county'];
                     }
 
                     if ($postCodeResponseCountry) {
@@ -52,8 +52,8 @@ class GetAddress
 
                     $result[] = [
                         'address' => $transformedAddress,
-                        'post_code' => str_replace(" ", "", $address['postcode']),
-                        'plain_address' => implode(" ", $address['address']),
+                        'post_code' => str_replace(' ', '', $address['postcode']),
+                        'plain_address' => implode(' ', $address['address']),
                         'city' => $address['city'] ?? null,
                         'county' => $address['county'] ?? null,
                         'country' => $postCodeResponseCountry ?? null,
@@ -74,30 +74,30 @@ class GetAddress
         $token = config('app.get_address_api');
 
         try {
-            $postCode = Str::upper(str_replace(" ", "", preg_replace('/[^a-zA-Z0-9\s]/', ' ', $postCode)));
-            $query = str_replace("\n", " ", str_replace("  ", " ", preg_replace('/[^a-zA-Z0-9\s]/', ' ', $query)));
+            $postCode = Str::upper(str_replace(' ', '', preg_replace('/[^a-zA-Z0-9\s]/', ' ', $postCode)));
+            $query = str_replace("\n", ' ', str_replace('  ', ' ', preg_replace('/[^a-zA-Z0-9\s]/', ' ', $query)));
 
             $request = Http::withHeaders([
-                'X-Api-Key' => $token
+                'X-Api-Key' => $token,
             ])
                 ->get("https://api.addressian.co.uk/v2/autocomplete/$postCode $query");
 
             $postCodeRequest = Http::withHeaders([
-                'X-Api-Key' => $token
+                'X-Api-Key' => $token,
             ])
                 ->get("https://api.addressian.co.uk/v1/postcode/$postCode");
 
             if ($request->successful()) {
                 $postCodeResponseCountry = Arr::get($postCodeRequest->json(), 'country', null);
                 $address = $request->json()[0];
-                $transformedAddress = implode(" ", $address['address']);
+                $transformedAddress = implode(' ', $address['address']);
 
                 if (isset($address['city'])) {
-                    $transformedAddress .= ', ' . $address['city'];
+                    $transformedAddress .= ', '.$address['city'];
                 }
 
                 if (isset($address['county'])) {
-                    $transformedAddress .= ', ' . $address['county'];
+                    $transformedAddress .= ', '.$address['county'];
                 }
 
                 if ($postCodeResponseCountry) {
@@ -105,12 +105,12 @@ class GetAddress
                 }
 
                 return [
-                    str_replace(" ", "", $address['postcode']),
+                    str_replace(' ', '', $address['postcode']),
                     $transformedAddress,
-                    implode(" ", $address['address']),
+                    implode(' ', $address['address']),
                     $address['city'] ?? null,
                     $address['county'] ?? null,
-                    $postCodeResponseCountry ?? null
+                    $postCodeResponseCountry ?? null,
                 ];
             } else {
                 Log::channel('addresso_api')

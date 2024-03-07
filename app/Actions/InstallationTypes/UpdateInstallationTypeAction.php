@@ -12,7 +12,6 @@ class UpdateInstallationTypeAction extends AbstractUpdateAction
     public function update(mixed $installationType, array $data): mixed
     {
         /** @var InstallationType $installationType */
-
         $installationType = parent::update($installationType, $data);
 
         // update or create relations

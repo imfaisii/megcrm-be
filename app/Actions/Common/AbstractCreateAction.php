@@ -10,11 +10,10 @@ use Spatie\Permission\Models\Role;
 
 abstract class AbstractCreateAction
 {
-    use NewQueryTrait;
     use HasApiResource;
+    use NewQueryTrait;
 
     /**
-     * @param array $data
      * @return BaseModel|Collection
      */
     public function create(array $data): BaseModel|Collection|Role|Permission
