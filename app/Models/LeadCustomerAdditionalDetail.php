@@ -19,7 +19,7 @@ class LeadCustomerAdditionalDetail extends BaseModel
         'is_datamatch_required',
         'datamatch_progress',
         'datamatch_progress_date',
-        'lead_id'
+        'lead_id',
     ];
 
     protected $casts = [

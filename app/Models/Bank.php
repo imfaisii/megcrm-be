@@ -12,6 +12,6 @@ class Bank extends BaseModel
 
     protected $fillable = [
         'name',
-        'created_by_id'
+        'created_by_id',
     ];
 }

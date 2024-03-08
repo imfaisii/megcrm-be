@@ -37,4 +37,10 @@ return [
         'refresh_token' => env('DROPBOX_REFRESH_TOKEN'),
     ],
 
+    'twilio' => [
+        'sid' => env('TWILIO_ACCOUNT_SID'),
+        'token' => env('TWILIO_AUTH_TOKEN'),
+        'number' => '447480822674',
+        'default_sms_reference_number' => '+447700615215'
+    ]
 ];

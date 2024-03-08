@@ -12,12 +12,14 @@ class CalendarController extends Controller
     public function index(ListCalendarAction $action): ResourceCollection
     {
         $action->enableQueryBuilder();
+
         return $action->resourceCollection($action->listOrPaginate());
     }
 
     public function store(Request $request, StoreCalendarAction $action)
     {
         $lead = $action->create($request->validated());
+
         return $action->individualResource($lead);
     }
 }

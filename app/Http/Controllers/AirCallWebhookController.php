@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Log;
 class AirCallWebhookController extends Controller
 {
     use Jsonify;
+
     /**
      * Handle the incoming request.
      */
@@ -36,16 +37,17 @@ class AirCallWebhookController extends Controller
                     $action->LogEvent($data);
                     break;
                 default:
-                    throw new Exception("no such resource");
+                    throw new Exception('no such resource');
                     break;
             }
         } catch (Exception $e) {
             Log::driver('slack-meg-crm-webhook')->error($e->getMessage(), $request->all());  // Log event to Slack
+
             return $this->error($e->getMessage());
         }
-        return $this->success();  // it must return 200 status code to air call server else the webhook will be disbaled by the air call 
-    }
 
+        return $this->success();  // it must return 200 status code to air call server else the webhook will be disbaled by the air call
+    }
 
     public function verifyToken(array $data): bool
     {

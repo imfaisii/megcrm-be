@@ -18,7 +18,7 @@ class StoreLeadRequest extends BaseFormRequest
             'dob' => ['required', 'string'],
             'address' => ['required', 'array'],
             'address.address' => ['required', 'string', 'unique:leads,address'],
-            'address.*' => ['string'],
+            'address.*' => ['nullable', 'string'],
             'post_code' => ['required', 'string'],
             'measures' => ['array'],
             'has_second_receipent' => ['required', 'boolean'],
@@ -30,7 +30,7 @@ class StoreLeadRequest extends BaseFormRequest
             'lead_generator_id' => ['nullable', 'exists:lead_generators,id'],
             'lead_source_id' => ['nullable', 'exists:lead_sources,id'],
             'benefits' => ['nullable', 'array'],
-            'notes' => ['nullable']
+            'notes' => ['nullable'],
         ];
     }
 }

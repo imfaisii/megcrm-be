@@ -18,24 +18,28 @@ class FuelTypeController extends Controller
     public function index(ListFuelTypeAction $action): ResourceCollection
     {
         $action->enableQueryBuilder();
+
         return $action->resourceCollection($action->listOrPaginate());
     }
 
     public function store(StoreFuelTypeRequest $request, StoreFuelTypeAction $action)
     {
         $action->create($request->validated());
+
         return null_resource();
     }
 
-    public function update(FuelType $fuelType, StoreFuelTypeRequest $request,  UpdateFuelTypeAction $action): BaseJsonResource
+    public function update(FuelType $fuelType, StoreFuelTypeRequest $request, UpdateFuelTypeAction $action): BaseJsonResource
     {
         $action->enableQueryBuilder();
+
         return $action->individualResource($action->update($fuelType, $request->validated()));
     }
 
     public function destroy(FuelType $FuelType, DeleteFuelTypeAction $action): BaseJsonResource
     {
         $action->delete($FuelType);
+
         return null_resource();
     }
 }

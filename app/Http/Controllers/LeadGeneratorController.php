@@ -18,24 +18,28 @@ class LeadGeneratorController extends Controller
     public function index(ListLeadGeneratorAction $action): ResourceCollection
     {
         $action->enableQueryBuilder();
+
         return $action->resourceCollection($action->listOrPaginate());
     }
 
     public function store(StoreLeadGeneratorRequest $request, StoreLeadGeneratorAction $action)
     {
         $action->create($request->validated());
+
         return null_resource();
     }
 
-    public function update(LeadGenerator $leadGenerator, StoreLeadGeneratorRequest $request,  UpdateLeadGeneratorAction $action): BaseJsonResource
+    public function update(LeadGenerator $leadGenerator, StoreLeadGeneratorRequest $request, UpdateLeadGeneratorAction $action): BaseJsonResource
     {
         $action->enableQueryBuilder();
+
         return $action->individualResource($action->update($leadGenerator, $request->validated()));
     }
 
     public function destroy(LeadGenerator $LeadGenerator, DeleteLeadGeneratorAction $action): BaseJsonResource
     {
         $action->delete($LeadGenerator);
+
         return null_resource();
     }
 }

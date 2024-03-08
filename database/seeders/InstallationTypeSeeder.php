@@ -20,7 +20,7 @@ class InstallationTypeSeeder extends Seeder
         foreach ($this->entries as $key => $entry) {
             InstallationType::firstOrCreate([
                 'name' => $entry,
-                'created_by_id' => 1
+                'created_by_id' => 1,
             ]);
         }
     }

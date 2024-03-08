@@ -12,7 +12,7 @@ class UserHasInstallationType extends BaseModel
 
     protected $fillable = [
         'user_id',
-        'installation_engineer_type_id'
+        'installation_engineer_type_id',
     ];
 
     public function user()

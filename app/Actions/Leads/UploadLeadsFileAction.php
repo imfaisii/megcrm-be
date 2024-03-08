@@ -17,6 +17,7 @@ use Maatwebsite\Excel\HeadingRowImport;
 class UploadLeadsFileAction
 {
     use Jsonify;
+
     public function __construct(public LeadResponseClass $leadResponseClass)
     {
     }
@@ -25,15 +26,15 @@ class UploadLeadsFileAction
     {
         try {
             $exampleHeader = [
-                "website",
-                "name",
-                "email",
-                "contact_number",
-                "dob",
-                "postcode",
-                "address",
-                "what_is_your_home_ownership_status",
-                "benefits",
+                'website',
+                'name',
+                'email',
+                'contact_number',
+                'dob',
+                'postcode',
+                'address',
+                'what_is_your_home_ownership_status',
+                'benefits',
             ];
             $this->CheckFileHeaderErrors($exampleHeader, $request->file('file'));
             Excel::import(new LeadsImport($this->leadResponseClass), $request->file('file'));
@@ -41,8 +42,9 @@ class UploadLeadsFileAction
             return $this->success('File was uploaded successfully.', data: $this->leadResponseClass);
         } catch (Exception $e) {
             Log::channel('lead_file_read_log')->info(
-                "Error importing exception " . $e->getMessage()
+                'Error importing exception '.$e->getMessage()
             );
+
             return $this->error($e->getMessage());
         }
     }

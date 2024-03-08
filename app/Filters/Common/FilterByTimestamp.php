@@ -9,21 +9,18 @@ use Spatie\QueryBuilder\Filters\Filter;
 class FilterByTimestamp implements Filter
 {
     /**
-     * @param Builder $query
-     * @param $value
-     * @param string $property
-     * @return void
      * @phpcs:disable Generic.CodeAnalysis.UnusedFunctionParameter
+     *
      * @phpcs:disable VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable
      */
     public function __invoke(Builder $query, $value, string $property): void
     {
-        if (!Str::contains($value, " to")) {
+        if (! Str::contains($value, ' to')) {
             $query->whereDate('created_at', $value);
         } else {
-            [$from, $to] = explode(" to", $value);
+            [$from, $to] = explode(' to', $value);
 
-            $query->whereBetween('created_at', [$from . ' 00:00:00', $to . ' 23:59:59']);
+            $query->whereBetween('created_at', [$from.' 00:00:00', $to.' 23:59:59']);
         }
     }
 }

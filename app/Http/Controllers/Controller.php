@@ -10,9 +10,9 @@ use Spatie\Permission\Models\Permission;
 
 class Controller extends BaseController
 {
-    use AuthorizesRequests, ValidatesRequests, Jsonify;
+    use AuthorizesRequests, Jsonify, ValidatesRequests;
 
-    public function __construct(string $moduleName = null)
+    public function __construct(?string $moduleName = null)
     {
         if ($moduleName) {
             $modulePermissions = Permission::where('parent_module_name', $moduleName)
@@ -20,7 +20,7 @@ class Controller extends BaseController
                 ->toArray();
 
             foreach ($modulePermissions as $key => $permission) {
-                $this->middleware("can:{$permission['name']}", ['only' => [$permission["method"]]]);
+                $this->middleware("can:{$permission['name']}", ['only' => [$permission['method']]]);
             }
         }
     }

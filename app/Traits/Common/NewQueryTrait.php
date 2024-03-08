@@ -26,6 +26,7 @@ trait NewQueryTrait
     public function enableQueryBuilder(): static
     {
         $this->queryBuilderEnabled = true;
+
         return $this;
     }
 
@@ -35,34 +36,28 @@ trait NewQueryTrait
     public function disableQueryBuilder(): static
     {
         $this->queryBuilderEnabled = false;
+
         return $this;
     }
 
-    /**
-     * @return bool
-     */
     public function isQueryBuilderEnabled(): bool
     {
         return $this->queryBuilderEnabled;
     }
 
-    /**
-     * @return Builder
-     */
     public function newQuery(): Builder
     {
         return $this->modelClass::query();
     }
 
     /**
-     * @return SpatieQueryBuilder|Builder
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */
     public function getQuery(): SpatieQueryBuilder|Builder
     {
         $query = $this->query ?? $this->newQuery();
-        if (!$this->queryBuilderEnabled || $query instanceof QueryBuilder) {
+        if (! $this->queryBuilderEnabled || $query instanceof QueryBuilder) {
             return $query;
         }
 
@@ -70,8 +65,6 @@ trait NewQueryTrait
     }
 
     /**
-     * @param Builder $query
-     * @return SpatieQueryBuilder
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */
@@ -104,17 +97,11 @@ trait NewQueryTrait
         return $query;
     }
 
-    /**
-     * @return array
-     */
     protected function getExtraIncludes(): array
     {
         return [];
     }
 
-    /**
-     * @return array
-     */
     protected function getExtraFilters(): array
     {
         return [
@@ -122,29 +109,23 @@ trait NewQueryTrait
         ];
     }
 
-    /**
-     * @return array
-     */
     protected function getExtraSorts(): array
     {
         return [];
     }
 
-    /**
-     * @return array
-     */
     protected function getExtraAppends(): array
     {
         return [];
     }
 
     /**
-     * @param  Builder  $query
      * @return NewQueryTrait
      */
     public function setQuery(Builder $query): static
     {
         $this->query = $query;
+
         return $this;
     }
 }

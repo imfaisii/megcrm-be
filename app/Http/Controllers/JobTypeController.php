@@ -18,24 +18,28 @@ class JobTypeController extends Controller
     public function index(ListJobTypeAction $action): ResourceCollection
     {
         $action->enableQueryBuilder();
+
         return $action->resourceCollection($action->listOrPaginate());
     }
 
     public function store(StoreJobTypeRequest $request, StoreJobTypeAction $action)
     {
         $action->create($request->validated());
+
         return null_resource();
     }
 
-    public function update(JobType $jobType, StoreJobTypeRequest $request,  UpdateJobTypeAction $action): BaseJsonResource
+    public function update(JobType $jobType, StoreJobTypeRequest $request, UpdateJobTypeAction $action): BaseJsonResource
     {
         $action->enableQueryBuilder();
+
         return $action->individualResource($action->update($jobType, $request->validated()));
     }
 
     public function destroy(JobType $JobType, DeleteJobTypeAction $action): BaseJsonResource
     {
         $action->delete($JobType);
+
         return null_resource();
     }
 }

@@ -4,8 +4,8 @@ namespace App\Helpers;
 
 use App\Actions\Common\BaseJsonResource;
 use Illuminate\Http\Resources\Json\JsonResource;
-use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Str;
 
 function null_resource(): JsonResource
 {
@@ -19,19 +19,19 @@ function get_permissions_by_routes(): array
 
     foreach ($routeCollection as $item) {
         $name = $item->action;
-        if (!empty($name['as'])) {
+        if (! empty($name['as'])) {
             $permission = $name['as'];
             $permission = trim(strtolower($permission));
             $ignoreRoutesStartingWith = 'sanctum|livewire|ignition|notifications|log-viewer|debugbar';
-            $permissionFilled = trim(str_replace("user management ", "", $permission));
+            $permissionFilled = trim(str_replace('user management ', '', $permission));
             if (preg_match("($ignoreRoutesStartingWith)", $permission) === 0 && filled($permissionFilled)) {
                 $method = $item->getActionMethod();
 
                 if (strpos($method, '\\') !== false) {
-                    $method = "__invoke";
+                    $method = '__invoke';
                 }
 
-                $permissions[] = ["name" => $permissionFilled, "method" => $method];
+                $permissions[] = ['name' => $permissionFilled, 'method' => $method];
             }
         }
     }
@@ -48,12 +48,12 @@ function get_modules_array_from_permissions(array $permissions): array
         $module = $parts[0];
         $submodule = implode('.', array_slice($parts, 1));
 
-        if (!isset($modules[$module])) {
+        if (! isset($modules[$module])) {
             $modules[$module] = [];
         }
 
-        if (!in_array($submodule, $modules[$module])) {
-            array_push($modules[$module], ["name" => $submodule, "method" => $item['method']]);
+        if (! in_array($submodule, $modules[$module])) {
+            array_push($modules[$module], ['name' => $submodule, 'method' => $item['method']]);
         }
     }
 
@@ -81,7 +81,7 @@ function get_all_includes_in_camel_case(): array
     return collect(get_all_includes())
         ->map(function (string $includes) {
             return collect(explode('.', $includes))
-                ->map(fn(string $include) => Str::camel($include))
+                ->map(fn (string $include) => Str::camel($include))
                 ->join('.');
         })
         ->toArray();
@@ -117,8 +117,8 @@ function get_permissions_as_modules_array(mixed $permissions): array
 
     foreach ($modulesThroughSubmodules as $key => $submodule) {
         try {
-            $moduleName = explode(".", $submodule)[0];
-            if (!in_array($moduleName, $modules)) {
+            $moduleName = explode('.', $submodule)[0];
+            if (! in_array($moduleName, $modules)) {
                 $modules[] = $moduleName;
             }
         } catch (\Exception $e) {
@@ -130,7 +130,7 @@ function get_permissions_as_modules_array(mixed $permissions): array
         $modulePermissions = $permissions->filter(function ($permission) use ($module) {
             return strpos($permission['name'], $module) === 0 && $permission['name'] !== $module;
         })->map(function ($permission) use ($module) {
-            $name = Str::ucfirst(Str::replace(".", " ", Str::replace("{$module}.", "", $permission['name'])));
+            $name = Str::ucfirst(Str::replace('.', ' ', Str::replace("{$module}.", '', $permission['name'])));
 
             return [
                 'id' => $permission['id'],
@@ -161,10 +161,10 @@ function shouldAppend(string $append): bool
     $appends = [];
 
     if (request()->has('append')) {
-        $appends = explode(",", request()->get('append'));
+        $appends = explode(',', request()->get('append'));
     }
 
-    if (!in_array($append, $appends)) {
+    if (! in_array($append, $appends)) {
         return false;
     }
 
@@ -184,7 +184,6 @@ function formatCommas($address): string
 
     return $address;
 }
-
 
 function removeSpace(string $string): string
 {

@@ -18,7 +18,7 @@ class LeadGeneratorAssignment extends BaseModel
     protected array $allowedIncludes = [
         'createdBy',
         'user',
-        'leadGenerator'
+        'leadGenerator',
     ];
 
     public function user()

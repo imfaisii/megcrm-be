@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\Calendar;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class CalendarSeeder extends Seeder
@@ -11,19 +10,19 @@ class CalendarSeeder extends Seeder
     protected $entries = [
         [
             'name' => 'Scheduled Calls',
-            'color' => 'info'
+            'color' => 'info',
         ],
         [
             'name' => 'Surveys',
-            'color' => 'success'
+            'color' => 'success',
         ],
         [
             'name' => 'Installations',
-            'color' => 'warning'
+            'color' => 'warning',
         ],
         [
             'name' => 'Complaints',
-            'color' => 'error'
+            'color' => 'error',
         ],
     ];
 
@@ -36,7 +35,7 @@ class CalendarSeeder extends Seeder
             Calendar::firstOrCreate([
                 'name' => $calendar['name'],
                 'color' => $calendar['color'],
-                'created_by_id' => 1
+                'created_by_id' => 1,
             ]);
         }
     }

@@ -32,7 +32,7 @@ class CalendarEventNotification extends AbstractNotification
             'title' => $this->data['title'],
             'subtitle' => $this->data['subtitle'],
             'module' => $this->data['module'],
-            'redirect_link' => $this->data['link'] ?? null
+            'redirect_link' => $this->data['link'] ?? null,
         ];
     }
 }

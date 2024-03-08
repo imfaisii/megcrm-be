@@ -10,11 +10,14 @@ use BenSampo\Enum\Enum;
 final class SurveyBookedEnum extends Enum
 {
     const TITLE = 'Survey Booked';
+
     const NOTIFICATION_TITLE = 'Survey Booking Notification';
+
     const CALENDAR_NAME = 'Surveys';
+
     const IS_FULL_DAY = true;
 
-    public static function getCalendarId(): int|null
+    public static function getCalendarId(): ?int
     {
         return Calendar::where('name', self::CALENDAR_NAME)->first()?->id;
     }
@@ -26,6 +29,25 @@ final class SurveyBookedEnum extends Enum
 
     public static function getNotificationSubtitle(string $name, string $time)
     {
-        return "You have a survey booked with {$name} at {$time}.";
+        return "You have a survey booked with {$name} at { $time }.";
+    }
+
+    public static function getTwilioMessage($lead, string $time, string $from): string
+    {
+        $message = "Hi {$lead['first_name']},\n\nDomestic Energy Survey has been booked for:\n\n{$lead['plain_address']} at\n\n{$time}.\n\nIf you have any query, ";
+
+        if (isset($lead['lead_generator']['email'])) {
+            $message .= "please contact us via email at: {$lead['lead_generator']['email']} or ";
+        }
+
+        if (isset($lead['lead_generator']['phone_no'])) {
+            $message .= "Call us at: +44" . substr($lead['lead_generator']['phone_no'], -10);
+        } else {
+            $message .= "Call us at: " . config('services.twilio.default_sms_reference_number');
+        }
+
+        $message .= "\n\nRegards,\n{$from}";
+
+        return $message;
     }
 }

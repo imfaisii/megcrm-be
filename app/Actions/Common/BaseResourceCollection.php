@@ -13,24 +13,14 @@ class BaseResourceCollection extends ResourceCollection
         'status' => 'success',
     ];
 
-    /**
-     * @var string|null
-     */
     protected ?string $modelClass;
 
-    /**
-     * @param $resource
-     * @param string|null $modelClass
-     */
-    public function __construct($resource, string $modelClass = null)
+    public function __construct($resource, ?string $modelClass = null)
     {
         parent::__construct($resource);
         $this->modelClass = $modelClass;
     }
 
-    /**
-     * @return string
-     */
     public function guessResourceKey(): string
     {
         if ($this->modelClass !== null) {
@@ -41,14 +31,16 @@ class BaseResourceCollection extends ResourceCollection
         if ($resource !== null && method_exists($resource, 'guessResourceKey')) {
             return $resource->guessResourceKey();
         }
+
         return 'items';
     }
 
     /**
      * @phpcs:disable VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable
+     *
      * @phpcs:disable Generic.CodeAnalysis.UnusedFunctionParameter
-     * @param \Illuminate\Http\Request $request
-     * @return array
+     *
+     * @param  \Illuminate\Http\Request  $request
      */
     public function toArray($request): array
     {
@@ -57,9 +49,6 @@ class BaseResourceCollection extends ResourceCollection
         ];
     }
 
-    /**
-     * @return string|null
-     */
     public function getModelClass(): ?string
     {
         return $this->modelClass;

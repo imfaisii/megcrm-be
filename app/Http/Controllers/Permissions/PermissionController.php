@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Permissions;
 
 use App\Actions\Permissions\ListPermissionsAction;
 use App\Http\Controllers\Controller;
-use App\Traits\Common\HasApiResponses;
 use App\traits\Jsonify;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\ResourceCollection;
@@ -23,6 +22,7 @@ class PermissionController extends Controller
     public function index(ListPermissionsAction $action): ResourceCollection
     {
         $action->enableQueryBuilder();
+
         return $action->resourceCollection(collect(get_permissions_as_modules_array($action->listOrPaginate())));
     }
 

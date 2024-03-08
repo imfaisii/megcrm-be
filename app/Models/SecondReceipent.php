@@ -14,7 +14,7 @@ class SecondReceipent extends Model
         'middle_name',
         'last_name',
         'dob',
-        'lead_id'
+        'lead_id',
     ];
 
     public function lead()

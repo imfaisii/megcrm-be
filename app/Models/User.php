@@ -12,38 +12,40 @@ use App\Traits\Common\HasCalenderEvent;
 use Carbon\Carbon;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Notifications\Notifiable;
-use Laravel\Sanctum\HasApiTokens;
-use Illuminate\Database\Eloquent\Builder;
-use Spatie\Permission\Traits\HasRoles;
-use Illuminate\Support\Str;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
+use Jenssegers\Agent\Agent;
+use Laravel\Sanctum\HasApiTokens;
 use LaravelAndVueJS\Traits\LaravelPermissionToVueJS;
 use Rappasoft\LaravelAuthenticationLog\Traits\AuthenticationLoggable;
 use Spatie\Activitylog\Traits\CausesActivity;
-use Spatie\QueryBuilder\AllowedFilter;
-use Spatie\QueryBuilder\AllowedInclude;
-use Jenssegers\Agent\Agent;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\Permission\Traits\HasPermissions;
+use Spatie\Permission\Traits\HasRoles;
+use Spatie\QueryBuilder\AllowedFilter;
+use Spatie\QueryBuilder\AllowedInclude;
 
 use function App\Helpers\is_append_present;
 
 class User extends BaseModel implements AuthenticatableContract, HasMedia
 {
-    use HasApiTokens,
+    use Authenticatable,
+        AuthenticationLoggable,
+        CausesActivity,
+        HasApiTokens,
         HasCalenderEvent,
         HasFactory,
-        Authenticatable,
-        Notifiable,
         HasRoles,
-        LaravelPermissionToVueJS,
-        AuthenticationLoggable,
         InteractsWithMedia,
         CausesActivity,
-        HasPermissions;
+        HasPermissions,
+        LaravelPermissionToVueJS,
+        Notifiable;
+
     protected $guard_name = 'sanctum';
 
     protected $fillable = [
@@ -53,7 +55,8 @@ class User extends BaseModel implements AuthenticatableContract, HasMedia
         'air_caller_id',
         'is_active',
         'phone_number_aircall',
-        'created_by_id'
+        'aircall_email_address',
+        'created_by_id',
     ];
 
     protected $hidden = [
@@ -69,7 +72,7 @@ class User extends BaseModel implements AuthenticatableContract, HasMedia
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
-        'is_active' => 'boolean'
+        'is_active' => 'boolean',
     ];
 
     protected array $allowedIncludes = [
@@ -77,7 +80,8 @@ class User extends BaseModel implements AuthenticatableContract, HasMedia
         'leadGeneratorAssignments',
         'notifications',
         'authentications',
-        'additional.bank'
+        'installerCompany',
+        'additional.bank',
     ];
 
     protected $appends = ['rights', 'top_role', 'user_agents'];
@@ -113,7 +117,7 @@ class User extends BaseModel implements AuthenticatableContract, HasMedia
 
     public function getTopRoleAttribute()
     {
-        return Str::ucfirst(Str::replace("_", " ", Arr::first($this->getRoleNames())));
+        return Str::ucfirst(Str::replace('_', ' ', Arr::first($this->getRoleNames())));
     }
 
     public function getUserAgentsAttribute($count = 5)
@@ -169,6 +173,11 @@ class User extends BaseModel implements AuthenticatableContract, HasMedia
         return $this->belongsToMany(LeadGenerator::class, LeadGeneratorAssignment::class)
             ->withPivot('created_by_id')
             ->withTimestamps();
+    }
+
+    public function installerCompany()
+    {
+        return $this->hasOne(InstallerCompany::class);
     }
 
     public function installationTypes()

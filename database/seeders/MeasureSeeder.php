@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\Measure;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class MeasureSeeder extends Seeder
@@ -39,8 +38,9 @@ class MeasureSeeder extends Seeder
         'Window Glazing',
         'Higher performance external doors',
         'Inspection',
-        'Remedial'
+        'Remedial',
     ];
+
     /**
      * Run the database seeds.
      */
@@ -48,7 +48,7 @@ class MeasureSeeder extends Seeder
     {
         foreach ($this->entries as $key => $measure) {
             Measure::firstOrCreate([
-                'name' => $measure
+                'name' => $measure,
             ]);
         }
     }

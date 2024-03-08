@@ -132,6 +132,10 @@ return [
 
     'date_time_format' => 'l jS \of F Y h:i:s A',
 
+    'visa_expiry_alert_emails' => explode(",", env('VISA_DOCUMENTS_ALERT_EMAILS', '')),
+
+    'company_documents_alert_emails' => explode(",", env('COMPANY_DOCUMENTS_ALERT_EMAILS', '')),
+
     /*
     |--------------------------------------------------------------------------
     | Maintenance Mode Driver

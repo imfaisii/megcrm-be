@@ -4,13 +4,12 @@ namespace App\traits;
 
 trait Jsonify
 {
-
     public function success($message = 'Success', $data = null, $statusCode = 200)
     {
         $response = [
             'success' => true,
             'message' => $message,
-            'data' => $data
+            'data' => $data,
         ];
 
         return response()->json($response, $statusCode);

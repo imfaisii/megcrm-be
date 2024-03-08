@@ -3,10 +3,8 @@
 namespace App\Listeners\Users;
 
 use App\Events\Users\NewUserCreated;
-use App\Mail\Users\NewUserCredentialsMail;
 use App\Notifications\Users\UserCreatedNotification;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Support\Facades\Mail;
 
 class SendUserCredentialsListener implements ShouldQueue
 {
@@ -14,7 +12,7 @@ class SendUserCredentialsListener implements ShouldQueue
     {
         $event->user->notify(new UserCreatedNotification([
             ...$event->user->toArray(),
-            'password' => $event->password
+            'password' => $event->password,
         ]));
     }
 }

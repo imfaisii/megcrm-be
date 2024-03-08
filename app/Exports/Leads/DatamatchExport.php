@@ -34,7 +34,7 @@ class DatamatchExport implements FromCollection, WithHeadings, WithMapping, Resp
      * It's required to define the fileName within
      * the export class when making use of Responsable.
      */
-    private $fileName = "datamatch-required.xlsx";
+    private $fileName = 'datamatch-required.xlsx';
 
     /**
      * Optional Writer Type
@@ -110,7 +110,7 @@ class DatamatchExport implements FromCollection, WithHeadings, WithMapping, Resp
 
 
     /**
-     * @param Lead $lead
+     * @param  Lead  $lead
      */
     public function map($lead): array
     {

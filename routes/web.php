@@ -22,6 +22,9 @@ use function App\Helpers\getOnlyNumersFromString;
 
 
 
+use Aloha\Twilio\Twilio;
+
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -33,50 +36,30 @@ use function App\Helpers\getOnlyNumersFromString;
 |
 */
 
-if (app()->isLocal()) {
-    Route::get('test', function () {
+Route::get('test', function () {
+    // throw new Exception('test');
 
+    $client = new Twilio(config('services.twilio.sid'), config('services.twilio.token'), 'ECO Free Boiler Scheme');
 
-
-// $lead = Lead::withWhereHas('leadCustomerAdditionalDetail', function ($query) {
-
-//             $query->where('is_datamatch_required', true);
-//         })->get()->each(function($lead){
-//             dump($lead->id);
-//            $res1 = $lead->sub_building ? extractFirstNumericNumber(getOnlyNumersFromString($lead->sub_building)) : ($lead->building_number ? extractFirstNumericNumber(getOnlyNumersFromString($lead->building_number)) : extractFirstNumericNumber(getOnlyNumersFromString($lead->address)));
-//             $res2 = $lead->sub_building ? removeStringFromString($lead->sub_building, $lead->address) : ($lead->building_number ? removeStringFromString($lead->building_number, $lead->address) : removeStringFromString(extractFirstNumericNumber(getOnlyNumersFromString($lead->address)), $lead->address));
-//             dump($res1,$res2);
-//         });
-
-//         dd("asfs");
-        //  return $lead  = Lead::where('address','like','%Oldham House 3A Grantham Road, London, Greater London -- England%')->get();
-      $string  = 'Oldham House 3A Grantham Road, London, Greater London -- England';
-        return  $lead = Lead::find([341,342])->filter(function ($item) use ($string) {
-        return stripos($item, $string) !== false;
-    });;
-        return new DatamatchExport;
-
-    });
-}
-
+    $client->message('447943111370', "Test Message from Umer Riaz");
+});
 
 Route::get('/', fn() => ['Laravel' => app()->version()]);
 Route::get('/dropbox/redirect', fn() => response()->json(response()->all()));
 
 Route::get('/dropbox', function () {
-    $redirect = "http://localhost:8000/dropbox/redirect";
+    $redirect = 'http://localhost:8000/dropbox/redirect';
     $url = "https://www.dropbox.com/oauth2/authorize?client_id=8vda4d31bbpfvxm&response_type=code&redirect_uri=$redirect&token_access_type=offline";
 
     return redirect($url);
 });
 
-
 Route::get('/webhook/{name}', function ($name) {
-    Log::driver($name)->info("Testing web hook");
+    Log::driver($name)->info('Testing web hook');
 
     return response()->json('Done');
 });
 
 Route::prefix('aircall')->as('aircall_')->group(function () {
-    Route::post('check/webhook', AirCallWebhookController::class)->name("webhook");
+    Route::post('check/webhook', AirCallWebhookController::class)->name('webhook');
 });

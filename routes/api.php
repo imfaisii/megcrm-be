@@ -20,10 +20,10 @@ use App\Http\Controllers\MeasureController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\Permissions\PermissionController;
 use App\Http\Controllers\Permissions\RoleController;
+use App\Http\Controllers\SmsController;
 use App\Http\Controllers\SurveyorController;
 use App\Http\Controllers\Users\UserController;
 use App\Http\Requests\Leads\GetAddressRequest;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -44,28 +44,31 @@ Route::get('/getSuggestions', function (GetAddressRequest $request) {
 
     try {
         return response()->json([
-            'data' => $getAddress->getSuggestions($request->post_code)
+            'data' => $getAddress->getSuggestions($request->post_code),
         ]);
     } catch (Exception $e) {
         return response()->json([
             'success' => false,
             'message' => $e->getMessage(),
-            'data' => []
+            'data' => [],
         ]);
     }
 });
+
+Route::get('/leads-links/council-tax/{postcode}', [LeadController::class, 'getCouncilTaxLink'])->name('leads.council-tax-link');
 
 Route::group(['middleware' => 'auth:sanctum'], function () {
 
     Route::get('/get-permissions', function () {
         return response()->json([
-            'data' => json_decode(auth()->user()->jsPermissions())
+            'data' => json_decode(auth()->user()->jsPermissions()),
         ]);
     });
 
     Route::get('/user', [UserController::class, 'currentUser']);
-
+    Route::post('/users/{user}/collections/docs/upload', [UserController::class, 'uploadDocumentToCollection'])->name('users.documents-to-collections');
     Route::post('/users/{user}/documents/upload', [UserController::class, 'uploadDocument'])->name('users.documents-upload');
+    Route::post('/users/{media}/expiry/update', [UserController::class, 'updateDocumentExpiry'])->name('users.update-document-expiry');
     Route::apiResource('/permissions', PermissionController::class);
     Route::apiResource('/roles', RoleController::class);
     Route::apiResource('/users', UserController::class);
@@ -75,6 +78,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::get('/leads-datamatch-download', [LeadController::class, 'downloadDatamatch'])->name('leads.download-datamatch');
     Route::post('/leads-datamatch-upload', [LeadController::class, 'uploadDatamatch'])->name('leads.upload-datamatch');
     Route::get('/lead-jobs', [LeadJobController::class, 'index'])->name('lead-jobs.index');
+    Route::post('/send-sms/{lead}', [SmsController::class, 'sendSmsToLead'])->name('leads.send-sms-to-lead');
     Route::apiResource('/lead-statuses', StatusController::class);
     Route::apiResource('/lead-generator-assignments', LeadGeneratorAssignmentController::class);
 
@@ -94,8 +98,6 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::post('aircall/search-call', [AirCallController::class, 'searchCall'])->name('aircall.search-call');
     Route::post('aircall/dial-call', [AirCallController::class, 'dialCall'])->name('aircall.dial-call');
     Route::post('aircall/make-call', [AirCallController::class, 'makeCall'])->name('aircall.make-call');
-
-
 
     Route::get('/notifications/{id}', [NotificationController::class, 'markSingleAsMarked'])->name('notifications.mark-single-as-read');
     Route::delete('/notifications/{id}', [NotificationController::class, 'deleteNotification'])->name('notifications.destroy');

@@ -31,7 +31,12 @@ class UpdateUserRequest extends FormRequest
             'additional.account_number' => ['nullable', 'string'],
             'additional.visa_expiry' => ['nullable', 'date'],
             'additional.bank' => ['nullable', 'string'],
-            'installation_types' => ['nullable', 'array']
+            'installation_types' => ['nullable', 'array'],
+            'installer_company' => ['nullable', 'array'],
+            'installer_company.name' => ['nullable', 'string'],
+            'installer_company.address' => ['nullable', 'string'],
+            'installer_company.company_number' => ['nullable', 'string'],
+            'installer_company.vat_number' => ['nullable', 'string'],
         ];
     }
 }

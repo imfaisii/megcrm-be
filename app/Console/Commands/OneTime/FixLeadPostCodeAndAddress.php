@@ -3,8 +3,6 @@
 namespace App\Console\Commands\OneTime;
 
 use App\Classes\GetAddress;
-use App\Enums\Permissions\RoleEnum;
-use App\Fascade\AirCallFascade;
 use App\Models\Lead;
 use App\Models\User;
 use Exception;
@@ -27,7 +25,6 @@ class FixLeadPostCodeAndAddress extends Command
      */
     protected $description = 'This command is responsible for Fixing the post code and address of leads table in one format ';
 
-
     public function handle()
     {
         $this->info('Starting to Fix Lead`s Post Code And Address ...');
@@ -39,11 +36,11 @@ class FixLeadPostCodeAndAddress extends Command
 
             $this->withProgressBar($leads, function ($lead) use ($getAddress) {
                 $this->newLine();
-                $this->info("DB:: post_code => " . $lead->post_code . ", address => " . $lead->address);
+                $this->info('DB:: post_code => '.$lead->post_code.', address => '.$lead->address);
 
                 [$postCode, $address, $plainAddres, $city, $county, $country,$buildingNumber,$subBuilding] = $getAddress->adressionApi($lead->post_code, $lead->address);
 
-                $this->info("API:: post code => " . $postCode . ", address => " . $address);
+                $this->info('API:: post code => '.$postCode.', address => '.$address);
 
                 $lead->update([
                     // 'post_code' => $postCode,
