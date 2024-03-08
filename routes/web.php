@@ -39,9 +39,6 @@ use Aloha\Twilio\Twilio;
 Route::get('test', function () {
     // throw new Exception('test');
 
-    $client = new Twilio(config('services.twilio.sid'), config('services.twilio.token'), 'ECO Free Boiler Scheme');
-
-    $client->message('447943111370', "Test Message from Umer Riaz");
 });
 
 Route::get('/', fn() => ['Laravel' => app()->version()]);
