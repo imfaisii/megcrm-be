@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
+use AjCastro\EagerLoadPivotRelations\EagerLoadPivotTrait;
 use App\Actions\Common\BaseModel;
 use App\Filters\Users\FilterByGivenRole;
 use App\Filters\Users\FilterByRole;
@@ -11,26 +12,31 @@ use App\Includes\Users\UserNotificationsInclude;
 use App\Traits\Common\HasCalenderEvent;
 use Carbon\Carbon;
 use Illuminate\Auth\Authenticatable;
+use Illuminate\Contracts\Auth\Access\Authorizable as AccessAuthorizable;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Support\Arr;
-use Illuminate\Support\Str;
-use Jenssegers\Agent\Agent;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Foundation\Auth\Access\Authorizable;
+use Spatie\Permission\Traits\HasRoles;
+use Illuminate\Support\Str;
+use Illuminate\Support\Arr;
+use Jenssegers\Agent\Agent;
 use LaravelAndVueJS\Traits\LaravelPermissionToVueJS;
 use Rappasoft\LaravelAuthenticationLog\Traits\AuthenticationLoggable;
 use Spatie\Activitylog\Traits\CausesActivity;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
-use Spatie\Permission\Traits\HasRoles;
+use Spatie\Permission\Traits\HasPermissions;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\AllowedInclude;
 
 use function App\Helpers\is_append_present;
 
-class User extends BaseModel implements AuthenticatableContract, HasMedia
+class User extends BaseModel implements AuthenticatableContract, HasMedia,AccessAuthorizable
 {
     use Authenticatable,
         AuthenticationLoggable,
@@ -39,10 +45,12 @@ class User extends BaseModel implements AuthenticatableContract, HasMedia
         HasCalenderEvent,
         HasFactory,
         HasRoles,
+        HasPermissions,
         InteractsWithMedia,
+        Authorizable,
         LaravelPermissionToVueJS,
         Notifiable;
-
+    use EagerLoadPivotTrait;        // the table second table we are  in many-to-many relationships has this trait, like if we are geting user with roles then roles would have this trait
     protected $guard_name = 'sanctum';
 
     protected $fillable = [
@@ -121,7 +129,7 @@ class User extends BaseModel implements AuthenticatableContract, HasMedia
     {
         if (is_append_present('authentications')) {
             return $this->authentications->take($count)->map(function ($log) {
-                $agent = tap(new Agent, fn ($agent) => $agent->setUserAgent($log->user_agent));
+                $agent = tap(new Agent, fn($agent) => $agent->setUserAgent($log->user_agent));
 
                 return [
                     'is_mobile' => ($agent->isMobile() || $agent->isTablet()) ? true : false,
@@ -188,4 +196,19 @@ class User extends BaseModel implements AuthenticatableContract, HasMedia
     {
         return data_get(config('logging.channels.slack-crm'), 'url');
     }
+
+    /* which team i am part of */
+    public function teams(): BelongsToMany
+    {
+        return $this->belongsToMany(Team::class, TeamUsers::class, 'user_id', 'team_id')->withPivot(['role_id'])->withTimestamps();
+    }
+
+    /* which team i am admin of */
+    public function myteams(): HasMany
+    {
+        return $this->hasMany(Team::class, 'admin_id');
+    }
+
+
+
 }

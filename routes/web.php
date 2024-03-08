@@ -1,7 +1,12 @@
 <?php
 
+use App\Classes\LeadResponseClass;
 use Aloha\Twilio\Twilio;
 use App\Http\Controllers\AirCallWebhookController;
+use App\Imports\Leads\LeadsImport;
+use App\Models\Lead;
+use App\Models\User;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 
@@ -15,17 +20,18 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
+if (app()->isLocal()) {
+    Route::get('test', function (Request $request) {
+        // Define the trait with multiple methods
 
-Route::get('test', function () {
-    // throw new Exception('test');
+        
 
-    $client = new Twilio(config('services.twilio.sid'), config('services.twilio.token'), 'ECO Free Boiler Scheme');
+    });
 
-    $client->message('447943111370', "Test Message from Umer Riaz");
-});
+}
 
-Route::get('/', fn () => ['Laravel' => app()->version()]);
-Route::get('/dropbox/redirect', fn () => response()->json(response()->all()));
+Route::get('/', fn() => ['Laravel' => app()->version()]);
+Route::get('/dropbox/redirect', fn() => response()->json(response()->all()));
 
 Route::get('/dropbox', function () {
     $redirect = 'http://localhost:8000/dropbox/redirect';

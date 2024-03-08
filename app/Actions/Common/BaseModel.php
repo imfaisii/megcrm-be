@@ -25,7 +25,7 @@ use function App\Helpers\get_all_includes_in_camel_case;
 abstract class BaseModel extends Model
 {
     use BaseQueryBuilderConfig, HasLogsAppend, KeepsDeletedModels, LogsActivity;
-
+    public $ScopeColumn = 'user_id';   // this is the main column used in policy and for checking whether this model can be checked by admin or not
     protected string $resourceKey = '';
 
     protected array $exactFilters = [];
@@ -96,7 +96,7 @@ abstract class BaseModel extends Model
     public function toSearchableArray(): array
     {
         foreach ($this->searchableRelationships as $relationship) {
-            if (! $this->relationLoaded($relationship)) {
+            if (!$this->relationLoaded($relationship)) {
                 $this->load($relationship);
             }
         }
@@ -123,8 +123,8 @@ abstract class BaseModel extends Model
             if ($array[$dateKey] ?? false) {
                 try {
                     $date = Carbon::parse($array[$dateKey]);
-                    $array[$dateKey.'_date_formatted'] = $date->format($user?->date_format ?? 'Y-m-d');
-                    $array[$dateKey.'_time_formatted'] = $date->format($user?->time_format ?? 'H:i:s');
+                    $array[$dateKey . '_date_formatted'] = $date->format($user?->date_format ?? 'Y-m-d');
+                    $array[$dateKey . '_time_formatted'] = $date->format($user?->time_format ?? 'H:i:s');
                 } catch (Throwable) { // @phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
                 }
             }
@@ -150,7 +150,7 @@ abstract class BaseModel extends Model
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-            ->setDescriptionForEvent(fn (string $eventName) => "This record has been {$eventName}")
+            ->setDescriptionForEvent(fn(string $eventName) => "This record has been {$eventName}")
             ->logOnly(['*'])
             ->logOnlyDirty()
             ->dontSubmitEmptyLogs();
@@ -158,7 +158,7 @@ abstract class BaseModel extends Model
 
     public function tapActivity(Activity $activity, string $eventName)
     {
-        if (! auth()->check()) {
+        if (!auth()->check()) {
             $activity->causer_id = 1;
             $activity->causer_type = User::class;
         }

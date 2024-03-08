@@ -33,8 +33,9 @@ class DatabaseSeeder extends Seeder
             CalendarSeeder::class,
             InstallationTypeSeeder::class,
 
-            //! Always after adminseeder
+                //! Always after adminseeder
             LeadStatusSeeder::class,
+            TeamRolesSeeder::class,
         ]);
 
         if ($local) {

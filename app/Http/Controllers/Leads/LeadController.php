@@ -26,6 +26,11 @@ use function App\Helpers\null_resource;
 
 class LeadController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->authorizeResource(Lead::class, 'lead');
+    }
     public function index(ListLeadAction $action): ResourceCollection
     {
         $action->enableQueryBuilder();
@@ -40,11 +45,12 @@ class LeadController extends Controller
         return $action->individualResource($lead);
     }
 
-    public function show(int $lead, FindLeadAction $action)
+    public function show(Lead $lead, FindLeadAction $action)
     {
+        // $this->authorize('view', $lead);
         $action->enableQueryBuilder();
 
-        return $action->individualResource($action->findOrFail($lead));
+        return $action->individualResource($action->findOrFail($lead->id));
     }
 
     public function update(Lead $lead, UpdateLeadRequest $request, UpdateLeadAction $action)
