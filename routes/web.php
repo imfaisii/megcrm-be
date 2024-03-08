@@ -22,14 +22,10 @@ use Illuminate\Support\Facades\Route;
 */
 if (app()->isLocal()) {
     Route::get('test', function (Request $request) {
-        // $myTeams = $user?->teams?->map(function ($model) {
-        //     return $model->id;
-        // })?->flatten()->all();
-        // $myMembers = $user?->teams?->map(function ($model) {
-        //     return $model->users?->pluck('id')->toArray();
-        // })?->flatten()->all();
-        // dump($myMembers, $myTeams);
-        // return $user;
+        // Define the trait with multiple methods
+
+        
+
     });
 
 }

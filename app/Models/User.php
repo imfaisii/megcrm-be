@@ -12,6 +12,7 @@ use App\Includes\Users\UserNotificationsInclude;
 use App\Traits\Common\HasCalenderEvent;
 use Carbon\Carbon;
 use Illuminate\Auth\Authenticatable;
+use Illuminate\Contracts\Auth\Access\Authorizable as AccessAuthorizable;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -19,6 +20,7 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Foundation\Auth\Access\Authorizable;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Support\Str;
 use Illuminate\Support\Arr;
@@ -28,12 +30,13 @@ use Rappasoft\LaravelAuthenticationLog\Traits\AuthenticationLoggable;
 use Spatie\Activitylog\Traits\CausesActivity;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\Permission\Traits\HasPermissions;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\AllowedInclude;
 
 use function App\Helpers\is_append_present;
 
-class User extends BaseModel implements AuthenticatableContract, HasMedia
+class User extends BaseModel implements AuthenticatableContract, HasMedia,AccessAuthorizable
 {
     use Authenticatable,
         AuthenticationLoggable,
@@ -42,7 +45,9 @@ class User extends BaseModel implements AuthenticatableContract, HasMedia
         HasCalenderEvent,
         HasFactory,
         HasRoles,
+        HasPermissions,
         InteractsWithMedia,
+        Authorizable,
         LaravelPermissionToVueJS,
         Notifiable;
     use EagerLoadPivotTrait;        // the table second table we are  in many-to-many relationships has this trait, like if we are geting user with roles then roles would have this trait

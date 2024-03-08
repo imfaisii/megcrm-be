@@ -34,18 +34,26 @@ trait HasTeamTrait
     }
 
 
-    public function getTeams(): array
+    public function getTeams(?int $id = null): array
     {
-        $user = User::Has('myteams')->with('teams.pivot.role', 'teams.users')->find(auth()->id());
+        if (request()->__isset(config('app.key_for_request_team_cache'))) {
+            // the teams are already fetched in this request
+            return request()->get(config('app.key_for_request_team_cache'));
+        }
+        $user = User::Has('myteams')->with('teams.pivot.role', 'teams.users')->find($id ?? auth()->id());
         $myTeams = $user?->teams?->map(function ($model) {
             return $model->id;
         })?->flatten()->all();
         $myMembers = $user?->teams?->map(function ($model) {
             return $model->users?->pluck('id')->toArray();
         })?->flatten()->all();
-        return [
+        $teams = [
             'teams' => $myTeams,
-            'members' => $myMembers ?: [auth()->id()],
+            'members' => $myMembers ?: [$id ?? auth()->id()],
         ];
+        request()->offsetSet(config('app.key_for_request_team_cache'), $teams);
+        return $teams;
+
+        // for each request we will add this to the request and if found in the request we will sent back the result instead of queries
     }
 }

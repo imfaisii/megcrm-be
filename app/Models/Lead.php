@@ -25,7 +25,7 @@ class Lead extends BaseModel
     use HasTeamTrait;
 
 
-    protected  $ScopeColumn = 'surveyor_id';    // jis column p wherein lgy ga
+    public $ScopeColumn = 'surveyor_id';    // the coloumn on which whereIn condition will be used for teams
 
 
 
