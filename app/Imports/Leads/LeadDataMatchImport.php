@@ -26,7 +26,7 @@ class LeadDataMatchImport implements ToCollection, WithHeadingRow
 
     public function headingRow(): int
     {
-        return 2;
+        return 3;
     }
     /**
      * @param Collection $collection
@@ -35,7 +35,6 @@ class LeadDataMatchImport implements ToCollection, WithHeadingRow
     {
         try {
             DB::transaction(function () use ($rows) {
-                dd($rows);
                 $rows->each(function ($eachLead) {
                     $lead = Lead::query()
                         ->withWhereHas('leadCustomerAdditionalDetail', function ($query) {
@@ -52,9 +51,10 @@ class LeadDataMatchImport implements ToCollection, WithHeadingRow
                                     ? \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($eachLead['date_of_birth'])->format('Y-m-d')
                                     : $eachLead['date_of_birth'])
                             ],
-                            ['post_code', '=', strtoupper(removeSpace($eachLead['Postcode']))],
+                            ['post_code', '=', strtoupper(removeSpace($eachLead['postcode']))],
                         ])->get();
                     if ($lead->count() > 1) {
+                        dump("multiple found");
                         //means multiple records found now need to query more for specific
                       $response =  $lead->filter(function ($item) use ($eachLead) {
                         return stripos($item, $eachLead['address']) !== false;
@@ -73,7 +73,7 @@ class LeadDataMatchImport implements ToCollection, WithHeadingRow
                     } else {
                         //no found
                         Log::channel('data_match_result_file_read_log')->error('No match found for record' . json_encode($lead->ToArray()));
-                        $this->classResponse->failedLeads[] = $lead->toArray();
+                        $this->classResponse->failedLeads[] = $eachLead->toArray();
                     }
 
                 });

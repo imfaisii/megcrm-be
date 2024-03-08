@@ -74,7 +74,7 @@ class UploadLeadsFileAction
                 "date_processed_by_dwp",
             ];
 
-            // $this->CheckFileHeaderErrors($exampleHeader, $request->file('file'), 2);
+            $this->CheckFileHeaderErrors($exampleHeader, $request->file('file'), 3);
             Excel::import(new LeadDataMatchImport($this->leadResponseClass), $request->file('file'));
 
             return $this->success('File was uploaded successfully.', data: $this->leadResponseClass);
@@ -89,7 +89,6 @@ class UploadLeadsFileAction
 
     private function CheckFileHeaderErrors(array $headersArray, $file, $headingRow = 1)
     {
-
 
         $headings = (new HeadingRowImport($headingRow))->toArray($file)[0][0];
         if (count($headings) < count($headersArray)) {
