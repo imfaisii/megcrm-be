@@ -14,6 +14,7 @@ class LeadGenerator extends BaseModel
         'name',
         'sender_id',
         'email',
+        'phone_no',
         'mask_name',
     ];
 

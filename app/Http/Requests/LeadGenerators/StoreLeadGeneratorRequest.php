@@ -12,6 +12,7 @@ class StoreLeadGeneratorRequest extends BaseFormRequest
             'name' => ['required', 'string', 'max:255'],
             'sender_id' => ['required', 'string', 'max:11'],
             'email' => ['nullable', 'email'],
+            'phone_no' => ['nullable', 'numeric', 'digits:10,10'],
         ];
     }
 }
