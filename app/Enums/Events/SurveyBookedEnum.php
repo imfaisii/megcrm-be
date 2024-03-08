@@ -34,12 +34,12 @@ final class SurveyBookedEnum extends Enum
 
     public static function getTwilioMessage($lead, string $time, string $from): string
     {
-        $message = "Hi {$lead['full_name']},\n\nDomestic Energy Survey has been booked for:\n\n{$lead['plain_address']} at\n\n{$time}.\n\nIf you have any query, ";
+        $message = "Hi {$lead['first_name']},\n\nDomestic Energy Survey has been booked for:\n\n{$lead['plain_address']} at\n\n{$time}.\n\nIf you have any query, ";
 
         if (isset($lead['lead_generator']['email'])) {
             $message .= "please contact us via email at: {$lead['lead_generator']['email']} or ";
-        } 
-        
+        }
+
         if (isset($lead['lead_generator']['phone_no'])) {
             $message .= "Call us at: +44" . substr($lead['lead_generator']['phone_no'], -10);
         } else {
