@@ -23,7 +23,7 @@ class AbstractPolicy
     public function before(Model $user, string $ability): bool|null
     {
 
-        if ($user->hasRole(RoleEnum::SUPER_ADMIN)) {
+        if ($user->hasAnyRole([RoleEnum::SUPER_ADMIN,RoleEnum::CSR])) {
             return true;
         }
 
