@@ -32,7 +32,6 @@ class AbstractPolicy
 
     public function viewAny(Model $user)
     {
-
         return $user->can(request()->route()->getName()); // the user has permission for this action
     }
 

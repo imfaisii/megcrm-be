@@ -17,12 +17,11 @@ trait HasTeamTrait
     /**
      * Scope a query to only include active users.
      */
-    public function scopeTeamScope(Builder $query, array $ids = []): void
+    public function scopeTeamScope(Builder $query, array $ids = [], array $bypassRole = []): void
     {
         if (filled($ids)) {
             $query->whereIn($this->ScopeColumn ?? 'user_id', $ids);
-        }
-        if (auth()?->user()?->hasRole(RoleEnum::SUPER_ADMIN)) {
+        } else if (auth()?->user()?->hasAnyRole(RoleEnum::SUPER_ADMIN,...$bypassRole)) {
             $query;
         } elseif (auth()?->user()?->hasRole(RoleEnum::TEAM_ADMIN)) {
             // get all the team members ids and then get those leads

@@ -16,7 +16,7 @@ class ListLeadAction extends AbstractListAction
     {
         $query = parent::getQuery();
         if (method_exists($this->modelClass, 'scopeTeamScope')) {
-            $query->TeamScope();
+            $query->TeamScope(bypassRole:[RoleEnum::CSR]);
         }
         // $user = auth()->user();
 
