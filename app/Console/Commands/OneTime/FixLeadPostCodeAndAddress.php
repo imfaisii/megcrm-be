@@ -36,21 +36,21 @@ class FixLeadPostCodeAndAddress extends Command
 
             $this->withProgressBar($leads, function ($lead) use ($getAddress) {
                 $this->newLine();
-                $this->info('DB:: post_code => '.$lead->post_code.', address => '.$lead->address);
+                $this->info('DB:: post_code => ' . $lead->post_code . ', address => ' . $lead->address);
 
-                [$postCode, $address, $plainAddres, $city, $county, $country,$buildingNumber,$subBuilding] = $getAddress->adressionApi($lead->post_code, $lead->address);
+                [$postCode, $address, $plainAddres, $city, $county, $country, $buildingNumber, $subBuilding] = $getAddress->adressionApi($lead->post_code, $lead->address);
 
-                $this->info('API:: post code => '.$postCode.', address => '.$address);
+                $this->info('API:: post code => ' . $postCode . ', address => ' . $address);
 
                 $lead->update([
-                    // 'post_code' => $postCode,
-                    // 'address' => $address,
-                    // 'plain_address' => $plainAddres,
-                    // 'county' => $county,
-                    // 'city' => $city,
-                    // 'country' => $country,
+                    'post_code' => $postCode,
+                    'address' => $address,
+                    'plain_address' => $plainAddres,
+                    'county' => $county,
+                    'city' => $city,
+                    'country' => $country,
                     'building_number' => $buildingNumber,
-                    'sub_building'=> $subBuilding
+                    'sub_building' => $subBuilding
                 ]);
 
                 Log::channel('addresso_api')

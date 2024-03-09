@@ -120,7 +120,9 @@ class DatamatchExport implements FromCollection, WithHeadings, WithMapping, Resp
             $lead->first_name,
             $lead->last_name,
             Carbon::parse($lead->dob)->format('m/d/Y'),
-            $lead->sub_building ? extractFirstNumericNumber(getOnlyNumersFromString($lead->sub_building)) : ($lead->building_number ? extractFirstNumericNumber(getOnlyNumersFromString($lead->building_number)) : extractFirstNumericNumber(getOnlyNumersFromString($lead->address))),
+            // $lead->sub_building ? extractFirstNumericNumber(getOnlyNumersFromString($lead->sub_building)) : ($lead->building_number ? extractFirstNumericNumber(getOnlyNumersFromString($lead->building_number)) : extractFirstNumericNumber(getOnlyNumersFromString($lead->address))),    // only fails when there is no number in sub building and buildingnumber  like flat one
+            // $lead->sub_building ? removeStringFromString($lead->sub_building, $lead->address) : ($lead->building_number ? removeStringFromString($lead->building_number, $lead->address) : removeStringFromString(extractFirstNumericNumber(getOnlyNumersFromString($lead->address)), $lead->address)),
+            $lead->sub_building ?: ($lead->building_number ?: extractFirstNumericNumber(getOnlyNumersFromString($lead->address))),
             $lead->sub_building ? removeStringFromString($lead->sub_building, $lead->address) : ($lead->building_number ? removeStringFromString($lead->building_number, $lead->address) : removeStringFromString(extractFirstNumericNumber(getOnlyNumersFromString($lead->address)), $lead->address)),
             '',
             '',
@@ -136,15 +138,15 @@ class DatamatchExport implements FromCollection, WithHeadings, WithMapping, Resp
     public function collection()
     {
         return $lead = Lead::withWhereHas('leadCustomerAdditionalDetail', function ($query) {
-
             $query->where('is_datamatch_required', true);
         })->get()->each(function ($lead) {
             $lead->leadCustomerAdditionalDetail->update([
                 'datamatch_progress' => DataMatchEnum::StatusSent,
-                // 'is_datamatch_required' => false,
-
+                'is_datamatch_required' => false,
+                'data_match_sent_date' => now()
             ]);
         });
+
 
     }
     /**
@@ -164,7 +166,15 @@ class DatamatchExport implements FromCollection, WithHeadings, WithMapping, Resp
                 // // Shift cells from row 3 one cell ahead.
                 // $sheet->shiftRows(3, 1, 1);
 
-
+                // Lead::withWhereHas('leadCustomerAdditionalDetail', function ($query) {
+                //     $query->where('is_datamatch_required', true);
+                // })->get()->each(function ($lead) {
+                //     $lead->leadCustomerAdditionalDetail->update([
+                //         'datamatch_progress' => DataMatchEnum::StatusSent,
+                //         'is_datamatch_required' => false,
+                //         'data_match_sent_date' => now()
+                //     ]);
+                // });
 
 
 

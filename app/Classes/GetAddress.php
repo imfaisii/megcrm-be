@@ -39,11 +39,11 @@ class GetAddress
                     $transformedAddress = implode(' ', $address['address']);
 
                     if (isset($address['city'])) {
-                        $transformedAddress .= ', '.$address['city'];
+                        $transformedAddress .= ', ' . $address['city'];
                     }
 
                     if (isset($address['county'])) {
-                        $transformedAddress .= ', '.$address['county'];
+                        $transformedAddress .= ', ' . $address['county'];
                     }
 
                     if ($postCodeResponseCountry) {
@@ -72,11 +72,9 @@ class GetAddress
     public function adressionApi(string $postCode, string $query)
     {
         $token = config('app.get_address_api');
-
         try {
             $postCode = Str::upper(str_replace(' ', '', preg_replace('/[^a-zA-Z0-9\s]/', ' ', $postCode)));
             $query = str_replace("\n", ' ', str_replace('  ', ' ', preg_replace('/[^a-zA-Z0-9\s]/', ' ', $query)));
-
             $request = Http::withHeaders([
                 'X-Api-Key' => $token,
             ])
@@ -89,15 +87,37 @@ class GetAddress
 
             if ($request->successful()) {
                 $postCodeResponseCountry = Arr::get($postCodeRequest->json(), 'country', null);
+                /* the beneath code is first matching the exact pose code to the result and modifying the addrees plus code for later use
+                 and next thing is that if no exact address is found against our provided address then we are just using the first address */
+                /***
+
+                 $Firstresult = $request?->collect()?->transform(function ($eachResult) {
+                    return [
+                        ...$eachResult,
+                        'address' => str_replace("\n", ' ', str_replace('  ', ' ', preg_replace('/[^a-zA-Z0-9\s]/', ' ', implode(" ", $eachResult['address'])))),
+                        'postcode' => Str::upper(str_replace(' ', '', preg_replace('/[^a-zA-Z0-9\s]/', ' ', $eachResult['postcode']))),
+                    ];
+                });
+                $postCode = 'E125AH1';
+                $Firstresult = $Firstresult->filter(function ($eachResult) use ($postCode) {
+                    return $eachResult['postcode'] == $postCode;
+                })->isNotEmpty() ? $Firstresult->filter(function ($eachResult) use ($postCode) {
+                    return $eachResult['postcode'] == $postCode;
+                }) : $Firstresult;
+                // check for exact match if possible else old ka pehla
+                $exactCheck = $Firstresult?->first(function (array $value, int $key) use ($query) {
+                    return Str::contains($value['address'], $query);
+                }) ?: $Firstresult?->first();
+                */
                 $address = $request->json()[0];
                 $transformedAddress = implode(' ', $address['address']);
 
                 if (isset($address['city'])) {
-                    $transformedAddress .= ', '.$address['city'];
+                    $transformedAddress .= ', ' . $address['city'];
                 }
 
                 if (isset($address['county'])) {
-                    $transformedAddress .= ', '.$address['county'];
+                    $transformedAddress .= ', ' . $address['county'];
                 }
 
                 if ($postCodeResponseCountry) {
@@ -116,6 +136,7 @@ class GetAddress
 
                 ];
             } else {
+
                 Log::channel('addresso_api')
                     ->info("Error in postcode:: $postCode and address:: $query");
 
@@ -125,7 +146,6 @@ class GetAddress
         } catch (Exception $e) {
             Log::channel('addresso_api')
                 ->info("Exception in postcode:: $postCode and address:: $query {$e->getMessage()}");
-
             return [$postCode, $query, $query, null, null, null, null, null];
         }
     }
