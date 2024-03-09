@@ -148,6 +148,7 @@ return [
     | Supported drivers: "file", "cache"
     |
     */
+    'key_for_request_team_cache' => 'MegCrmTeamsConcept',
 
     'maintenance' => [
         'driver' => 'file',

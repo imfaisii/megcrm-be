@@ -10,6 +10,7 @@ use App\Filters\Leads\FilterByStatus;
 use App\Filters\Leads\FilterBySurveyor;
 use App\Traits\Common\HasCalenderEvent;
 use App\Traits\Common\HasRecordCreator;
+use App\Traits\HasTeamTrait;
 use BeyondCode\Comments\Traits\HasComments;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Notifications\Notifiable;
@@ -20,6 +21,13 @@ use Spatie\QueryBuilder\AllowedFilter;
 class Lead extends BaseModel
 {
     use HasCalenderEvent, HasComments, HasFactory, HasRecordCreator, HasStatuses, Notifiable;
+
+    use HasTeamTrait;
+
+
+    public $ScopeColumn = 'surveyor_id';    // the coloumn on which whereIn condition will be used for teams
+
+
 
     protected $fillable = [
         'title',

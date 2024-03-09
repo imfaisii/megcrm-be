@@ -11,6 +11,9 @@ use Carbon\Carbon;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
+use App\Classes\LeadResponseClass;
+use Aloha\Twilio\Twilio;
+use App\Imports\Leads\LeadsImport;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 
@@ -22,7 +25,6 @@ use function App\Helpers\getOnlyNumersFromString;
 
 
 
-use Aloha\Twilio\Twilio;
 
 
 /*
@@ -35,11 +37,15 @@ use Aloha\Twilio\Twilio;
 | contains the "web" middleware group. Now create something great!
 |
 */
+if (app()->isLocal()) {
+    Route::get('test', function (Request $request) {
+        // Define the trait with multiple methods
 
-Route::get('test', function () {
-    // throw new Exception('test');
 
-});
+
+    });
+
+}
 
 Route::get('/', fn() => ['Laravel' => app()->version()]);
 Route::get('/dropbox/redirect', fn() => response()->json(response()->all()));

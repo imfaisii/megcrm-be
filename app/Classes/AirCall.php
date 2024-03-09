@@ -171,7 +171,7 @@ class AirCall
      *
      * @description By default it goes one month back
      */
-    public function getCalls(array $queryParams = ['order' => 'asc', 'fetch_contact' => false]): JsonResponse
+    public function getCalls(array $queryParams = ['order' => 'asc', "fetch_contact" => false, 'per_page' => 50]): JsonResponse
     {
         try {
             $this->GeneralDataSet($queryParams);

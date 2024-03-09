@@ -25,4 +25,11 @@ final class RoleEnum extends Enum
     const SUBMISSION = 'submission';
 
     const PRECHECK = 'precheck';
+
+
+
+    /* Team Roles   */
+    const TEAM_ADMIN = 'team_admin';
+
+    const TEAM_MEMBER = 'team_member';
 }
