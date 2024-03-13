@@ -159,6 +159,12 @@ return [
             'path' => storage_path('logs/lead_file_read.log'),
             'level' => 'debug',
         ],
+        'data_match_result_file_read_log' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/data_match_result_file_upload.log'),
+            'level' => 'debug',
+        ],
+
 
         'addresso_api' => [
             'driver' => 'daily',

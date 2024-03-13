@@ -12,6 +12,7 @@ use App\Actions\Leads\UpdateLeadAction;
 use App\Actions\Leads\UploadLeadsFileAction;
 use App\Exports\Leads\DatamatchExport;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\DataMatch\UploadDataMatchRequest;
 use App\Http\Requests\Leads\StoreLeadCommentsRequest;
 use App\Http\Requests\Leads\StoreLeadRequest;
 use App\Http\Requests\Leads\UpdateLeadRequest;
@@ -109,5 +110,10 @@ class LeadController extends Controller
     public function downloadDatamatch()
     {
         return new DatamatchExport;
+    }
+
+    public function uploadDatamatch(UploadDataMatchRequest $request,UploadLeadsFileAction $action)
+    {
+        return $action->executeLeadsDataMatchResultUpload($request);
     }
 }

@@ -190,3 +190,28 @@ function removeSpace(string $string): string
     return str_replace(' ', '', $string);
 
 }
+
+function extractFirstNumericNumber(string $input): ?string
+{
+    return trim(Str::before($input, ' '));
+}
+
+/* Replace the only first occurance of a substring in a string */
+function removeStringFromString(string $needle,string $string,string $replaceString = ''): ?string{
+   return  trim(Str::replaceFirst($needle,$replaceString, $string));
+}
+
+function getOnlyNumersFromString(string $string): string
+{
+    $cleanedString = preg_replace('/[^0-9.,\/-]/', ' ', $string);
+
+    // Remove extra spaces at the end
+    return $cleanedString = trim($cleanedString);
+
+}
+
+
+function replaceFirst(string $search, string $replace, string $subject): string
+{
+    return preg_replace('/' . preg_quote($search, '/') . '/', $replace, $subject, 1);
+}

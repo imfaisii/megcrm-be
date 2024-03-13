@@ -20,11 +20,14 @@ class LeadCustomerAdditionalDetail extends BaseModel
         'datamatch_progress',
         'datamatch_progress_date',
         'lead_id',
+        'urn',
+        'data_match_sent_date'
     ];
 
     protected $casts = [
         'is_datamatch_required' => 'boolean',
         'is_customer_owner' => 'boolean',
+        'data_match_sent_date' => 'datetime'
     ];
 
     public function lead()
