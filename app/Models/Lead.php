@@ -93,11 +93,14 @@ class Lead extends BaseModel
         if ($user->hasRole($role) && $role === RoleEnum::SURVEYOR) {
             $assignedLeadGenerators = $user->leadGeneratorAssignments()->pluck('lead_generator_id');
 
-            $query->whereIn('lead_generator_id', $assignedLeadGenerators);
+            $query->where(function ($query) use ($assignedLeadGenerators, $user) {
+                $query->whereIn('lead_generator_id', $assignedLeadGenerators);
 
-            $query->orWhereHas('surveyBooking', function ($query) use ($user) {
-                $query->where('surveyor_id', $user->id);
+                // $query->orWhereHas('surveyBooking', function ($query) use ($user) {
+                //     $query->where('surveyor_id', $user->id);
+                // });
             });
+
         }
 
         return $query;
