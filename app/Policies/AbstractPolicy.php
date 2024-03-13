@@ -23,7 +23,7 @@ class AbstractPolicy
     public function before(Model $user, string $ability): bool|null
     {
 
-        if ($user->hasAnyRole([RoleEnum::SUPER_ADMIN,RoleEnum::CSR])) {
+        if ($user->hasAnyRole([RoleEnum::SUPER_ADMIN, RoleEnum::CSR])) {
             return true;
         }
 
@@ -41,10 +41,11 @@ class AbstractPolicy
         if ($user->cannot(request()->route()->getName())) {
             return false;
         } else if ($user->hasRole(RoleEnum::TEAM_ADMIN)) {
-            ['members' => $members] = $this->getTeamsForUsers();
-            return in_array($relatedModel->{$relatedModel->ScopeColumn}, $members);
+            ['members' => $members, 'lead_generators' => $leadGenerators] = $this->getTeamsForUsers();
+            return in_array($relatedModel->{$relatedModel->ScopeColumn}, $members) || in_array($relatedModel->lead_generator_id, $leadGenerators);
         } else {
-            return $relatedModel->{$relatedModel->ScopeColumn} == $user?->id;
+
+            return $relatedModel->{$relatedModel->ScopeColumn} == $user?->id || in_array($relatedModel->lead_generator_id, $user->leadGeneratorAssignments->pluck('id')->all());
         }
     }
 
@@ -61,10 +62,10 @@ class AbstractPolicy
         if ($user->cannot(request()->route()->getName())) {
             return false;
         } else if ($user->hasRole(RoleEnum::TEAM_ADMIN)) {
-            ['members' => $members] = $this->getTeamsForUsers();
-            return in_array($relatedModel->{$relatedModel->ScopeColumn}, $members);
+            ['members' => $members, 'lead_generators' => $leadGenerators] = $this->getTeamsForUsers();
+            return in_array($relatedModel->{$relatedModel->ScopeColumn}, $members) || in_array($relatedModel->lead_generator_id, $leadGenerators);
         } else {
-            return $relatedModel->{$relatedModel->ScopeColumn} == $user?->id;
+            return $relatedModel->{$relatedModel->ScopeColumn} == $user?->id || in_array($relatedModel->lead_generator_id, $user->leadGeneratorAssignments->pluck('id')->all());
         }
     }
 
@@ -74,10 +75,10 @@ class AbstractPolicy
         if ($user->cannot(request()->route()->getName())) {
             return false;
         } else if ($user->hasRole(RoleEnum::TEAM_ADMIN)) {
-            ['members' => $members] = $this->getTeamsForUsers();
-            return in_array($relatedModel->{$relatedModel->ScopeColumn}, $members);
+            ['members' => $members, 'lead_generators' => $leadGenerators] = $this->getTeamsForUsers();
+            return in_array($relatedModel->{$relatedModel->ScopeColumn}, $members) || in_array($relatedModel->lead_generator_id, $leadGenerators);
         } else {
-            return $relatedModel->{$relatedModel->ScopeColumn} == $user?->id;
+            return $relatedModel->{$relatedModel->ScopeColumn} == $user?->id || in_array($relatedModel->lead_generator_id, $user->leadGeneratorAssignments->pluck('id')->all());
         }
     }
 

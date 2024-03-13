@@ -21,15 +21,24 @@ trait HasTeamTrait
     {
         if (filled($ids)) {
             $query->whereIn($this->ScopeColumn ?? 'user_id', $ids);
-        } else if (auth()?->user()?->hasAnyRole(RoleEnum::SUPER_ADMIN,...$bypassRole)) {
+        } else if (auth()?->user()?->hasAnyRole(RoleEnum::SUPER_ADMIN, ...$bypassRole)) {
             $query;
         } elseif (auth()?->user()?->hasRole(RoleEnum::TEAM_ADMIN)) {
             // get all the team members ids and then get those leads
-            $query->whereIn($this->ScopeColumn ?? 'user_id', Arr::get($this->getTeams(), 'members', []));
+            // if its admin add  lead generator as well
+            $query->where(function ($q) {
+                return $q->whereIn($this->ScopeColumn ?? 'user_id', Arr::get($this->getTeams(), 'members', []))
+                    ->orWhereIn('lead_generator_id', Arr::get($this->getTeams(), 'lead_generators', []));
+            });
+            // $query->whereIn($this->ScopeColumn ?? 'user_id', Arr::get($this->getTeams(), 'members', []));
         } else {
-            $query->where($this->ScopeColumn ?? 'user_id', auth()->id());
-        }
+            $query->where(function ($query) {
+                // if its a single member then check also its lead generators
+                $query->byRole(RoleEnum::SURVEYOR);
+                $query->Orwhere($this->ScopeColumn ?? 'user_id', auth()->id());
 
+            });
+        }
     }
 
 
@@ -39,16 +48,21 @@ trait HasTeamTrait
             // the teams are already fetched in this request
             return request()->get(config('app.key_for_request_team_cache'));
         }
-        $user = User::Has('myteams')->with('teams.pivot.role', 'teams.users')->find($id ?? auth()->id());
+        $user = User::Has('myteams')->with('teams.pivot.role', 'teams.users.leadGeneratorAssignments')->find($id ?? auth()->id());
         $myTeams = $user?->teams?->map(function ($model) {
             return $model->id;
         })?->flatten()->all();
-        $myMembers = $user?->teams?->map(function ($model) {
+        $leadGenerators = [];
+        $myMembers = $user?->teams?->map(function ($model) use (&$leadGenerators) {
+            $leadGenerators[] = $model->users->map(function ($modelForLeadGen) {
+                return $modelForLeadGen->leadGeneratorAssignments?->pluck('id')?->toArray();
+            });
             return $model->users?->pluck('id')->toArray();
         })?->flatten()->all();
         $teams = [
             'teams' => $myTeams,
             'members' => $myMembers ?: [$id ?? auth()->id()],
+            'lead_generators' => Arr::flatten($leadGenerators),
         ];
         request()->offsetSet(config('app.key_for_request_team_cache'), $teams);
         return $teams;
