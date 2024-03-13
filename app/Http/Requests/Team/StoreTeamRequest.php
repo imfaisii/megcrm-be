@@ -4,7 +4,7 @@ namespace App\Http\Requests\Team;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Arr;
-use Str;
+use Illuminate\Support\Str;
 
 class StoreTeamRequest extends FormRequest
 {
