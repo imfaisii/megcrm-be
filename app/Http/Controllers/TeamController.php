@@ -9,7 +9,7 @@ use App\Actions\Team\ListTeamAction;
 use App\Actions\Team\StoreTeamAction;
 use App\Actions\Team\UpdateTeamAction;
 use App\Http\Requests\Team\ListTeamRequest;
-use App\Http\Requests\team\StoreTeamRequest;
+use App\Http\Requests\Team\StoreTeamRequest;
 use App\Models\Team;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
