@@ -18,6 +18,8 @@ class ListLeadAction extends AbstractListAction
         if (method_exists($this->modelClass, 'scopeTeamScope')) {
             $query->TeamScope(bypassRole:[RoleEnum::CSR]);
         }
+
+        // dd($query->toRawSql());
         // $user = auth()->user();
 
         // if (
