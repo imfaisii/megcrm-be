@@ -43,12 +43,12 @@ class FixLeadPostCodeAndAddress extends Command
                 $this->info('API:: post code => ' . $postCode . ', address => ' . $address);
 
                 $lead->update([
-                    'post_code' => $postCode,
-                    'address' => $address,
-                    'plain_address' => $plainAddres,
-                    'county' => $county,
-                    'city' => $city,
-                    'country' => $country,
+                    // 'post_code' => $postCode,
+                    // 'address' => $address,
+                    // 'plain_address' => $plainAddres,
+                    // 'county' => $county,
+                    // 'city' => $city,
+                    // 'country' => $country,
                     'building_number' => $buildingNumber,
                     'sub_building' => $subBuilding
                 ]);
