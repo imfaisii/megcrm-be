@@ -4,6 +4,7 @@ namespace App\Imports\Leads;
 
 use App\Classes\GetAddress;
 use App\Classes\LeadResponseClass;
+use App\Jobs\AircallContactCreationJob;
 
 ini_set('memory_limit', '-1');
 ini_set('max_execution_time', 0);
@@ -21,7 +22,7 @@ use Maatwebsite\Excel\Concerns\WithHeadingRow;
 
 class LeadsImport implements ToCollection, WithHeadingRow
 {
-    public function __construct(public LeadResponseClass $classResponse)
+    public function __construct(public LeadResponseClass $classResponse, public $newlyCreatedLeads = [])
     {
         //
     }
@@ -83,7 +84,10 @@ class LeadsImport implements ToCollection, WithHeadingRow
                             'city' => $city,
                             'country' => $country,
                         ]);
-
+                        // check if its new created add it to an for later sending for creating contact on air call
+                        if ($lead->wasRecentlyCreated) {
+                            $this->newlyCreatedLeads[] = $lead->toArray();
+                        }
                         // Set Status
                         if (array_key_exists('status', $row->toArray())) {
                             $status = LeadStatus::firstOrCreate([
@@ -106,18 +110,31 @@ class LeadsImport implements ToCollection, WithHeadingRow
                         ]);
                     } catch (Exception $exception) {
                         Log::channel('lead_file_read_log')->info(
-                            'Error importing lead address: '.$address.'. '.$exception->getMessage()
+                            'Error importing lead address: ' . $address . '. ' . $exception->getMessage()
                         );
                     }
                 }
             }
         } catch (Exception $exception) {
             Log::channel('lead_file_read_log')->info(
-                'Exception importing lead address:: '.$row['address'].' message:: '.$exception->getMessage()
+                'Exception importing lead address:: ' . $row['address'] . ' message:: ' . $exception->getMessage()
             );
 
             $this->classResponse->failedLeads[] = $row['address'];
         }
+
+        try {
+
+            $chunks = array_chunk($this->newlyCreatedLeads, 30);
+            foreach ($chunks as $key => $eachchunk) {
+                AircallContactCreationJob::dispatch($eachchunk)->delay($key != 0 ? 120 : null);
+            }
+
+
+        } catch (Exception $exception) {
+
+        }
+
     }
 
     public function split_name($name)
@@ -128,7 +145,7 @@ class LeadsImport implements ToCollection, WithHeadingRow
             $name = trim($name);
             $string = preg_replace('#.*\s([\w-]*)$#', '$1', $name);
             $parts[] = $string;
-            $name = trim(preg_replace('#'.preg_quote($string, '#').'#', '', $name));
+            $name = trim(preg_replace('#' . preg_quote($string, '#') . '#', '', $name));
         }
 
         if (empty($parts)) {
