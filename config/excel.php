@@ -14,7 +14,7 @@ return [
         | Here you can specify how big the chunk should be.
         |
         */
-        'chunk_size' => 1000,
+        'chunk_size'             => 5000,
 
         /*
         |--------------------------------------------------------------------------
@@ -60,16 +60,16 @@ return [
         | Configure e.g. default title, creator, subject,...
         |
         */
-        'properties' => [
-            'creator' => '',
+        'properties'             => [
+            'creator'        => 'Muhammad Umar Riaz',
             'lastModifiedBy' => '',
-            'title' => '',
-            'description' => '',
-            'subject' => '',
-            'keywords' => '',
-            'category' => '',
-            'manager' => '',
-            'company' => '',
+            'title'          => 'data-match-sent',
+            'description'    => '',
+            'subject'        => '',
+            'keywords'       => '',
+            'category'       => '',
+            'manager'        => '',
+            'company'        => 'MEG',
         ],
     ],
 

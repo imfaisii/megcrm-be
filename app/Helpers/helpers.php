@@ -19,7 +19,7 @@ function get_permissions_by_routes(): array
 
     foreach ($routeCollection as $item) {
         $name = $item->action;
-        if (! empty($name['as'])) {
+        if (!empty($name['as'])) {
             $permission = $name['as'];
             $permission = trim(strtolower($permission));
             $ignoreRoutesStartingWith = 'sanctum|livewire|ignition|notifications|log-viewer|debugbar';
@@ -48,11 +48,11 @@ function get_modules_array_from_permissions(array $permissions): array
         $module = $parts[0];
         $submodule = implode('.', array_slice($parts, 1));
 
-        if (! isset($modules[$module])) {
+        if (!isset($modules[$module])) {
             $modules[$module] = [];
         }
 
-        if (! in_array($submodule, $modules[$module])) {
+        if (!in_array($submodule, $modules[$module])) {
             array_push($modules[$module], ['name' => $submodule, 'method' => $item['method']]);
         }
     }
@@ -81,7 +81,7 @@ function get_all_includes_in_camel_case(): array
     return collect(get_all_includes())
         ->map(function (string $includes) {
             return collect(explode('.', $includes))
-                ->map(fn (string $include) => Str::camel($include))
+                ->map(fn(string $include) => Str::camel($include))
                 ->join('.');
         })
         ->toArray();
@@ -118,7 +118,7 @@ function get_permissions_as_modules_array(mixed $permissions): array
     foreach ($modulesThroughSubmodules as $key => $submodule) {
         try {
             $moduleName = explode('.', $submodule)[0];
-            if (! in_array($moduleName, $modules)) {
+            if (!in_array($moduleName, $modules)) {
                 $modules[] = $moduleName;
             }
         } catch (\Exception $e) {
@@ -164,7 +164,7 @@ function shouldAppend(string $append): bool
         $appends = explode(',', request()->get('append'));
     }
 
-    if (! in_array($append, $appends)) {
+    if (!in_array($append, $appends)) {
         return false;
     }
 
@@ -189,4 +189,36 @@ function removeSpace(string $string): string
 {
     return str_replace(' ', '', $string);
 
+}
+
+function extractFirstNumericNumber(string $input): ?string
+{
+    return trim(Str::before($input, ' '));
+}
+
+/* Replace the only first occurance of a substring in a string */
+function removeStringFromString(string $needle, string $string, string $replaceString = ''): ?string
+{
+    return trim(Str::replaceFirst($needle, $replaceString, $string));
+}
+
+function getOnlyNumersFromString(string $string): string
+{
+    $cleanedString = preg_replace('/[^0-9.,\/-]/', ' ', $string);
+
+    // Remove extra spaces at the end
+    return $cleanedString = trim($cleanedString);
+
+}
+
+
+function replaceFirst(string $search, string $replace, string $subject): string
+{
+    return preg_replace('/' . preg_quote($search, '/') . '/', $replace, $subject, 1);
+}
+
+
+function fixNumberForAirCall(string $number): string
+{
+    return Str::start(substr(preg_replace('/\D/', '', $number), -10), '+44');
 }
