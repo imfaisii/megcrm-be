@@ -3,6 +3,7 @@
 namespace App\Actions\Leads;
 
 use App\Actions\Common\AbstractCreateAction;
+use App\Jobs\AircallContactCreationJob;
 use App\Models\Lead;
 use App\Models\LeadStatus;
 use Illuminate\Support\Arr;
@@ -26,7 +27,7 @@ class StoreLeadAction extends AbstractCreateAction
 
         /** @var Lead $lead */
         $lead = parent::create($fillables);
-
+        AircallContactCreationJob::dispatch([$lead]);  // create contact on air call
         if ($data['has_second_receipent']) {
             $lead->secondReceipent()->firstOrCreate($data['second_receipent']);
         }

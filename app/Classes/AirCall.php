@@ -8,6 +8,7 @@ use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class AirCall
@@ -25,12 +26,12 @@ class AirCall
     public function __construct()
     {
         $this->data = collect();
-        $token = base64_encode(config('credentials.AIRCALL_API_ID').':'.config('credentials.AIRCALL_API_TOKEN'));
+        $token = base64_encode(config('credentials.AIRCALL_API_ID') . ':' . config('credentials.AIRCALL_API_TOKEN'));
         $this->HttpClient = Http::withHeaders([
             'Authorization' => "Basic {$token}",
             'Accept' => 'application/json',
             'Content-Type' => 'application/json',
-        ])->timeout(120)->retry(3, 1000);
+        ])->timeout(120)->retry(3, 60000);
     }
 
     public function pingServer()
@@ -52,7 +53,7 @@ class AirCall
         try {
             $isNextPage = true;
             $Url = $userId ? Str::of("{$this->BaseUrl}{$this->version}/users/")->append($userId) : "{$this->BaseUrl}{$this->version}/users";
-            while (! empty($isNextPage)) {
+            while (!empty($isNextPage)) {
                 $response = $this->HttpClient->get($Url, $queryParams);
                 if ($response->successful()) {
                     $Url = data_get($response->json(), 'meta.next_page_link', null);
@@ -81,7 +82,7 @@ class AirCall
         try {
             $isNextPage = true;
             $Url = "{$this->BaseUrl}{$this->version}/users/availabilities";
-            while (! empty($isNextPage)) {
+            while (!empty($isNextPage)) {
                 $response = $this->HttpClient->get($Url, $queryParams);
                 if ($response->successful()) {
                     $Url = data_get($response->json(), 'meta.next_page_link', null);
@@ -177,7 +178,7 @@ class AirCall
             $this->GeneralDataSet($queryParams);
             $isNextPage = true;
             $Url = "{$this->BaseUrl}{$this->version}/calls";
-            while (! empty($isNextPage)) {
+            while (!empty($isNextPage)) {
                 $response = $this->HttpClient->get($Url, $queryParams);
                 if ($response->successful()) {
                     $Url = data_get($response->json(), 'meta.next_page_link', null);
@@ -219,7 +220,7 @@ class AirCall
             }
             $isNextPage = true;
             $Url = "{$this->BaseUrl}{$this->version}/calls/search";
-            while (! empty($isNextPage)) {
+            while (!empty($isNextPage)) {
                 $response = $this->HttpClient->get($Url, [...$defaultParams, ...$queryParams]);
                 if ($response->successful()) {
                     $Url = data_get($response->json(), 'meta.next_page_link', null);
@@ -248,7 +249,7 @@ class AirCall
         try {
             $isNextPage = true;
             $Url = "{$this->BaseUrl}{$this->version}/calls/{$callId}";
-            while (! empty($isNextPage)) {
+            while (!empty($isNextPage)) {
                 $response = $this->HttpClient->get($Url);
                 if ($response->successful()) {
                     $Url = data_get($response->json(), 'meta.next_page_link', null);
@@ -338,7 +339,7 @@ class AirCall
             $this->GeneralDataSet($queryParams);
             $isNextPage = true;
             $Url = "{$this->BaseUrl}{$this->version}/contacts";
-            while (! empty($isNextPage)) {
+            while (!empty($isNextPage)) {
                 $response = $this->HttpClient->get($Url);
                 if ($response->successful()) {
                     $Url = data_get($response->json(), 'meta.next_page_link', null);
@@ -360,6 +361,26 @@ class AirCall
     }
 
     /**
+     *Create A New Contact
+     */
+    public function createContact(array $queryParams = []): JsonResponse
+    {
+        try {
+            Log::info("Creating contact");
+
+            if (blank($queryParams)) {
+                return $this->error();
+            }
+            $Url = "{$this->BaseUrl}{$this->version}/contacts";
+            $response = $this->HttpClient->POST($Url, $queryParams);
+            return $response->successful() ? $this->success(data: $response->json()) : $this->error(message: "Couldn't do it because of status Code :{$response->status()}");
+        } catch (Exception $e) {
+
+            return $this->exception($e);
+        }
+    }
+
+    /**
      * Get Details of a Contact
      */
     public function getDetailsOfAContact(string $contactId): JsonResponse
@@ -367,7 +388,7 @@ class AirCall
         try {
             $isNextPage = true;
             $Url = "{$this->BaseUrl}{$this->version}/contacts{$contactId}";
-            while (! empty($isNextPage)) {
+            while (!empty($isNextPage)) {
                 $response = $this->HttpClient->get($Url);
                 if ($response->successful()) {
                     $Url = data_get($response->json(), 'meta.next_page_link', null);
