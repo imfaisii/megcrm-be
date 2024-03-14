@@ -89,16 +89,15 @@ class GetAddress
                 $postCodeResponseCountry = Arr::get($postCodeRequest->json(), 'country', null);
                 /* the beneath code is first matching the exact pose code to the result and modifying the addrees plus code for later use
                  and next thing is that if no exact address is found against our provided address then we are just using the first address */
-                /***
 
-                 $Firstresult = $request?->collect()?->transform(function ($eachResult) {
+
+                $Firstresult = $request?->collect()?->transform(function ($eachResult) {
                     return [
                         ...$eachResult,
                         'address' => str_replace("\n", ' ', str_replace('  ', ' ', preg_replace('/[^a-zA-Z0-9\s]/', ' ', implode(" ", $eachResult['address'])))),
                         'postcode' => Str::upper(str_replace(' ', '', preg_replace('/[^a-zA-Z0-9\s]/', ' ', $eachResult['postcode']))),
                     ];
                 });
-                $postCode = 'E125AH1';
                 $Firstresult = $Firstresult->filter(function ($eachResult) use ($postCode) {
                     return $eachResult['postcode'] == $postCode;
                 })->isNotEmpty() ? $Firstresult->filter(function ($eachResult) use ($postCode) {
@@ -108,9 +107,10 @@ class GetAddress
                 $exactCheck = $Firstresult?->first(function (array $value, int $key) use ($query) {
                     return Str::contains($value['address'], $query);
                 }) ?: $Firstresult?->first();
-                */
-                $address = $request->json()[0];
-                $transformedAddress = implode(' ', $address['address']);
+
+
+                $address = $exactCheck;
+                $transformedAddress =  $address['address'];
 
                 if (isset($address['city'])) {
                     $transformedAddress .= ', ' . $address['city'];
@@ -127,7 +127,7 @@ class GetAddress
                 return [
                     str_replace(' ', '', $address['postcode']),
                     $transformedAddress,
-                    implode(' ', $address['address']),
+                   $address['address'],
                     $address['city'] ?? null,
                     $address['county'] ?? null,
                     $postCodeResponseCountry ?? null,
