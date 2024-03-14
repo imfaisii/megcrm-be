@@ -29,6 +29,7 @@ class ListLeadAction extends AbstractListAction
         //     $query->byRole(RoleEnum::SURVEYOR);
         // }
 
+        //  dd($query->toRawSql());
         return $query;
     }
 }
