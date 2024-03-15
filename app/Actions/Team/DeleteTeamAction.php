@@ -3,8 +3,9 @@
 namespace App\Actions\Team;
 
 use App\Actions\Common\AbstractDeleteAction;
+use App\Enums\Permissions\RoleEnum;
 use App\Models\Team;
-use App\Models\User;
+use Illuminate\Support\Str;
 
 class DeleteTeamAction extends AbstractDeleteAction
 {
@@ -12,6 +13,14 @@ class DeleteTeamAction extends AbstractDeleteAction
 
     public function delete($model): ?bool
     {
+        $model->users()->get()->each(function ($user) {
+            $teamRoles = $user?->roles?->filter(function ($role) {
+                return Str::contains($role->name, 'team');
+            })?->map(function ($role) {
+                return $role->id;
+            });
+            $user->roles()->detach($teamRoles);
+        });  // remove the team roles from the users
         $model->users()->detach();
 
         return parent::delete($model);

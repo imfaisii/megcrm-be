@@ -34,7 +34,13 @@ trait HasTeamTrait
         } else {
             $query->where(function ($query) {
                 // if its a single member then check also its lead generators
-                $query->byRole(RoleEnum::SURVEYOR);
+
+                if (
+                    !auth()->user()->hasRole(RoleEnum::SUPER_ADMIN)
+                    && auth()->user()->hasRole(RoleEnum::SURVEYOR)
+                ) {
+                    $query->byRole(RoleEnum::SURVEYOR);
+                }
                 $query->Orwhere($this->ScopeColumn ?? 'user_id', auth()->id());
 
             });

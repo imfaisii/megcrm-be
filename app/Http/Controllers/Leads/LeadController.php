@@ -22,6 +22,7 @@ use App\Models\Lead;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Resources\Json\ResourceCollection;
+use Illuminate\Support\Facades\Cache;
 
 use function App\Helpers\null_resource;
 
@@ -112,7 +113,7 @@ class LeadController extends Controller
         return new DatamatchExport;
     }
 
-    public function uploadDatamatch(UploadDataMatchRequest $request,UploadLeadsFileAction $action)
+    public function uploadDatamatch(UploadDataMatchRequest $request, UploadLeadsFileAction $action)
     {
         return $action->executeLeadsDataMatchResultUpload($request);
     }
