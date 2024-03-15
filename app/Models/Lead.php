@@ -98,9 +98,9 @@ class Lead extends BaseModel
             $query->where(function ($query) use ($assignedLeadGenerators, $user) {
                 $query->whereIn('lead_generator_id', $assignedLeadGenerators);  // if we pass an empty array the condition become 0=1
 
-                // $query->orWhereHas('surveyBooking', function ($query) use ($user) {
-                //     $query->where('surveyor_id', $user->id);
-                // });
+                $query->orWhereHas('surveyBooking', function ($query) use ($user) {
+                    $query->where('surveyor_id', $user->id);
+                });
             });
 
 
