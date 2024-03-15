@@ -6,6 +6,7 @@ use App\Enums\DataMatch\DataMatchEnum;
 use App\Models\Lead;
 use Carbon\Carbon;
 use Illuminate\Contracts\Support\Responsable;
+use Illuminate\Support\Facades\Cache;
 use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
@@ -122,8 +123,8 @@ class DatamatchExport implements FromCollection, WithHeadings, WithMapping, Resp
             Carbon::parse($lead->dob)->format('m/d/Y'),
             // $lead->sub_building ? extractFirstNumericNumber(getOnlyNumersFromString($lead->sub_building)) : ($lead->building_number ? extractFirstNumericNumber(getOnlyNumersFromString($lead->building_number)) : extractFirstNumericNumber(getOnlyNumersFromString($lead->address))),    // only fails when there is no number in sub building and buildingnumber  like flat one
             // $lead->sub_building ? removeStringFromString($lead->sub_building, $lead->address) : ($lead->building_number ? removeStringFromString($lead->building_number, $lead->address) : removeStringFromString(extractFirstNumericNumber(getOnlyNumersFromString($lead->address)), $lead->address)),
-            $lead->sub_building ?: ($lead->building_number ?: extractFirstNumericNumber(getOnlyNumersFromString($lead->address))),
-            $lead->sub_building ? removeStringFromString($lead->sub_building, $lead->address) : ($lead->building_number ? removeStringFromString($lead->building_number, $lead->address) : removeStringFromString(extractFirstNumericNumber(getOnlyNumersFromString($lead->address)), $lead->address)),
+            $lead->sub_building ?: ($lead->building_number ?: extractFirstNumericNumber(getOnlyNumersFromString($lead->plain_address))),
+            $lead->sub_building ? removeStringFromString($lead->sub_building, $lead->plain_address) : ($lead->building_number ? removeStringFromString($lead->building_number, $lead->plain_address) : removeStringFromString(extractFirstNumericNumber(getOnlyNumersFromString($lead->address)), $lead->plain_address)),
             '',
             '',
             $lead->city,
@@ -137,15 +138,27 @@ class DatamatchExport implements FromCollection, WithHeadings, WithMapping, Resp
      */
     public function collection()
     {
-        return $lead = Lead::withWhereHas('leadCustomerAdditionalDetail', function ($query) {
+        // if there is no new data match required then download the old result
+        $query = Lead::withWhereHas('leadCustomerAdditionalDetail', function ($query) {
             $query->where('is_datamatch_required', true);
-        })->get()->each(function ($lead) {
-            $lead->leadCustomerAdditionalDetail->update([
-                'datamatch_progress' => DataMatchEnum::StatusSent,
-                'is_datamatch_required' => false,
-                'data_match_sent_date' => now()
-            ]);
-        });
+        })->get();
+        if (blank($query) && Cache::store('file')->has('datamatch-download')) {
+            return Cache::store('file')->get('datamatch-download');
+        } else {
+            $lead = Lead::withWhereHas('leadCustomerAdditionalDetail', function ($query) {
+                $query->where('is_datamatch_required', true);
+            })->get()->each(function ($lead) {
+                $lead->leadCustomerAdditionalDetail->update([
+                    'datamatch_progress' => DataMatchEnum::StatusSent,
+                    'is_datamatch_required' => false,
+                    'data_match_sent_date' => now()
+                ]);
+            });
+            Cache::store('file')->put('datamatch-download', $lead);
+            return $lead;
+        }
+
+
 
 
     }
