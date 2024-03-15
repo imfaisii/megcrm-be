@@ -62,9 +62,9 @@ class TeamController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Team $user, DeleteTeamAction $action): BaseJsonResource
+    public function destroy(Team $team, DeleteTeamAction $action): BaseJsonResource
     {
-        $action->delete($user);
+        $action->delete($team);
 
         return null_resource();
     }
