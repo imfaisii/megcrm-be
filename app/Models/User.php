@@ -36,7 +36,7 @@ use Spatie\QueryBuilder\AllowedInclude;
 
 use function App\Helpers\is_append_present;
 
-class User extends BaseModel implements AuthenticatableContract, HasMedia,AccessAuthorizable
+class User extends BaseModel implements AuthenticatableContract, HasMedia, AccessAuthorizable
 {
     use Authenticatable,
         AuthenticationLoggable,
@@ -129,7 +129,7 @@ class User extends BaseModel implements AuthenticatableContract, HasMedia,Access
     {
         if (is_append_present('authentications')) {
             return $this->authentications->take($count)->map(function ($log) {
-                $agent = tap(new Agent, fn($agent) => $agent->setUserAgent($log->user_agent));
+                $agent = tap(new Agent, fn ($agent) => $agent->setUserAgent($log->user_agent));
 
                 return [
                     'is_mobile' => ($agent->isMobile() || $agent->isTablet()) ? true : false,
@@ -208,7 +208,4 @@ class User extends BaseModel implements AuthenticatableContract, HasMedia,Access
     {
         return $this->hasMany(Team::class, 'admin_id');
     }
-
-
-
 }
