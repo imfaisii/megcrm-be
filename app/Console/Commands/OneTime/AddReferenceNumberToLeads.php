@@ -31,8 +31,7 @@ class AddReferenceNumberToLeads extends Command
     {
         try {
             $this->info("Running Command");
-            Lead::whereNull('reference_number')
-                ->lazyById(1000, $column = 'id')
+            Lead::lazyById(1000, $column = 'id')
                 ->each(function ($lead) {
                     $lead->update(['reference_number' => generateUniqueRandomString()]);
                 });
