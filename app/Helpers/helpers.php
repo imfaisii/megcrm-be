@@ -19,7 +19,7 @@ function get_permissions_by_routes(): array
 
     foreach ($routeCollection as $item) {
         $name = $item->action;
-        if (!empty($name['as'])) {
+        if (!empty ($name['as'])) {
             $permission = $name['as'];
             $permission = trim(strtolower($permission));
             $ignoreRoutesStartingWith = 'sanctum|livewire|ignition|notifications|log-viewer|debugbar';
@@ -48,7 +48,7 @@ function get_modules_array_from_permissions(array $permissions): array
         $module = $parts[0];
         $submodule = implode('.', array_slice($parts, 1));
 
-        if (!isset($modules[$module])) {
+        if (!isset ($modules[$module])) {
             $modules[$module] = [];
         }
 
@@ -221,4 +221,23 @@ function replaceFirst(string $search, string $replace, string $subject): string
 function fixNumberForAirCall(string $number): string
 {
     return Str::start(substr(preg_replace('/\D/', '', $number), -10), '+44');
+}
+
+
+function generateUniqueRandomString(): string
+{
+    // Generate a random string of 10 characters
+    $randomString = Str::random(10);
+
+    // Get the current timestamp
+    $timestamp = time(); // Or use Carbon\Carbon::now()->timestamp for Carbon timestamp
+
+    // Get a random index within the range of the random string length
+    $randomIndex = mt_rand(0, strlen($randomString));
+
+    // Insert the timestamp at the random index
+    $uniqueString = substr($randomString, 0, $randomIndex) . $timestamp . substr($randomString, $randomIndex);
+
+    return $uniqueString; // Output the unique random string with timestamp inserted at a random index
+
 }
