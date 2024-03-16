@@ -54,6 +54,7 @@ class Lead extends BaseModel
         'created_by_id',
         'sub_building',
         'building_number',
+        'reference_number',
 
     ];
 
