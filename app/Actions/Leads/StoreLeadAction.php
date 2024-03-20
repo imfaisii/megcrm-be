@@ -20,7 +20,6 @@ class StoreLeadAction extends AbstractCreateAction
         ];
 
         $fillables = Arr::except($data, [
-            'has_second_receipent',
             'second_receipent',
             'measures',
         ]);
