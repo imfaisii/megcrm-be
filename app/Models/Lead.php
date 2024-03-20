@@ -44,6 +44,7 @@ class Lead extends BaseModel
         'country',
         'address',
         'is_marked_as_job',
+        'has_second_receipent',
         'job_type_id',
         'fuel_type_id',
         // 'surveyor_id',
@@ -62,6 +63,7 @@ class Lead extends BaseModel
 
     protected $casts = [
         'is_marked_as_job' => 'boolean',
+        'has_second_receipent' => 'boolean',
     ];
 
     protected array $allowedIncludes = [
@@ -78,7 +80,8 @@ class Lead extends BaseModel
         'callCenters.callCenterStatus',
         'comments.commentator',
         'leadAdditional',
-        'notifications'
+        'notifications',
+        'secondReceipent'
     ];
 
     protected array $discardedFieldsInFilter = [
@@ -103,8 +106,6 @@ class Lead extends BaseModel
                     $query->where('surveyor_id', $user->id);
                 });
             });
-
-
         }
 
         return $query;

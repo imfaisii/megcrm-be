@@ -49,7 +49,6 @@ class LeadController extends Controller
 
     public function show(Lead $lead, FindLeadAction $action)
     {
-        // $this->authorize('view', $lead);
         $action->enableQueryBuilder();
 
         return $action->individualResource($action->findOrFail($lead->id));
