@@ -64,7 +64,7 @@ class LeadStatusSeeder extends Seeder
         foreach ($this->entries as $key => $leadStatus) {
             LeadStatus::firstOrCreate([
                 'name' => $leadStatus,
-                'color' => $key < count($this->entries) / 2 ? 'warning' : 'success',
+                'color' => $key < count($this->entries) / 2 ? '#E4A11B' : '#14A44D',
                 'created_by_id' => 1,
             ]);
         }
