@@ -4,6 +4,7 @@ namespace App\Helpers;
 
 use App\Actions\Common\BaseJsonResource;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
 
@@ -19,7 +20,7 @@ function get_permissions_by_routes(): array
 
     foreach ($routeCollection as $item) {
         $name = $item->action;
-        if (!empty($name['as'])) {
+        if (!empty ($name['as'])) {
             $permission = $name['as'];
             $permission = trim(strtolower($permission));
             $ignoreRoutesStartingWith = 'sanctum|livewire|ignition|notifications|log-viewer|debugbar';
@@ -48,7 +49,7 @@ function get_modules_array_from_permissions(array $permissions): array
         $module = $parts[0];
         $submodule = implode('.', array_slice($parts, 1));
 
-        if (!isset($modules[$module])) {
+        if (!isset ($modules[$module])) {
             $modules[$module] = [];
         }
 
@@ -81,7 +82,7 @@ function get_all_includes_in_camel_case(): array
     return collect(get_all_includes())
         ->map(function (string $includes) {
             return collect(explode('.', $includes))
-                ->map(fn (string $include) => Str::camel($include))
+                ->map(fn(string $include) => Str::camel($include))
                 ->join('.');
         })
         ->toArray();
@@ -225,4 +226,47 @@ function fixNumberForAirCall(string $number): string
 function generateUniqueRandomString(): string
 {
     return str()->upper(Str::random(10));
+}
+
+
+function base64url_encode($data): string
+{
+    return rtrim(strtr(base64_encode($data), '+/', '-_'), '=');
+}
+
+function base64url_decode($data): bool|string
+{
+    return base64_decode(str_pad(strtr($data, '-_', '+/'), strlen($data) % 4, '='));
+}
+
+function meg_encrypt($data): string
+{
+    // it get the string, replace each character with our specified ascii value from config array
+    $str = json_encode($data);
+    $ourAsciiArray = config("encrypt.ascii_char");
+    $result = '';
+    for ($i = 0; $i < strlen($str); $i++) {
+        $stringChar = substr($str, $i, 1);
+        $result .= chr(Arr::get($ourAsciiArray, ord($stringChar)));
+        // $result .= chr(ord($stringChar) + 33);  // if the above not working we could replace it with a simple addition of a random ascii character
+
+    }
+    return base64url_encode($result);
+}
+
+function meg_decrypts($data)
+{
+    $str = base64url_decode($data);
+
+    $ourAsciiArray = config("encrypt.ascii_char");
+
+    $result = '';
+    for ($i = 0; $i < strlen($str); $i++) {
+        $stringChar = substr($str, $i, 1);
+        $result .= chr(Arr::get($ourAsciiArray, ord($stringChar)));
+        // $result .= chr(ord($stringChar) - 33);
+
+    }
+
+    return json_decode($result, true);
 }

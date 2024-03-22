@@ -197,4 +197,9 @@ return [
         'AirCallFascade' => App\Fascade\AirCallFascade::class,
     ])->toArray(),
 
+    'allowed_domains' => env('allowed_domains', [
+        'megcrm.co.uk',
+        'localhost:5173'
+    ])
+
 ];

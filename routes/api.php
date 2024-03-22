@@ -7,6 +7,7 @@ use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\CalenderEventsController;
 use App\Http\Controllers\CallCenterController;
 use App\Http\Controllers\CallCenterStatusesController;
+use App\Http\Controllers\Customer\CustomerController;
 use App\Http\Controllers\FuelTypeController;
 use App\Http\Controllers\InstallationTypeController;
 use App\Http\Controllers\JobTypeController;
@@ -57,7 +58,7 @@ Route::get('/getSuggestions', function (GetAddressRequest $request) {
 });
 
 Route::get('/leads-links/council-tax/{postcode}', [LeadController::class, 'getCouncilTaxLink'])->name('leads.council-tax-link');
-
+Route::get('customer-lead-status-view/{lead}', [CustomerController::class, 'lead_view'])->name('customer.lead-status')->middleware('verify_domain', 'signed');
 Route::group(['middleware' => 'auth:sanctum'], function () {
 
     Route::get('/get-permissions', function () {
