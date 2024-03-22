@@ -40,10 +40,12 @@ class LeadsImport implements ToCollection, WithHeadingRow
 
                     try {
                         // lead generator
+                        $leadGeneratorName = $row['website'] ?? 'Lead Generator Default';
                         $leadGenerator = LeadGenerator::firstOrCreate(
                             [
-                                'name' => $row['website'] ?? 'Lead Generator Default',
+                                'name' => $leadGeneratorName,
                             ],
+                            ['sender_id' => substr($leadGeneratorName, 0, 11)],
                         );
                         $email = Arr::get($row, 'email', null);
                         $phoneNo = Arr::get($row, 'contact_number', '000000');
@@ -110,7 +112,7 @@ class LeadsImport implements ToCollection, WithHeadingRow
                         ]);
                     } catch (Exception $exception) {
                         Log::channel('lead_file_read_log')->info(
-                            'Error importing lead address: ' . $address . '. ' . $exception->getMessage()
+                            'Error importing lead address: ' . $row['address'] . '. ' . $exception->getMessage()
                         );
                     }
                 }
@@ -129,12 +131,8 @@ class LeadsImport implements ToCollection, WithHeadingRow
             foreach ($chunks as $key => $eachchunk) {
                 AircallContactCreationJob::dispatch($eachchunk)->delay($key != 0 ? 120 : null);
             }
-
-
         } catch (Exception $exception) {
-
         }
-
     }
 
     public function split_name($name)
