@@ -23,6 +23,7 @@ use Maatwebsite\Excel\Concerns\WithStyles;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 use function App\Helpers\extractFirstNumericNumber;
+use function App\Helpers\formatPostCodeWithSpace;
 use function App\Helpers\getOnlyNumersFromString;
 use function App\Helpers\removeStringFromString;
 use function App\Helpers\replaceFirst;
@@ -120,7 +121,7 @@ class DatamatchExport implements FromCollection, WithHeadings, WithMapping, Resp
             '', // surname
             $lead->first_name,
             $lead->last_name,
-            Carbon::parse($lead->dob)->format('m/d/Y'),
+            Carbon::parse($lead->dob)->format('d/m/Y'),
             // $lead->sub_building ? extractFirstNumericNumber(getOnlyNumersFromString($lead->sub_building)) : ($lead->building_number ? extractFirstNumericNumber(getOnlyNumersFromString($lead->building_number)) : extractFirstNumericNumber(getOnlyNumersFromString($lead->address))),    // only fails when there is no number in sub building and buildingnumber  like flat one
             // $lead->sub_building ? removeStringFromString($lead->sub_building, $lead->address) : ($lead->building_number ? removeStringFromString($lead->building_number, $lead->address) : removeStringFromString(extractFirstNumericNumber(getOnlyNumersFromString($lead->address)), $lead->address)),
             $lead->sub_building ?: ($lead->building_number ?: extractFirstNumericNumber(getOnlyNumersFromString($lead->plain_address))),
@@ -129,7 +130,7 @@ class DatamatchExport implements FromCollection, WithHeadings, WithMapping, Resp
             '',
             $lead->city,
             $lead->country,
-            $lead->post_code,
+            $lead->actual_post_code ?? formatPostCodeWithSpace($lead->post_code),
         ];
     }
 

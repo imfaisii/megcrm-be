@@ -38,6 +38,7 @@ class Lead extends BaseModel
         'phone_no',
         'dob',
         'post_code',
+        'actual_post_code',
         'plain_address',
         'city',
         'county',

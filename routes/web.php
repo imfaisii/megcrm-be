@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Route;
 
 use function App\Helpers\removeStringFromString;
 use function App\Helpers\extractFirstNumericNumber;
+use function App\Helpers\formatPostCodeWithSpace;
 use function App\Helpers\removeSpace;
 use function App\Helpers\replaceFirst;
 use function App\Helpers\getOnlyNumersFromString;
@@ -39,8 +40,10 @@ use function App\Helpers\getOnlyNumersFromString;
 */
 if (app()->isLocal()) {
     Route::get('test', function (Request $request) {
-        // Define the trait with multiple methods
-
+       return $lead = Lead::query()
+        ->withWhereHas('leadCustomerAdditionalDetail', function ($query) {
+            $query->where('datamatch_progress', DataMatchEnum::StatusSent);
+        })->get();
 
 
     });
