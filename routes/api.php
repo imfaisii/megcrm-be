@@ -40,22 +40,6 @@ use Illuminate\Support\Facades\Route;
 
 require __DIR__ . '/auth.php';
 
-Route::get('/getSuggestions', function (GetAddressRequest $request) {
-    $getAddress = new GetAddress();
-
-    try {
-        return response()->json([
-            'data' => $getAddress->getSuggestions($request->post_code),
-        ]);
-    } catch (Exception $e) {
-        return response()->json([
-            'success' => false,
-            'message' => $e->getMessage(),
-            'data' => [],
-        ]);
-    }
-});
-
 Route::get('/leads-links/council-tax/{postcode}', [LeadController::class, 'getCouncilTaxLink'])->name('leads.council-tax-link');
 
 Route::group(['middleware' => 'auth:sanctum'], function () {
@@ -65,6 +49,23 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
             'data' => json_decode(auth()->user()->jsPermissions()),
         ]);
     });
+
+    Route::get('/getSuggestions', function (GetAddressRequest $request) {
+        $getAddress = new GetAddress();
+
+        try {
+            return response()->json([
+                'data' => $getAddress->getSuggestions($request->post_code),
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+                'data' => [],
+            ]);
+        }
+    });
+
 
     Route::get('/user', [UserController::class, 'currentUser']);
     Route::post('/users/{user}/collections/docs/upload', [UserController::class, 'uploadDocumentToCollection'])->name('users.documents-to-collections');
@@ -109,5 +110,4 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::get('/lead-extras', [LeadController::class, 'getExtras'])->name('leads.extras');
     Route::post('/lead-status/{lead}', [LeadController::class, 'updateStatus'])->name('leads.set-lead-status');
     Route::apiResource('/team', TeamController::class);
-
 });
