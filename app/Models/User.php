@@ -6,8 +6,10 @@ namespace App\Models;
 
 use AjCastro\EagerLoadPivotRelations\EagerLoadPivotTrait;
 use App\Actions\Common\BaseModel;
+use App\Classes\LeadResponseClass;
 use App\Filters\Users\FilterByGivenRole;
 use App\Filters\Users\FilterByRole;
+use App\Imports\Leads\LeadsImport;
 use App\Includes\Users\UserNotificationsInclude;
 use App\Traits\Common\HasCalenderEvent;
 use Carbon\Carbon;
@@ -35,6 +37,7 @@ use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\AllowedInclude;
 
 use function App\Helpers\is_append_present;
+use function App\Helpers\split_name;
 
 class User extends BaseModel implements AuthenticatableContract, HasMedia, AccessAuthorizable
 {
@@ -89,7 +92,7 @@ class User extends BaseModel implements AuthenticatableContract, HasMedia, Acces
         'additional.bank',
     ];
 
-    protected $appends = ['rights', 'top_role', 'user_agents'];
+    protected $appends = ['rights', 'top_role', 'user_agents', 'first_name', 'last_name'];
 
     public function notifyAuthenticationLogVia()
     {
@@ -146,6 +149,16 @@ class User extends BaseModel implements AuthenticatableContract, HasMedia, Acces
         }
 
         return null;
+    }
+
+    public function getFirstNameAttribute()
+    {
+        return split_name($this->name)['first_name'];
+    }
+
+    public function getLastNameAttribute()
+    {
+        return split_name($this->name)['last_name'];
     }
 
     public function additional()

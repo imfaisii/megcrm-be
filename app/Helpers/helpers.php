@@ -19,7 +19,7 @@ function get_permissions_by_routes(): array
 
     foreach ($routeCollection as $item) {
         $name = $item->action;
-        if (!empty ($name['as'])) {
+        if (!empty($name['as'])) {
             $permission = $name['as'];
             $permission = trim(strtolower($permission));
             $ignoreRoutesStartingWith = 'sanctum|livewire|ignition|notifications|log-viewer|debugbar';
@@ -48,7 +48,7 @@ function get_modules_array_from_permissions(array $permissions): array
         $module = $parts[0];
         $submodule = implode('.', array_slice($parts, 1));
 
-        if (!isset ($modules[$module])) {
+        if (!isset($modules[$module])) {
             $modules[$module] = [];
         }
 
@@ -81,7 +81,7 @@ function get_all_includes_in_camel_case(): array
     return collect(get_all_includes())
         ->map(function (string $includes) {
             return collect(explode('.', $includes))
-                ->map(fn(string $include) => Str::camel($include))
+                ->map(fn (string $include) => Str::camel($include))
                 ->join('.');
         })
         ->toArray();
@@ -237,4 +237,28 @@ function formatPostCodeWithSpace(string $postCode, int $indexFromLast = 3): stri
     $reversedPostCode = strrev($postCode);
     $reversedPostCode = Str::substrReplace($reversedPostCode, ' ', 3, 0);
     return strrev($reversedPostCode);
+}
+
+function split_name($name)
+{
+    $parts = [];
+
+    while (strlen(trim($name)) > 0) {
+        $name = trim($name);
+        $string = preg_replace('#.*\s([\w-]*)$#', '$1', $name);
+        $parts[] = $string;
+        $name = trim(preg_replace('#' . preg_quote($string, '#') . '#', '', $name));
+    }
+
+    if (empty($parts)) {
+        return false;
+    }
+
+    $parts = array_reverse($parts);
+    $name = [];
+    $name['first_name'] = $parts[0];
+    $name['middle_name'] = (isset($parts[2])) ? $parts[1] : '';
+    $name['last_name'] = (isset($parts[2])) ? $parts[2] : (isset($parts[1]) ? $parts[1] : '');
+
+    return $name;
 }

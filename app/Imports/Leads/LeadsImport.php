@@ -20,6 +20,8 @@ use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Concerns\ToCollection;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 
+use function App\Helpers\split_name;
+
 class LeadsImport implements ToCollection, WithHeadingRow
 {
     public function __construct(public LeadResponseClass $classResponse, public $newlyCreatedLeads = [])
@@ -35,7 +37,7 @@ class LeadsImport implements ToCollection, WithHeadingRow
 
             foreach ($rows as $key => $row) {
 
-                if (isset ($row['address']) && $row['address'] !== null) {
+                if (isset($row['address']) && $row['address'] !== null) {
                     $benefitTypes = [];
 
                     try {
@@ -63,7 +65,7 @@ class LeadsImport implements ToCollection, WithHeadingRow
 
                         [$postCode, $address, $plainAddress, $city, $county, $country, $buildingNumber, $subBuilding, $RawApiResponse, $actualPostCode] = $apiClass->adressionApi($postCode ?? '', $address);
 
-                        $name = $this->split_name($row['name'] ?? '');
+                        $name = split_name($row['name'] ?? '');
                         $lead = Lead::firstOrCreate([
                             'post_code' => $postCode,
                             'address' => $address,
@@ -137,29 +139,5 @@ class LeadsImport implements ToCollection, WithHeadingRow
             }
         } catch (Exception $exception) {
         }
-    }
-
-    public function split_name($name)
-    {
-        $parts = [];
-
-        while (strlen(trim($name)) > 0) {
-            $name = trim($name);
-            $string = preg_replace('#.*\s([\w-]*)$#', '$1', $name);
-            $parts[] = $string;
-            $name = trim(preg_replace('#' . preg_quote($string, '#') . '#', '', $name));
-        }
-
-        if (empty ($parts)) {
-            return false;
-        }
-
-        $parts = array_reverse($parts);
-        $name = [];
-        $name['first_name'] = $parts[0];
-        $name['middle_name'] = (isset ($parts[2])) ? $parts[1] : '';
-        $name['last_name'] = (isset ($parts[2])) ? $parts[2] : (isset ($parts[1]) ? $parts[1] : '');
-
-        return $name;
     }
 }
