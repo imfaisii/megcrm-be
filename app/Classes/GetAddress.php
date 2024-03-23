@@ -57,6 +57,8 @@ class GetAddress
                         'city' => $address['city'] ?? null,
                         'county' => $address['county'] ?? null,
                         'country' => $postCodeResponseCountry ?? null,
+                        'building_number'  => $address['buildingnumber'] ?? null,
+                        'sub_building' => $address['subbuilding'] ?? null,
                     ];
                 }
 
@@ -127,7 +129,7 @@ class GetAddress
                 return [
                     str_replace(' ', '', $address['postcode']),
                     $transformedAddress,
-                   $address['address'],
+                    $address['address'],
                     $address['city'] ?? null,
                     $address['county'] ?? null,
                     $postCodeResponseCountry ?? null,
@@ -141,7 +143,6 @@ class GetAddress
                     ->info("Error in postcode:: $postCode and address:: $query");
 
                 return [$postCode, $query, $query, null, null, null, null, null];
-
             }
         } catch (Exception $e) {
             Log::channel('addresso_api')
