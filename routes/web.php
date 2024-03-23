@@ -40,10 +40,7 @@ use function App\Helpers\getOnlyNumersFromString;
 */
 if (app()->isLocal()) {
     Route::get('test', function (Request $request) {
-       return $lead = Lead::query()
-        ->withWhereHas('leadCustomerAdditionalDetail', function ($query) {
-            $query->where('datamatch_progress', DataMatchEnum::StatusSent);
-        })->get();
+
 
 
     });

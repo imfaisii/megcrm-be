@@ -57,6 +57,7 @@ class Lead extends BaseModel
         'sub_building',
         'building_number',
         'reference_number',
+        'raw_api_response'
 
     ];
 
@@ -65,6 +66,7 @@ class Lead extends BaseModel
     protected $casts = [
         'is_marked_as_job' => 'boolean',
         'has_second_receipent' => 'boolean',
+        'raw_api_response' => 'json',
     ];
 
     protected array $allowedIncludes = [

@@ -35,7 +35,7 @@ class LeadsImport implements ToCollection, WithHeadingRow
 
             foreach ($rows as $key => $row) {
 
-                if (isset($row['address']) && $row['address'] !== null) {
+                if (isset ($row['address']) && $row['address'] !== null) {
                     $benefitTypes = [];
 
                     try {
@@ -61,7 +61,7 @@ class LeadsImport implements ToCollection, WithHeadingRow
                             ])->id;
                         }
 
-                        [$postCode, $address, $plainAddress, $city, $county, $country] = $apiClass->adressionApi($postCode ?? '', $address);
+                        [$postCode, $address, $plainAddress, $city, $county, $country, $buildingNumber, $subBuilding, $RawApiResponse, $actualPostCode] = $apiClass->adressionApi($postCode ?? '', $address);
 
                         $name = $this->split_name($row['name'] ?? '');
                         $lead = Lead::firstOrCreate([
@@ -85,6 +85,10 @@ class LeadsImport implements ToCollection, WithHeadingRow
                             'county' => $county,
                             'city' => $city,
                             'country' => $country,
+                            'building_number' => $buildingNumber,
+                            'sub_building' => $subBuilding,
+                            'raw_api_response' => $RawApiResponse,
+                            'actual_post_code' => $actualPostCode,
                         ]);
                         // check if its new created add it to an for later sending for creating contact on air call
                         if ($lead->wasRecentlyCreated) {
@@ -146,15 +150,15 @@ class LeadsImport implements ToCollection, WithHeadingRow
             $name = trim(preg_replace('#' . preg_quote($string, '#') . '#', '', $name));
         }
 
-        if (empty($parts)) {
+        if (empty ($parts)) {
             return false;
         }
 
         $parts = array_reverse($parts);
         $name = [];
         $name['first_name'] = $parts[0];
-        $name['middle_name'] = (isset($parts[2])) ? $parts[1] : '';
-        $name['last_name'] = (isset($parts[2])) ? $parts[2] : (isset($parts[1]) ? $parts[1] : '');
+        $name['middle_name'] = (isset ($parts[2])) ? $parts[1] : '';
+        $name['last_name'] = (isset ($parts[2])) ? $parts[2] : (isset ($parts[1]) ? $parts[1] : '');
 
         return $name;
     }
