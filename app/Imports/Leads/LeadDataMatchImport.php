@@ -68,9 +68,9 @@ class LeadDataMatchImport extends DefaultValueBinder implements ToCollection, Wi
                                 ['post_code', '=', strtoupper(removeSpace($eachLead['postcode']))],
                             ])->get();
                         if ($lead->count() > 1) {
-                            //means multiple records found now need to query more for specific
+                            //means multiple records found now need to query more for specific, so we find our row address in the coming leads
                             $response = $lead->filter(function ($item) use ($eachLead) {
-                                return stripos($item, $eachLead['address_line_1']) !== false;
+                                return stripos($item?->plain_address, $eachLead['address_line_1']) !== false;
                             })?->first();
                             $response?->leadCustomerAdditionalDetail->update([
                                 'datamatch_progress' => $eachLead['eco_4_verification_status'],
