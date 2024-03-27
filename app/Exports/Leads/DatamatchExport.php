@@ -11,22 +11,18 @@ use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithColumnWidths;
-use Maatwebsite\Excel\Concerns\WithCustomStartCell;
 use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
 use Maatwebsite\Excel\Events\AfterSheet;
 use Maatwebsite\Excel\Excel;
-use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 use Maatwebsite\Excel\Concerns\WithStyles;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-use function App\Helpers\extractFirstNumericNumber;
 use function App\Helpers\formatPostCodeWithSpace;
-use function App\Helpers\getOnlyNumersFromString;
 use function App\Helpers\removeStringFromString;
-use function App\Helpers\replaceFirst;
+use function App\Helpers\removetillFirstNuermicSpcae;
 
 class DatamatchExport implements FromCollection, WithHeadings, WithMapping, Responsable, WithStyles, WithEvents, WithColumnWidths, ShouldAutoSize
 {
@@ -122,10 +118,12 @@ class DatamatchExport implements FromCollection, WithHeadings, WithMapping, Resp
             $lead->first_name,
             $lead->last_name,
             Carbon::parse($lead->dob)->format('d/m/Y'),
-            // $lead->sub_building ? extractFirstNumericNumber(getOnlyNumersFromString($lead->sub_building)) : ($lead->building_number ? extractFirstNumericNumber(getOnlyNumersFromString($lead->building_number)) : extractFirstNumericNumber(getOnlyNumersFromString($lead->address))),    // only fails when there is no number in sub building and buildingnumber  like flat one
-            // $lead->sub_building ? removeStringFromString($lead->sub_building, $lead->address) : ($lead->building_number ? removeStringFromString($lead->building_number, $lead->address) : removeStringFromString(extractFirstNumericNumber(getOnlyNumersFromString($lead->address)), $lead->address)),
-            $lead->sub_building ?: ($lead->building_number ?: extractFirstNumericNumber(getOnlyNumersFromString($lead->plain_address))),
-            $lead->sub_building ? removeStringFromString($lead->sub_building, $lead->plain_address) : ($lead->building_number ? removeStringFromString($lead->building_number, $lead->plain_address) : removeStringFromString(extractFirstNumericNumber(getOnlyNumersFromString($lead->address)), $lead->plain_address)),
+            /* the beneath line first check if the sub building then that else building_number else buildingname else fir plain address s exact first number
+            // $lead->sub_building ?: ($lead->building_number ?: (array_key_exists('buildingname', $lead->raw_api_response) ? $lead->raw_api_response['buildingname'] : extractFirstNumericNumber(getOnlyNumersFromString($lead->plain_address)))),
+            // $lead->sub_building ? removeStringFromString($lead->sub_building, $lead->plain_address) : ($lead->building_number ? removeStringFromString($lead->building_number, $lead->plain_address) : (array_key_exists('buildingname', $lead->raw_api_response) ? removeStringFromString($lead->raw_api_response['buildingname'], $lead->plain_address) : removeStringFromString(extractFirstNumericNumber(getOnlyNumersFromString($lead->plain_address)), $lead->plain_address))),
+            */
+            $lead->sub_building ?: ($lead->building_number ?: (array_key_exists('buildingname', $lead->raw_api_response ?? []) ? $lead->raw_api_response['buildingname'] : removetillFirstNuermicSpcae($lead->plain_address))),
+            $lead->sub_building ? removeStringFromString($lead->sub_building, $lead->plain_address) : ($lead->building_number ? removeStringFromString($lead->building_number, $lead->plain_address) : (array_key_exists('buildingname', $lead->raw_api_response ?? []) ? removeStringFromString($lead->raw_api_response['buildingname'], $lead->plain_address) : removeStringFromString(removetillFirstNuermicSpcae($lead->plain_address), $lead->plain_address))),
             '',
             '',
             $lead->city,
