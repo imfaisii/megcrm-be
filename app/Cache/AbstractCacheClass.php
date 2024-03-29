@@ -15,11 +15,13 @@ abstract class AbstractCacheClass
 
     public function getData(string $key): mixed
     {
+        dump($this->getKey($key));
         return $this->cahceObj->get($this->getKey($key));
     }
 
     public function setData(string $key, mixed $data, int $seconds = null): mixed
     {
+        dump($this->getKey($key));
         return $this->cahceObj->put($this->getKey($key), $data, $seconds);
     }
 

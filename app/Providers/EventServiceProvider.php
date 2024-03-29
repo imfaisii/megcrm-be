@@ -3,8 +3,10 @@
 namespace App\Providers;
 
 use App\Events\Calendars\NewCalendarEvent;
+use App\Events\LoginUserEvent;
 use App\Events\Users\NewUserCreated;
 use App\Listeners\Calendars\SendCalendarEventListener;
+use App\Listeners\UserLoginEventListener;
 use App\Listeners\Users\SendUserCredentialsListener;
 use App\Models\CalenderEvent;
 use App\Models\InstallationBooking;
@@ -40,6 +42,11 @@ class EventServiceProvider extends ServiceProvider
         // calendar events
         NewCalendarEvent::class => [
             SendCalendarEventListener::class,
+        ],
+
+         // calendar events
+         LoginUserEvent::class => [
+            UserLoginEventListener ::class,
         ],
     ];
 

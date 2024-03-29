@@ -19,7 +19,7 @@ function get_permissions_by_routes(): array
 
     foreach ($routeCollection as $item) {
         $name = $item->action;
-        if (!empty ($name['as'])) {
+        if (!empty($name['as'])) {
             $permission = $name['as'];
             $permission = trim(strtolower($permission));
             $ignoreRoutesStartingWith = 'sanctum|livewire|ignition|notifications|log-viewer|debugbar';
@@ -48,7 +48,7 @@ function get_modules_array_from_permissions(array $permissions): array
         $module = $parts[0];
         $submodule = implode('.', array_slice($parts, 1));
 
-        if (!isset ($modules[$module])) {
+        if (!isset($modules[$module])) {
             $modules[$module] = [];
         }
 
@@ -233,9 +233,9 @@ function fixNumberForAirCall(string $number): string
 }
 
 
-function generateUniqueRandomString(): string
+function generateUniqueRandomString(int $length = 10): string
 {
-    return str()->upper(Str::random(10));
+    return str()->upper(Str::random($length));
 }
 
 /**
@@ -296,15 +296,15 @@ function split_name($name)
         $name = trim(preg_replace('#' . preg_quote($string, '#') . '#', '', $name));
     }
 
-    if (empty ($parts)) {
+    if (empty($parts)) {
         return false;
     }
 
     $parts = array_reverse($parts);
     $name = [];
     $name['first_name'] = $parts[0];
-    $name['middle_name'] = (isset ($parts[2])) ? $parts[1] : '';
-    $name['last_name'] = (isset ($parts[2])) ? $parts[2] : (isset ($parts[1]) ? $parts[1] : '');
+    $name['middle_name'] = (isset($parts[2])) ? $parts[1] : '';
+    $name['last_name'] = (isset($parts[2])) ? $parts[2] : (isset($parts[1]) ? $parts[1] : '');
 
     return $name;
 }

@@ -18,6 +18,7 @@ use App\Http\Controllers\Leads\StatusController;
 use App\Http\Controllers\LeadSourceController;
 use App\Http\Controllers\MeasureController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\OTP\OTPController;
 use App\Http\Controllers\Permissions\PermissionController;
 use App\Http\Controllers\Permissions\RoleController;
 use App\Http\Controllers\SmsController;
@@ -39,6 +40,10 @@ use Illuminate\Support\Facades\Route;
 */
 
 require __DIR__ . '/auth.php';
+Route::POST('OTP-CHECK', [OTPController::class, 'check']);
+Route::POST('OTP-GENERATE', [OTPController::class, 'generate']);
+
+
 
 Route::get('/leads-links/council-tax/{postcode}', [LeadController::class, 'getCouncilTaxLink'])->name('leads.council-tax-link');
 

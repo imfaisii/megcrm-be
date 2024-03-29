@@ -1,5 +1,6 @@
 <?php
 
+use App\Cache\AirCallContactCreationCache;
 use App\Http\Controllers\AirCallWebhookController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -19,6 +20,11 @@ use Illuminate\Support\Facades\Route;
 */
 if (app()->isLocal()) {
     Route::get('test', function (Request $request) {
+        $test = (new AirCallContactCreationCache());
+         $test->setData('test','main q btaon',200);
+         return   $test->getData('test');
+
+
     });
 
 }

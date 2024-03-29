@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Events\LoginUserEvent;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use Illuminate\Http\JsonResponse;
@@ -18,8 +19,8 @@ class AuthenticatedSessionController extends Controller
         $request->authenticate();
 
         if (Auth::attempt($request->validated())) {
-            $token = auth()->user()->createToken('auth_token')->plainTextToken;
-
+            $token = auth()->user()->createToken('auth_token', expiresAt: now()->addMinutes(config('session.lifetime')))->plainTextToken;
+            LoginUserEvent::dispatch(auth()->user());
             return $this->success(data: [
                 'access_token' => $token,
                 'token_type' => 'Bearer',
@@ -34,8 +35,9 @@ class AuthenticatedSessionController extends Controller
      * Destroy an authenticated session.
      */
     public function destroy(Request $request): JsonResponse
-    {
+    {  
         $request->user()->currentAccessToken()->delete();
+        $request->session()->invalidate();
 
         return $this->success();
     }
