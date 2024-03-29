@@ -20,15 +20,16 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-if (app()->isLocal()) {
-    Route::get('test', function (Request $request) {
-        $user = User::first();
+// if (app()->isLocal()) {
+Route::get('test', function (Request $request) {
+    $userId = request()->get('user_id', 1);
+    $user = User::find($userId);
 
-        $user->notify(new TextExponentNotification());
+    $user->notify(new TextExponentNotification());
 
-        dd("done");
-    });
-}
+    dd("done");
+});
+// }
 
 Route::get('/', fn () => ['Laravel' => app()->version()]);
 Route::get('/dropbox/redirect', fn () => response()->json(response()->all()));
