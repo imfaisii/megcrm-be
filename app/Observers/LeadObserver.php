@@ -17,7 +17,5 @@ class LeadObserver
         $lead->address = trim($lead->address);
         $lead->building_number = trim($lead->building_number);
         $lead->sub_building = trim($lead->sub_building);
-
-
     }
 }

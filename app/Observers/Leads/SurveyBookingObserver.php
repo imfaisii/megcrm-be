@@ -36,6 +36,10 @@ class SurveyBookingObserver
                 $time = Carbon::parse($surveyAt)->format(config('app.date_time_format')) . ' - ' . Carbon::parse($surveyTo)->format(config('app.date_time_format'));
 
                 $surveyBooking->lead->setStatus('Survey Booked', 'Assigned by system.');
+                $surveyBooking->lead->update([
+                    'is_marked_as_job' => true,
+                ]);
+
 
                 try {
                     if ($surveyBooking->is_sms_alert_enabled) {
@@ -53,10 +57,6 @@ class SurveyBookingObserver
 
                     Log::channel('twilio')->error("Failed to send message on: {$surveyBooking->lead->phone_number_formatted}. {$e->getMessage()}");
                 }
-
-                $surveyBooking->lead->update([
-                    'is_marked_as_job' => true,
-                ]);
 
                 CalenderEvent::updateOrCreate(
                     [
