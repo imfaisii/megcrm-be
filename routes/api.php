@@ -47,7 +47,7 @@ Route::POST('OTP-GENERATE', [OTPController::class, 'generate']);
 
 Route::get('/leads-links/council-tax/{postcode}', [LeadController::class, 'getCouncilTaxLink'])->name('leads.council-tax-link');
 
-Route::group(['middleware' => 'auth:sanctum'], function () {
+Route::group(['middleware' => ['auth:sanctum', 'twoFa']], function () {
 
     Route::get('/get-permissions', function () {
         return response()->json([
