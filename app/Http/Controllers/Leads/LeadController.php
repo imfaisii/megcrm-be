@@ -31,7 +31,7 @@ class LeadController extends Controller
 
     public function __construct()
     {
-        $this->authorizeResource(Lead::class, 'lead');
+        // $this->authorizeResource(Lead::class, 'lead');
     }
     public function index(ListLeadAction $action): ResourceCollection
     {
