@@ -20,7 +20,7 @@ class FilterByBookedBy implements Filter
 
         $query->whereHas('statuses', function ($query) use ($value) {
             $query->where('name', 'Survey Booked')
-                ->where('user_id', $value);
+                ->whereIn('user_id', $value);
         });
     }
 }
