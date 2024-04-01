@@ -46,6 +46,8 @@ class GetLeadExtrasAction
             'Cancelled Lead',
             'Cancelled (old)',
             'Condensing Boiler',
+            'Install Booked',
+            'One document missing ( all other documents ok )'
         ];
 
         if ($this->user->hasRole(RoleEnum::SURVEYOR)) {
