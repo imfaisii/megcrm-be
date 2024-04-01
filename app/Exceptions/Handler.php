@@ -7,6 +7,7 @@ use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Log;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -37,11 +38,12 @@ class Handler extends ExceptionHandler
             }
         });
 
-        $this->renderable(function (Throwable $e, Request $request) {
-            if ($request->is('api/*')) {
+        $this->renderable(function (HttpException $e, Request $request) {
+            if ($request->is('api/*') && $e->getStatusCode() == 423) {
                 return response()->json([
+                    'success' => false,
                     'message' => $e->getMessage(),
-                ],$e->getStatusCode());
+                ], $e->getStatusCode());
             }
         });
     }

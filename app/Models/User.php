@@ -65,6 +65,7 @@ class User extends BaseModel implements AuthenticatableContract, HasMedia, Acces
         'phone_number_aircall',
         'aircall_email_address',
         'created_by_id',
+        'last_otp',
     ];
 
     protected $hidden = [
@@ -91,7 +92,10 @@ class User extends BaseModel implements AuthenticatableContract, HasMedia, Acces
         'installerCompany',
         'additional.bank',
     ];
-
+    protected function routeNotificationForTwilio()
+    {
+        return $this->additional?->phone_no;
+    }
     protected $appends = ['rights', 'top_role', 'user_agents', 'first_name', 'last_name'];
 
     public function notifyAuthenticationLogVia()
@@ -132,7 +136,7 @@ class User extends BaseModel implements AuthenticatableContract, HasMedia, Acces
     {
         if (is_append_present('authentications')) {
             return $this->authentications->take($count)->map(function ($log) {
-                $agent = tap(new Agent, fn ($agent) => $agent->setUserAgent($log->user_agent));
+                $agent = tap(new Agent, fn($agent) => $agent->setUserAgent($log->user_agent));
 
                 return [
                     'is_mobile' => ($agent->isMobile() || $agent->isTablet()) ? true : false,

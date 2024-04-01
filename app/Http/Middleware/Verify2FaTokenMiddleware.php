@@ -15,10 +15,10 @@ class Verify2FaTokenMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if ($request->session()->has('OTP_Verified')) {
+        if (filled($request?->user()?->last_otp)) {
             return $next($request);
         } else {
-            abort(403,'Sorry Otp Verification Pending');
+            abort(423, 'Sorry Otp Verification Pending');
         }
     }
 }

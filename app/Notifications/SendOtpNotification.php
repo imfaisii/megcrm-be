@@ -29,7 +29,15 @@ class SendOtpNotification extends Notification
      */
     public function via(object $notifiable): array
     {
-        return app()->isProduction() ? ['mail', TwilioChannel::class] : ['mail'];
+        if (app()->isProduction()) {
+            if ($notifiable?->additional?->phone_no) {
+                return ['mail', TwilioChannel::class];
+            } else {
+                return ['mail'];
+            }
+        } else {
+            return ['mail'];
+        }
     }
 
     public function toTwilio(object $notifiable)

@@ -19,6 +19,9 @@ class AuthenticatedSessionController extends Controller
         $request->authenticate();
 
         if (Auth::attempt($request->validated())) {
+            auth()->user()->update([
+                'last_otp' => null,
+            ]);
             $token = auth()->user()->createToken('auth_token', expiresAt: now()->addMinutes(config('session.lifetime')))->plainTextToken;
             LoginUserEvent::dispatch(auth()->user());
             return $this->success(data: [
@@ -35,9 +38,8 @@ class AuthenticatedSessionController extends Controller
      * Destroy an authenticated session.
      */
     public function destroy(Request $request): JsonResponse
-    {  
+    {
         $request->user()->currentAccessToken()->delete();
-        $request->session()->invalidate();
 
         return $this->success();
     }

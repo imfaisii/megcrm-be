@@ -17,7 +17,6 @@ class OTPController extends Controller
     public function check(OTPVerificationRequest $request)
     {
         try {
-
             if (RateLimiter::tooManyAttempts('OTP-MESSAGE-CHECK:' . $request->user()->id, $perMinute = 5)) {
                 return $this->error("Too many attempts. please try again after " . RateLimiter::availableIn('OTP-MESSAGE-CHECK:' . $request->user()->id));
             }
@@ -27,12 +26,14 @@ class OTPController extends Controller
                 $perMinute = 5,
                 function () use ($request) {
                     $cacheObj = new TwoFactorCodeCacheClass();
-                    return $request->get('OTP_Code', 0) === $cacheObj->getData($request?->user()?->id);
+                    return strtolower($request->get('OTP_Code', 0)) === strtolower($cacheObj->getData($request?->user()?->id));
                 },
                 $decayRate = 60,
             );
             if ($result) {
-                session(['OTP_Verified' => true]);
+                $request->user()->update([
+                    'last_otp' => $request->get('OTP_Code')
+                ]);
                 return $this->success("OTP verified");
             } else {
                 return $this->error("OTP not verified");

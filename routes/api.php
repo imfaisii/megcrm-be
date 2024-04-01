@@ -40,14 +40,20 @@ use Illuminate\Support\Facades\Route;
 */
 
 require __DIR__ . '/auth.php';
-Route::POST('OTP-CHECK', [OTPController::class, 'check']);
-Route::POST('OTP-GENERATE', [OTPController::class, 'generate']);
-
-
 
 Route::get('/leads-links/council-tax/{postcode}', [LeadController::class, 'getCouncilTaxLink'])->name('leads.council-tax-link');
 
-Route::group(['middleware' => ['auth:sanctum', 'twoFa']], function () {
+Route::group(['middleware' => ['auth:sanctum','twoFa']], function () {
+    Route::withoutMiddleware(['twoFa'])->group(function () {
+
+        Route::get('/user', [UserController::class, 'currentUser']);
+        Route::POST('OTP-CHECK', [OTPController::class, 'check']);
+
+        Route::POST('OTP-GENERATE', [OTPController::class, 'generate']);
+    });
+
+
+
 
     Route::get('/get-permissions', function () {
         return response()->json([
@@ -72,7 +78,6 @@ Route::group(['middleware' => ['auth:sanctum', 'twoFa']], function () {
     });
 
 
-    Route::get('/user', [UserController::class, 'currentUser']);
     Route::post('/users/{user}/collections/docs/upload', [UserController::class, 'uploadDocumentToCollection'])->name('users.documents-to-collections');
     Route::post('/users/{user}/documents/upload', [UserController::class, 'uploadDocument'])->name('users.documents-upload');
     Route::post('/users/{media}/expiry/update', [UserController::class, 'updateDocumentExpiry'])->name('users.update-document-expiry');

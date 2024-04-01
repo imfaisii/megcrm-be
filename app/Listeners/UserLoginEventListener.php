@@ -33,7 +33,7 @@ class UserLoginEventListener
             $cacheObj = new TwoFactorCodeCacheClass();
             $code = $cacheObj->setData($event?->User?->id, generateUniqueRandomString(6), TwoFactorCodeCacheClass::cacheTime);
             $code = $cacheObj->getData($event?->User?->id);
-            
+
             $event?->User->notify(new SendOtpNotification(['code' => $code, 'expiration_time' => TwoFactorCodeCacheClass::cacheTime]));
 
         } catch (Exception $e) {
