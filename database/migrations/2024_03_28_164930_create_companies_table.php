@@ -12,14 +12,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('installer_companies', function (Blueprint $table) {
+        Schema::create('companies', function (Blueprint $table) {
             $table->id();
-            $table->string('name')->nullable();
-            $table->string('address')->nullable();
-            $table->string('company_number')->nullable();
+            $table->string('name');
+            $table->string('address');
+            $table->string('number')->nullable();
             $table->string('vat_number')->nullable();
+            $table->string('account_number')->nullable();
+            $table->string('sort_code')->nullable();
+            $table->string('policy_reference')->nullable();
+            $table->string('public_liability_number')->nullable();
             $table->foreignIdFor(User::class, 'created_by_id');
-            $table->foreignIdFor(User::class);
             $table->timestamps();
         });
     }
@@ -29,6 +32,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('installer_companies');
+        Schema::dropIfExists('companies');
     }
 };

@@ -53,7 +53,8 @@ class User extends BaseModel implements AuthenticatableContract, HasMedia, Acces
         Authorizable,
         LaravelPermissionToVueJS,
         Notifiable;
-    use EagerLoadPivotTrait;        // the table second table we are  in many-to-many relationships has this trait, like if we are geting user with roles then roles would have this trait
+    use EagerLoadPivotTrait;
+
     protected $guard_name = 'sanctum';
 
     protected $fillable = [
@@ -88,7 +89,7 @@ class User extends BaseModel implements AuthenticatableContract, HasMedia, Acces
         'leadGeneratorAssignments',
         'notifications',
         'authentications',
-        'installerCompany',
+        'company',
         'additional.bank',
     ];
 
@@ -193,9 +194,9 @@ class User extends BaseModel implements AuthenticatableContract, HasMedia, Acces
             ->withTimestamps();
     }
 
-    public function installerCompany()
+    public function company()
     {
-        return $this->hasOne(InstallerCompany::class);
+        return $this->hasOne(Company::class);
     }
 
     public function installationTypes()
