@@ -78,6 +78,9 @@ class GetLeadExtrasAction
             'surveyors' => User::whereHas('roles', function ($query) {
                 $query->where('name', RoleEnum::SURVEYOR);
             })->get(),
+            'csrs' => User::whereHas('roles', function ($query) {
+                $query->where('name', RoleEnum::CSR);
+            })->get(),
         ];
     }
 }
