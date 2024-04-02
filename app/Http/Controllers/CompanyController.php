@@ -9,6 +9,7 @@ use App\Actions\Companies\ListCompanyAction;
 use App\Actions\Companies\StoreCompanyAction;
 use App\Actions\Companies\UpdateCompanyAction;
 use App\Http\Requests\Companies\StoreCompanyRequest;
+use App\Http\Requests\Companies\UpdateCompanyRequest;
 use App\Http\Requests\Users\UpdateDocumentExpiryDate;
 use App\Http\Requests\Users\UploadDocumentsToCollectionRequest;
 use App\Models\Company;
@@ -40,7 +41,7 @@ class CompanyController extends Controller
         return $action->individualResource($company);
     }
 
-    public function update(Company $Company, StoreCompanyRequest $request, UpdateCompanyAction $action): BaseJsonResource
+    public function update(Company $Company, UpdateCompanyRequest $request, UpdateCompanyAction $action): BaseJsonResource
     {
         $action->enableQueryBuilder();
 

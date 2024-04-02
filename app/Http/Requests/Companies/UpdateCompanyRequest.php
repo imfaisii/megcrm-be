@@ -2,27 +2,21 @@
 
 namespace App\Http\Requests\Companies;
 
-use Illuminate\Foundation\Http\FormRequest;
+use App\Actions\Common\BaseFormRequest;
 
-class UpdateCompanyRequest extends FormRequest
+class UpdateCompanyRequest extends BaseFormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
-    public function authorize(): bool
-    {
-        return false;
-    }
-
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
-     */
     public function rules(): array
     {
         return [
-            //
+            'name' => ['required', 'string', 'unique:companies,name,' . $this->route('company')->id],
+            'address' => ['required', 'string', 'unique:companies,address,' . $this->route('company')->id],
+            'company_number' => ['nullable', 'string'],
+            'vat_number' => ['nullable', 'string'],
+            'account_number' => ['nullable', 'string'],
+            'sort_code' => ['nullable', 'string'],
+            'policy_reference' =>  ['nullable', 'string'],
+            'public_liability_number' =>  ['nullable', 'string'],
         ];
     }
 }

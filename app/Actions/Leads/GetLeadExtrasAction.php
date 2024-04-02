@@ -59,6 +59,19 @@ class GetLeadExtrasAction
             $leadGenerators = LeadGenerator::all();
         }
 
+        $intallers = User::whereHas('roles', function ($query) {
+            $query->where('name', RoleEnum::INSTALLER);
+        })->whereHas('company')
+            ->with('company', fn ($query) => $query->select('id', 'name'))->get();
+
+        $surveyors = User::whereHas('roles', function ($query) {
+            $query->where('name', RoleEnum::SURVEYOR);
+        })->get();
+
+        $csrs = User::whereHas('roles', function ($query) {
+            $query->where('name', RoleEnum::CSR);
+        })->get();
+
         return [
             'job_types' => JobType::all(),
             'fuel_types' => FuelType::all(),
@@ -72,15 +85,9 @@ class GetLeadExtrasAction
             'lead_statuses' => LeadStatus::oldest('name')->get(),
             'lead_table_filters' => LeadStatus::whereIn('name', [...$tableStatuses, ...$both])->oldest('name')->get(),
             'lead_jobs_filters' => LeadStatus::whereNotIn('name', $tableStatuses)->orWhere('name', $both)->oldest('name')->get(),
-            'installers' => User::whereHas('roles', function ($query) {
-                $query->where('name', RoleEnum::INSTALLER);
-            })->get(),
-            'surveyors' => User::whereHas('roles', function ($query) {
-                $query->where('name', RoleEnum::SURVEYOR);
-            })->get(),
-            'csrs' => User::whereHas('roles', function ($query) {
-                $query->where('name', RoleEnum::CSR);
-            })->get(),
+            'installers' => $intallers,
+            'surveyors' => $surveyors,
+            'csrs' => $csrs
         ];
     }
 }

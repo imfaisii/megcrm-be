@@ -22,6 +22,7 @@ class UpdateUserRequest extends FormRequest
             'roles' => ['array'],
             'is_active' => ['boolean'],
             'aircall_email_address' => ['nullable', 'email'],
+            'company_id' => ['nullable', 'numeric', 'exists:companies,id'],
             'additional' => ['nullable', 'array'],
             'additional.dob' => ['nullable', 'string'],
             'additional.gender' => ['nullable', 'string'],
