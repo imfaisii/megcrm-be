@@ -7,6 +7,7 @@ use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\CalenderEventsController;
 use App\Http\Controllers\CallCenterController;
 use App\Http\Controllers\CallCenterStatusesController;
+use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\FuelTypeController;
 use App\Http\Controllers\InstallationTypeController;
 use App\Http\Controllers\JobTypeController;
@@ -74,6 +75,9 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::apiResource('/permissions', PermissionController::class);
     Route::apiResource('/roles', RoleController::class);
     Route::apiResource('/users', UserController::class);
+    Route::apiResource('/companies', CompanyController::class);
+    Route::post('/companies/{company}/collections/docs/upload', [CompanyController::class, 'uploadDocumentToCollection'])->name('companies.documents-to-collections');
+    Route::post('/companies/{media}/expiry/update', [CompanyController::class, 'updateDocumentExpiry'])->name('companies.update-document-expiry');
     Route::put('/users/{user}/profile', [UserController::class, 'updateUserProfile'])->name('users.profile');
     Route::apiResource('/leads', LeadController::class);
     Route::post('/leads/{lead}/comments', [LeadController::class, 'storeComments'])->name('leads.add-comments');
