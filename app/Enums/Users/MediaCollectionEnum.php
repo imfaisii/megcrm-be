@@ -9,4 +9,6 @@ use BenSampo\Enum\Enum;
 final class MediaCollectionEnum extends Enum
 {
     const DOCUMENTS = 'documents';
+
+    const COMPANY_DOCUMENTS = 'company-documents';
 }

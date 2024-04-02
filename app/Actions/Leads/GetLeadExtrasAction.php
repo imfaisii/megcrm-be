@@ -61,8 +61,7 @@ class GetLeadExtrasAction
 
         $intallers = User::whereHas('roles', function ($query) {
             $query->where('name', RoleEnum::INSTALLER);
-        })->whereHas('company')
-            ->with('company', fn ($query) => $query->select('id', 'name'))->get();
+        })->with('company', fn ($query) => $query->select('id', 'name'))->get();
 
         $surveyors = User::whereHas('roles', function ($query) {
             $query->where('name', RoleEnum::SURVEYOR);

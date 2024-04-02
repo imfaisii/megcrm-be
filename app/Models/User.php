@@ -6,10 +6,8 @@ namespace App\Models;
 
 use AjCastro\EagerLoadPivotRelations\EagerLoadPivotTrait;
 use App\Actions\Common\BaseModel;
-use App\Classes\LeadResponseClass;
 use App\Filters\Users\FilterByGivenRole;
 use App\Filters\Users\FilterByRole;
-use App\Imports\Leads\LeadsImport;
 use App\Includes\Users\UserNotificationsInclude;
 use App\Traits\Common\HasCalenderEvent;
 use Carbon\Carbon;
@@ -64,6 +62,7 @@ class User extends BaseModel implements AuthenticatableContract, HasMedia, Acces
         'air_caller_id',
         'is_active',
         'company_id',
+        'is_associated_with_company',
         'phone_number_aircall',
         'aircall_email_address',
         'created_by_id',
@@ -83,6 +82,7 @@ class User extends BaseModel implements AuthenticatableContract, HasMedia, Acces
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
         'is_active' => 'boolean',
+        'is_associated_with_company' => 'boolean'
     ];
 
     protected array $allowedIncludes = [

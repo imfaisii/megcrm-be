@@ -17,8 +17,6 @@ class Company extends BaseModel implements HasMedia
         'address',
         'number',
         'vat_number',
-        'account_number',
-        'sort_code',
         'policy_reference',
         'public_liability_number'
     ];

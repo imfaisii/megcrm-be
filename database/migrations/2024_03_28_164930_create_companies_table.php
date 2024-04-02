@@ -18,8 +18,6 @@ return new class extends Migration
             $table->string('address');
             $table->string('number')->nullable();
             $table->string('vat_number')->nullable();
-            $table->string('account_number')->nullable();
-            $table->string('sort_code')->nullable();
             $table->string('policy_reference')->nullable();
             $table->string('public_liability_number')->nullable();
             $table->foreignIdFor(User::class, 'created_by_id');

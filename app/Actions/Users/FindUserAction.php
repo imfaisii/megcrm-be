@@ -21,6 +21,7 @@ class FindUserAction extends AbstractFindAction
 
         $user->load('installationTypes');
         $user['documents'] = $user->getMedia(MediaCollectionEnum::DOCUMENTS);
+        $user['company_documents'] = $user->getMedia(MediaCollectionEnum::COMPANY_DOCUMENTS)->toArray();
 
         try {
             $response = Http::asForm()->post($this->dropboxRefreshTokenUrl, [
