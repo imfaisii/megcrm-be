@@ -46,6 +46,8 @@ class GetLeadExtrasAction
             'Cancelled Lead',
             'Cancelled (old)',
             'Condensing Boiler',
+            'Install Booked',
+            'One document missing ( all other documents ok )'
         ];
 
         if ($this->user->hasRole(RoleEnum::SURVEYOR)) {
@@ -75,6 +77,9 @@ class GetLeadExtrasAction
             })->get(),
             'surveyors' => User::whereHas('roles', function ($query) {
                 $query->where('name', RoleEnum::SURVEYOR);
+            })->get(),
+            'csrs' => User::whereHas('roles', function ($query) {
+                $query->where('name', RoleEnum::CSR);
             })->get(),
         ];
     }

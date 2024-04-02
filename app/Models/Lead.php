@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Actions\Common\BaseModel;
 use App\Enums\Permissions\RoleEnum;
+use App\Filters\Leads\FilterByBookedBy;
 use App\Filters\Leads\FilterByName;
 use App\Filters\Leads\FilterByPostcode;
 use App\Filters\Leads\FilterByStatus;
@@ -149,6 +150,7 @@ class Lead extends BaseModel
             $latest['lead_status_model'] = null;
         }
 
+        $latest['survey_booked'] = $this->latestStatus('Survey Booked');
         return $latest;
     }
 
@@ -159,6 +161,7 @@ class Lead extends BaseModel
             AllowedFilter::custom('name', new FilterByName()),
             AllowedFilter::custom('statuses', new FilterByStatus()),
             AllowedFilter::custom('surveyor_id', new FilterBySurveyor()),
+            AllowedFilter::custom('survey_booked_by', new FilterByBookedBy()),
         ];
     }
 

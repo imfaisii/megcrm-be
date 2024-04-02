@@ -2,6 +2,8 @@
 
 use App\Cache\AirCallContactCreationCache;
 use App\Http\Controllers\AirCallWebhookController;
+use App\Models\User;
+use App\Notifications\TextExponentNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
@@ -18,15 +20,16 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
+
 if (app()->isLocal()) {
     Route::get('test', function (Request $request) {
-        $test = (new AirCallContactCreationCache());
-         $test->setData('test','main q btaon',200);
-         return   $test->getData('test');
+        $userId = request()->get('user_id', 1);
+        $user = User::find($userId);
 
+        $user->notify(new TextExponentNotification());
 
+        dd("done");
     });
-
 }
 
 Route::get('/', fn() => ['Laravel' => app()->version()]);
