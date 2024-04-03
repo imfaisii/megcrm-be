@@ -33,7 +33,7 @@ class SurveyBookedNotification extends Notification implements ShouldQueue
 
         $content = SurveyBookedEnum::getTwilioMessage(
             $lead->toArray(),
-            Carbon::parse($lead->surveyBooking->surveyAt)->format('l jS \of F Y h:i A') . ' - ' . Carbon::parse($lead->surveyBooking->surveyTo)->format('h:i A'),
+            Carbon::parse($lead->surveyBooking->survey_at)->format('l jS \of F Y h:i A') . ' - ' . Carbon::parse($lead->surveyBooking->survey_to)->format('h:i A'),
             $lead->leadGenerator->sender_id
         );
 
