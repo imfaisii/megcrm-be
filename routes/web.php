@@ -22,10 +22,7 @@ use function App\Helpers\extractFirstNumericNumber;
 use function App\Helpers\removeSpace;
 use function App\Helpers\replaceFirst;
 use function App\Helpers\getOnlyNumersFromString;
-
-
-
-
+use function App\Helpers\meg_encrypt;
 
 /*
 |--------------------------------------------------------------------------
@@ -40,7 +37,10 @@ use function App\Helpers\getOnlyNumersFromString;
 if (app()->isLocal()) {
     Route::get('test', function (Request $request) {
         // Define the trait with multiple methods
-
+        $lead = Lead::find(11);
+      return (   $ans =  $lead->getMedia("customer_survey_images"));
+        // return URL::signedRoute('customer.lead-status', ['lead' => meg_encrypt(11)]);
+        return URL::signedRoute('file_upload', ['ID' => meg_encrypt(11), 'Model' => 'Lead']);
 
 
     });

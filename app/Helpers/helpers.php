@@ -6,6 +6,7 @@ use App\Actions\Common\BaseJsonResource;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 function null_resource(): JsonResource
@@ -20,7 +21,7 @@ function get_permissions_by_routes(): array
 
     foreach ($routeCollection as $item) {
         $name = $item->action;
-        if (!empty ($name['as'])) {
+        if (!empty($name['as'])) {
             $permission = $name['as'];
             $permission = trim(strtolower($permission));
             $ignoreRoutesStartingWith = 'sanctum|livewire|ignition|notifications|log-viewer|debugbar';
@@ -49,7 +50,7 @@ function get_modules_array_from_permissions(array $permissions): array
         $module = $parts[0];
         $submodule = implode('.', array_slice($parts, 1));
 
-        if (!isset ($modules[$module])) {
+        if (!isset($modules[$module])) {
             $modules[$module] = [];
         }
 
@@ -228,6 +229,22 @@ function generateUniqueRandomString(): string
     return str()->upper(Str::random(10));
 }
 
+function generateUniqueRandomStringWithTimeStamp(): string
+{
+    // Generate a random string of length 9 (10 - length of timestamp)
+    $randomString = Str::random(9);
+
+    // Get the current timestamp
+    $timestamp = time();
+
+    // Randomly choose a position to insert the timestamp
+    $position = rand(0, 9); // Random position between 0 and 9 (inclusive)
+
+    // Insert the timestamp into the random string at the chosen position
+    $uniqueString = substr_replace($randomString, $timestamp, $position, 0);
+
+    return strtoupper($uniqueString);
+}
 
 function base64url_encode($data): string
 {
@@ -269,4 +286,19 @@ function meg_decrypts($data)
     }
 
     return json_decode($result, true);
+}
+
+
+function CopyFilefromSourceToDestination($source, $destination, $disk = 'public')
+{
+    dd(Storage::disk('public')->exists("public/$source"));
+    if (!Storage::disk($disk)->exists("public/$source")) {
+        dd($source);
+        return [
+            'success' => false,
+            'message' => 'File not found',
+        ];
+    } else {
+        return Storage::copy($source, $destination);
+    }
 }

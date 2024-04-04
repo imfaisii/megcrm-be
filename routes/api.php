@@ -8,6 +8,7 @@ use App\Http\Controllers\CalenderEventsController;
 use App\Http\Controllers\CallCenterController;
 use App\Http\Controllers\CallCenterStatusesController;
 use App\Http\Controllers\Customer\CustomerController;
+use App\Http\Controllers\File\FileHanlderController;
 use App\Http\Controllers\FuelTypeController;
 use App\Http\Controllers\InstallationTypeController;
 use App\Http\Controllers\JobTypeController;
@@ -26,6 +27,7 @@ use App\Http\Controllers\SurveyorController;
 use App\Http\Controllers\TeamController;
 use App\Http\Controllers\Users\UserController;
 use App\Http\Requests\Leads\GetAddressRequest;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -56,6 +58,9 @@ Route::get('/getSuggestions', function (GetAddressRequest $request) {
         ]);
     }
 });
+
+Route::post('/file-upload/{Model}/{ID}', [FileHanlderController::class, 'upload'])->name('file_upload')->whereAlphaNumeric(['Model', 'ID'])->middleware('signed', 'throttle:file-upload');
+Route::post('/file-delete/{Model}/{ID}', [FileHanlderController::class, 'delete'])->whereAlphaNumeric(['Model', 'ID'])->middleware('throttle:file-upload')->name('file_delete');
 
 Route::get('/leads-links/council-tax/{postcode}', [LeadController::class, 'getCouncilTaxLink'])->name('leads.council-tax-link');
 Route::get('customer-lead-status-view/{lead}', [CustomerController::class, 'lead_view'])->name('customer.lead-status')->middleware('verify_domain', 'signed');
