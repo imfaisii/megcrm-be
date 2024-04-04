@@ -65,6 +65,7 @@ class UpdateLeadRequest extends BaseFormRequest
             'lead_customer_additional_detail.datamatch_progress_date' => ['nullable', 'date'],
             'lead_customer_additional_detail.lead_id' => ['required', 'exists:leads,id'],
             'survey_booking' => ['required', 'array'],
+            'submission' => ['required', 'array'],
             'lead_additional' => ['required', 'array'],
             'lead_additional.datamatch_confirmed' => ['nullable', 'boolean'],
             'lead_additional.land_registry_confirmed' => ['nullable', 'boolean'],

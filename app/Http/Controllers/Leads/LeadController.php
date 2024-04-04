@@ -18,6 +18,7 @@ use App\Http\Requests\Leads\StoreLeadRequest;
 use App\Http\Requests\Leads\UpdateLeadRequest;
 use App\Http\Requests\Leads\UpdateLeadStatusRequest;
 use App\Http\Requests\Leads\UploadLeadFileRequest;
+use App\Http\Requests\Users\UploadDocumentsToCollectionRequest;
 use App\Models\Lead;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -98,6 +99,24 @@ class LeadController extends Controller
         }
 
         $lead->setStatus($request->status, $request->comments);
+
+        return null_resource();
+    }
+
+    public function uploadDocumentToCollection(Lead $lead, UploadDocumentsToCollectionRequest $request)
+    {
+        $existingMedia = $lead->getMedia($request->collection);
+
+        $existingMedia->each(function ($oldMedia) {
+            $fileName = pathinfo(request()->file('file')->getClientOriginalName(), PATHINFO_FILENAME);
+
+            if ($fileName === $oldMedia->name) {
+                $oldMedia->delete();
+            }
+        });
+
+        $lead->addMediaFromRequest('file')
+            ->toMediaCollection($request->collection);
 
         return null_resource();
     }

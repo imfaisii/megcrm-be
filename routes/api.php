@@ -80,6 +80,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::post('/companies/{media}/expiry/update', [CompanyController::class, 'updateDocumentExpiry'])->name('companies.update-document-expiry');
     Route::put('/users/{user}/profile', [UserController::class, 'updateUserProfile'])->name('users.profile');
     Route::apiResource('/leads', LeadController::class);
+    Route::post('/leads/{lead}/collections/docs/upload', [LeadController::class, 'uploadDocumentToCollection'])->name('leads.documents-to-collections');
     Route::post('/leads/{lead}/comments', [LeadController::class, 'storeComments'])->name('leads.add-comments');
     Route::get('/leads-datamatch-download', [LeadController::class, 'downloadDatamatch'])->name('leads.download-datamatch');
     Route::post('/leads-datamatch-upload', [LeadController::class, 'uploadDatamatch'])->name('leads.upload-datamatch');

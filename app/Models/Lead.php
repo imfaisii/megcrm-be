@@ -17,18 +17,22 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Notifications\Notifiable;
 use Imfaisii\ModelStatus\HasStatuses;
 use Spatie\Activitylog\Models\Activity;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\QueryBuilder\AllowedFilter;
 
-class Lead extends BaseModel
+class Lead extends BaseModel implements HasMedia
 {
-    use HasCalenderEvent, HasComments, HasFactory, HasRecordCreator, HasStatuses, Notifiable;
+    use HasCalenderEvent,
+        HasComments,
+        HasFactory,
+        HasRecordCreator,
+        HasStatuses,
+        Notifiable,
+        InteractsWithMedia,
+        HasTeamTrait;
 
-    use HasTeamTrait;
-
-
-    public $ScopeColumn = 'surveyor_id';    // the coloumn on which whereIn condition will be used for teams
-
-
+    public $ScopeColumn = 'surveyor_id';
 
     protected $fillable = [
         'title',
@@ -85,7 +89,8 @@ class Lead extends BaseModel
         'comments.commentator',
         'leadAdditional',
         'notifications',
-        'secondReceipent'
+        'secondReceipent',
+        'submission'
     ];
 
     protected array $discardedFieldsInFilter = [
@@ -232,6 +237,11 @@ class Lead extends BaseModel
     public function secondReceipent()
     {
         return $this->hasOne(SecondReceipent::class);
+    }
+
+    public function submission()
+    {
+        return $this->hasOne(Submission::class);
     }
 
     public function user()
