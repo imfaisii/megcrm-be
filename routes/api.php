@@ -59,9 +59,12 @@ Route::get('/getSuggestions', function (GetAddressRequest $request) {
     }
 });
 
-Route::post('/file-upload/{Model}/{ID}', [FileHanlderController::class, 'upload'])->name('file_upload')->whereAlphaNumeric(['Model', 'ID'])->middleware('signed', 'throttle:file-upload');
-Route::post('/file-delete/{Model}/{ID}', [FileHanlderController::class, 'delete'])->whereAlphaNumeric(['Model', 'ID'])->middleware('throttle:file-upload')->name('file_delete');
-
+Route::middleware('signed')->group(function () {
+    Route::post('/file-upload/{Model}/{ID}', [FileHanlderController::class, 'upload'])->name('file_upload')->middleware('throttle:customer-file-upload');
+    Route::post('/file-delete/{Model}/{ID}', [FileHanlderController::class, 'delete'])->middleware('throttle:customer-file-upload')->name('file_delete');
+    Route::get('/file-load/{Media:uuid}', [FileHanlderController::class, 'load'])->name('file_load');
+    Route::post('/file-data/{Model}/{ID}', [FileHanlderController::class, 'getAllFilesAssocaiatedWithModel'])->middleware('throttle:customer-file-upload')->name('file_data');
+});
 Route::get('/leads-links/council-tax/{postcode}', [LeadController::class, 'getCouncilTaxLink'])->name('leads.council-tax-link');
 Route::get('customer-lead-status-view/{lead}', [CustomerController::class, 'lead_view'])->name('customer.lead-status')->middleware('verify_domain', 'signed');
 Route::group(['middleware' => 'auth:sanctum'], function () {

@@ -24,9 +24,13 @@ final class AppEnum extends Enum
     /* MEDIA COLLECTIONS */
     const DEFAULT_MEDIA_DELETED_LOCATION = 'MegDeletedDocs';
 
+    const DEFAULT_LIMIT_FOR_MEDIA_FILE_CUSTOMER = 5;
+    const DEFAULT_LIMIT_FOR_SUPPORTING_DOCUMENTS_FILE_CUSTOMER = 2;
+
+    const LEAD_TRACKNG_DAYS_ALLOWED=14;
     const CUSTOMER_LEAD_IMAGES = 'customer_survey_images';
 
-    const CUSTOMER_LEAD_DOCUMENTS = 'customer_lead_images';
+    const CUSTOMER_LEAD_DOCUMENTS = 'customer_lead_documents';
 
     const Default_MediaType = 'meg-crm-default-collection';
 

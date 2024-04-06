@@ -13,9 +13,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use App\Classes\LeadResponseClass;
 use Aloha\Twilio\Twilio;
+use App\Enums\AppEnum;
 use App\Imports\Leads\LeadsImport;
+use App\Notifications\Customer\CustomerLeadTrackingMail;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\URL;
 
 use function App\Helpers\removeStringFromString;
 use function App\Helpers\extractFirstNumericNumber;
@@ -36,11 +39,30 @@ use function App\Helpers\meg_encrypt;
 */
 if (app()->isLocal()) {
     Route::get('test', function (Request $request) {
+
+        dump(meg_encrypt("Lead"));
+        dump(meg_encrypt(11));
+
         // Define the trait with multiple methods
         $lead = Lead::find(11);
-      return (   $ans =  $lead->getMedia("customer_survey_images"));
+        return ($ans = $lead->getMedia("customer_survey_images"));
         // return URL::signedRoute('customer.lead-status', ['lead' => meg_encrypt(11)]);
         return URL::signedRoute('file_upload', ['ID' => meg_encrypt(11), 'Model' => 'Lead']);
+
+
+    });
+
+    Route::get('test-lead-track', function (Request $request) {
+
+        $lead = Lead::first();
+        $encryptedID =meg_encrypt($lead->id);
+         $route = URL::temporarySignedRoute('customer.lead-status', now()->addDays(AppEnum::LEAD_TRACKNG_DAYS_ALLOWED), ['lead' =>$encryptedID ]);
+        $request = Request::create($route);
+
+        $lead->notify((new CustomerLeadTrackingMail([
+            ...$request->query(),
+            'lead'=>$encryptedID
+        ])));
 
 
     });

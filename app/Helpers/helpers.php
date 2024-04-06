@@ -291,14 +291,18 @@ function meg_decrypts($data)
 
 function CopyFilefromSourceToDestination($source, $destination, $disk = 'public')
 {
-    dd(Storage::disk('public')->exists("public/$source"));
-    if (!Storage::disk($disk)->exists("public/$source")) {
-        dd($source);
+    /* based on your disk , set path ,if its local add public in the string , and if its public don't add . so bascically based on your disk, it starting path starts */
+    if (!Storage::disk($disk)->exists($source)) {
         return [
             'success' => false,
             'message' => 'File not found',
         ];
     } else {
-        return Storage::copy($source, $destination);
+
+        $response = Storage::disk($disk)->copy($source, $destination);
+        return [
+            'success' => $response,
+            'message' => 'File operation was ' . $response ? ' successful' : 'unsuccessful',
+        ];
     }
 }
