@@ -64,7 +64,6 @@ class LeadsImport implements ToCollection, WithHeadingRow
                         }
 
                         [$postCode, $address, $plainAddress, $city, $county, $country, $buildingNumber, $subBuilding, $RawApiResponse, $actualPostCode] = $apiClass->adressionApi($postCode ?? '', $address);
-
                         $name = split_name($row['name'] ?? '');
                         $lead = Lead::firstOrCreate([
                             'post_code' => $postCode,
@@ -118,14 +117,14 @@ class LeadsImport implements ToCollection, WithHeadingRow
                         ]);
                     } catch (Exception $exception) {
                         Log::channel('lead_file_read_log')->info(
-                            'Error importing lead address: ' . $row['address'] . '. ' . $exception->getMessage()
+                            'Error importing lead address: '.$row['address'].'. '.$exception->getMessage()
                         );
                     }
                 }
             }
         } catch (Exception $exception) {
             Log::channel('lead_file_read_log')->info(
-                'Exception importing lead address:: ' . $row['address'] . ' message:: ' . $exception->getMessage()
+                'Exception importing lead address:: '.$row['address'].' message:: '.$exception->getMessage()
             );
 
             $this->classResponse->failedLeads[] = $row['address'];

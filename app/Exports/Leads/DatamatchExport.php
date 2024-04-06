@@ -7,6 +7,7 @@ use App\Models\Lead;
 use Carbon\Carbon;
 use Illuminate\Contracts\Support\Responsable;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
@@ -14,17 +15,17 @@ use Maatwebsite\Excel\Concerns\WithColumnWidths;
 use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
+use Maatwebsite\Excel\Concerns\WithStyles;
 use Maatwebsite\Excel\Events\AfterSheet;
 use Maatwebsite\Excel\Excel;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
-use Maatwebsite\Excel\Concerns\WithStyles;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 use function App\Helpers\formatPostCodeWithSpace;
 use function App\Helpers\removeStringFromString;
 use function App\Helpers\removetillFirstNuermicSpcae;
 
-class DatamatchExport implements FromCollection, WithHeadings, WithMapping, Responsable, WithStyles, WithEvents, WithColumnWidths, ShouldAutoSize
+class DatamatchExport implements FromCollection, Responsable, ShouldAutoSize, WithColumnWidths, WithEvents, WithHeadings, WithMapping, WithStyles
 {
     use Exportable;
 
@@ -70,10 +71,7 @@ class DatamatchExport implements FromCollection, WithHeadings, WithMapping, Resp
             // Style the first row as bold text.
             1 => ['font' => ['bold' => false, 'size' => 22]],
 
-            3 => ['font' => ['bold' => true,]],
-
-
-
+            3 => ['font' => ['bold' => true]],
 
         ];
     }
@@ -100,12 +98,10 @@ class DatamatchExport implements FromCollection, WithHeadings, WithMapping, Resp
                 'Address Line 3',
                 'Town',
                 'County',
-                'Postcode'
-            ]
+                'Postcode',
+            ],
         ];
     }
-
-
 
     /**
      * @param  Lead  $lead
@@ -150,24 +146,21 @@ class DatamatchExport implements FromCollection, WithHeadings, WithMapping, Resp
                 $lead->leadCustomerAdditionalDetail->update([
                     'datamatch_progress' => DataMatchEnum::StatusSent,
                     'is_datamatch_required' => false,
-                    'data_match_sent_date' => now()
+                    'data_match_sent_date' => now(),
                 ]);
             });
             Cache::store('file')->put('datamatch-download', $lead);
+
             return $lead;
         }
 
-
-
-
     }
-    /**
-     * @return array
-     */
+
     public function registerEvents(): array
     {
         return [
             AfterSheet::class => function (AfterSheet $event) {
+                Log::channel('slack-crm')->info('the user '.auth()->user()->email.' has downloaded the file ');
                 // Style the first row as bold text.
                 // $event->sheet->getStyle('A1')->getFont()->setBold(true);
 
@@ -188,13 +181,10 @@ class DatamatchExport implements FromCollection, WithHeadings, WithMapping, Resp
                 //     ]);
                 // });
 
-
-
                 // Styling the third row with a light gray background.
                 $event->sheet->getStyle('B3:L3')->getFill()->setFillType(Fill::FILL_SOLID);
                 $event->sheet->getStyle('B3:L3')->getFill()->getStartColor()->setARGB('FFDDDDDD');
             },
         ];
     }
-
 }
