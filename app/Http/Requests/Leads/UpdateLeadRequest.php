@@ -71,6 +71,7 @@ class UpdateLeadRequest extends BaseFormRequest
             'lead_additional.land_registry_confirmed' => ['nullable', 'boolean'],
             'lead_additional.proof_of_address_confirmed' => ['nullable', 'boolean'],
             'lead_additional.epr_report_confirmed' => ['nullable', 'boolean'],
+            'lead_additional.is_pre_checking_confirmed' => ['nullable', 'boolean'],
             'installation_bookings' => ['nullable', 'array'],
         ];
     }
