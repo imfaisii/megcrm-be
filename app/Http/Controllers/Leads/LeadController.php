@@ -6,6 +6,7 @@ use App\Actions\Leads\DeleteLeadAction;
 use App\Actions\Leads\FindLeadAction;
 use App\Actions\Leads\GetLeadExtrasAction;
 use App\Actions\Leads\GetOtherSitesLinkAction;
+use App\Actions\Leads\ListDataMatchAction;
 use App\Actions\Leads\ListLeadAction;
 use App\Actions\Leads\StoreLeadAction;
 use App\Actions\Leads\UpdateLeadAction;
@@ -13,27 +14,30 @@ use App\Actions\Leads\UploadLeadsFileAction;
 use App\Exports\Leads\DatamatchExport;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\DataMatch\UploadDataMatchRequest;
+use App\Http\Requests\Lead\GetAllDataMatchFilesRequest;
 use App\Http\Requests\Leads\StoreLeadCommentsRequest;
 use App\Http\Requests\Leads\StoreLeadRequest;
 use App\Http\Requests\Leads\UpdateLeadRequest;
 use App\Http\Requests\Leads\UpdateLeadStatusRequest;
 use App\Http\Requests\Leads\UploadLeadFileRequest;
 use App\Http\Requests\Users\UploadDocumentsToCollectionRequest;
+use App\Models\DataMatchFile;
 use App\Models\Lead;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Resources\Json\ResourceCollection;
-use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Str;
+use Maatwebsite\Excel\Facades\Excel;
 
 use function App\Helpers\null_resource;
 
 class LeadController extends Controller
 {
-
     public function __construct()
     {
         // $this->authorizeResource(Lead::class, 'lead');
     }
+
     public function index(ListLeadAction $action): ResourceCollection
     {
         $action->enableQueryBuilder();
@@ -128,11 +132,34 @@ class LeadController extends Controller
 
     public function downloadDatamatch()
     {
-        return new DatamatchExport;
+        $Model = DataMatchFile::make();
+        $Model->id = (string) Str::uuid();
+
+        $fileName = 'data_match_file_'.now()->format('YmdHis').'.xlsx';
+        // Store on default disk
+        $result = Excel::store(new DatamatchExport(), "DataMatch/{$Model->id}/{$fileName}", 'public');
+        if ($result) {
+
+            $Model->file_name = $fileName;
+            $Model->file_path = asset("storage/DataMatch/{$Model->id}/{$fileName}");
+            $Model->created_by = auth()->user()->id;
+            $Model->save();
+
+            return $this->success(data: asset("storage/DataMatch/{$Model->id}/{$fileName}"));
+        } else {
+            return $this->error(message: 'Something went wrong');
+        }
     }
 
     public function uploadDatamatch(UploadDataMatchRequest $request, UploadLeadsFileAction $action)
     {
         return $action->executeLeadsDataMatchResultUpload($request);
+    }
+
+    public function getDataMatchResultsFileLink(GetAllDataMatchFilesRequest $request, ListDataMatchAction $action)
+    {
+        $action->enableQueryBuilder();
+
+        return $action->resourceCollection($action->listOrPaginate());
     }
 }

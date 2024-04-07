@@ -39,7 +39,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-require __DIR__ . '/auth.php';
+require __DIR__.'/auth.php';
 
 Route::get('/leads-links/council-tax/{postcode}', [LeadController::class, 'getCouncilTaxLink'])->name('leads.council-tax-link');
 
@@ -67,7 +67,6 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
         }
     });
 
-
     Route::get('/user', [UserController::class, 'currentUser']);
     Route::post('/users/{user}/collections/docs/upload', [UserController::class, 'uploadDocumentToCollection'])->name('users.documents-to-collections');
     Route::post('/users/{user}/documents/upload', [UserController::class, 'uploadDocument'])->name('users.documents-upload');
@@ -82,6 +81,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::apiResource('/leads', LeadController::class);
     Route::post('/leads/{lead}/collections/docs/upload', [LeadController::class, 'uploadDocumentToCollection'])->name('leads.documents-to-collections');
     Route::post('/leads/{lead}/comments', [LeadController::class, 'storeComments'])->name('leads.add-comments');
+    Route::get('/leads-datamatch-files', [LeadController::class, 'getDataMatchResultsFileLink'])->name('leads.view_data_match_files');
     Route::get('/leads-datamatch-download', [LeadController::class, 'downloadDatamatch'])->name('leads.download-datamatch');
     Route::post('/leads-datamatch-upload', [LeadController::class, 'uploadDatamatch'])->name('leads.upload-datamatch');
     Route::get('/lead-jobs', [LeadJobController::class, 'index'])->name('lead-jobs.index');
