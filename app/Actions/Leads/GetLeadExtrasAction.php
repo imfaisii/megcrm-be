@@ -46,6 +46,8 @@ class GetLeadExtrasAction
             'Cancelled Lead',
             'Cancelled (old)',
             'Condensing Boiler',
+            'Install Booked',
+            'One document missing ( all other documents ok )'
         ];
 
         if ($this->user->hasRole(RoleEnum::SURVEYOR)) {
@@ -56,6 +58,18 @@ class GetLeadExtrasAction
         } else {
             $leadGenerators = LeadGenerator::all();
         }
+
+        $intallers = User::whereHas('roles', function ($query) {
+            $query->where('name', RoleEnum::INSTALLER);
+        })->with('company', fn ($query) => $query->select('id', 'name'))->get();
+
+        $surveyors = User::whereHas('roles', function ($query) {
+            $query->where('name', RoleEnum::SURVEYOR);
+        })->get();
+
+        $csrs = User::whereHas('roles', function ($query) {
+            $query->where('name', RoleEnum::CSR);
+        })->get();
 
         return [
             'job_types' => JobType::all(),
@@ -70,12 +84,9 @@ class GetLeadExtrasAction
             'lead_statuses' => LeadStatus::oldest('name')->get(),
             'lead_table_filters' => LeadStatus::whereIn('name', [...$tableStatuses, ...$both])->oldest('name')->get(),
             'lead_jobs_filters' => LeadStatus::whereNotIn('name', $tableStatuses)->orWhere('name', $both)->oldest('name')->get(),
-            'installers' => User::whereHas('roles', function ($query) {
-                $query->where('name', RoleEnum::INSTALLER);
-            })->get(),
-            'surveyors' => User::whereHas('roles', function ($query) {
-                $query->where('name', RoleEnum::SURVEYOR);
-            })->get(),
+            'installers' => $intallers,
+            'surveyors' => $surveyors,
+            'csrs' => $csrs
         ];
     }
 }

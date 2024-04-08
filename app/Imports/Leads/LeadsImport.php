@@ -20,6 +20,8 @@ use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Concerns\ToCollection;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 
+use function App\Helpers\split_name;
+
 class LeadsImport implements ToCollection, WithHeadingRow
 {
     public function __construct(public LeadResponseClass $classResponse, public $newlyCreatedLeads = [])
@@ -40,10 +42,12 @@ class LeadsImport implements ToCollection, WithHeadingRow
 
                     try {
                         // lead generator
+                        $leadGeneratorName = $row['website'] ?? 'Lead Generator Default';
                         $leadGenerator = LeadGenerator::firstOrCreate(
                             [
-                                'name' => $row['website'] ?? 'Lead Generator Default',
+                                'name' => $leadGeneratorName,
                             ],
+                            ['sender_id' => substr($leadGeneratorName, 0, 11)],
                         );
                         $email = Arr::get($row, 'email', null);
                         $phoneNo = Arr::get($row, 'contact_number', '000000');
@@ -59,9 +63,8 @@ class LeadsImport implements ToCollection, WithHeadingRow
                             ])->id;
                         }
 
-                        [$postCode, $address, $plainAddress, $city, $county, $country] = $apiClass->adressionApi($postCode ?? '', $address);
-
-                        $name = $this->split_name($row['name'] ?? '');
+                        [$postCode, $address, $plainAddress, $city, $county, $country, $buildingNumber, $subBuilding, $RawApiResponse, $actualPostCode] = $apiClass->adressionApi($postCode ?? '', $address);
+                        $name = split_name($row['name'] ?? '');
                         $lead = Lead::firstOrCreate([
                             'post_code' => $postCode,
                             'address' => $address,
@@ -83,6 +86,10 @@ class LeadsImport implements ToCollection, WithHeadingRow
                             'county' => $county,
                             'city' => $city,
                             'country' => $country,
+                            'building_number' => $buildingNumber,
+                            'sub_building' => $subBuilding,
+                            'raw_api_response' => $RawApiResponse,
+                            'actual_post_code' => $actualPostCode,
                         ]);
                         // check if its new created add it to an for later sending for creating contact on air call
                         if ($lead->wasRecentlyCreated) {
@@ -110,14 +117,14 @@ class LeadsImport implements ToCollection, WithHeadingRow
                         ]);
                     } catch (Exception $exception) {
                         Log::channel('lead_file_read_log')->info(
-                            'Error importing lead address: ' . $address . '. ' . $exception->getMessage()
+                            'Error importing lead address: '.$row['address'].'. '.$exception->getMessage()
                         );
                     }
                 }
             }
         } catch (Exception $exception) {
             Log::channel('lead_file_read_log')->info(
-                'Exception importing lead address:: ' . $row['address'] . ' message:: ' . $exception->getMessage()
+                'Exception importing lead address:: '.$row['address'].' message:: '.$exception->getMessage()
             );
 
             $this->classResponse->failedLeads[] = $row['address'];
@@ -129,35 +136,7 @@ class LeadsImport implements ToCollection, WithHeadingRow
             foreach ($chunks as $key => $eachchunk) {
                 AircallContactCreationJob::dispatch($eachchunk)->delay($key != 0 ? 120 : null);
             }
-
-
         } catch (Exception $exception) {
-
         }
-
-    }
-
-    public function split_name($name)
-    {
-        $parts = [];
-
-        while (strlen(trim($name)) > 0) {
-            $name = trim($name);
-            $string = preg_replace('#.*\s([\w-]*)$#', '$1', $name);
-            $parts[] = $string;
-            $name = trim(preg_replace('#' . preg_quote($string, '#') . '#', '', $name));
-        }
-
-        if (empty($parts)) {
-            return false;
-        }
-
-        $parts = array_reverse($parts);
-        $name = [];
-        $name['first_name'] = $parts[0];
-        $name['middle_name'] = (isset($parts[2])) ? $parts[1] : '';
-        $name['last_name'] = (isset($parts[2])) ? $parts[2] : (isset($parts[1]) ? $parts[1] : '');
-
-        return $name;
     }
 }

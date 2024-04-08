@@ -12,7 +12,7 @@ class StoreUserAction extends AbstractCreateAction
 {
     protected string $modelClass = User::class;
 
-    protected $relations = ['additional', 'installerCompany', 'installation_types'];
+    protected $relations = ['additional', 'company', 'installation_types'];
 
     public function create(array $data): User
     {

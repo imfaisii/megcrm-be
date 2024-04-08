@@ -33,10 +33,13 @@ use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\Permission\Traits\HasPermissions;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\AllowedInclude;
+use Illuminate\Auth\Passwords\CanResetPassword;
+use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
 
 use function App\Helpers\is_append_present;
+use function App\Helpers\split_name;
 
-class User extends BaseModel implements AuthenticatableContract, HasMedia, AccessAuthorizable
+class User extends BaseModel implements AuthenticatableContract, HasMedia, AccessAuthorizable, CanResetPasswordContract
 {
     use Authenticatable,
         AuthenticationLoggable,
@@ -49,8 +52,10 @@ class User extends BaseModel implements AuthenticatableContract, HasMedia, Acces
         InteractsWithMedia,
         Authorizable,
         LaravelPermissionToVueJS,
-        Notifiable;
-    use EagerLoadPivotTrait;        // the table second table we are  in many-to-many relationships has this trait, like if we are geting user with roles then roles would have this trait
+        Notifiable,
+        CanResetPassword,
+        EagerLoadPivotTrait;
+
     protected $guard_name = 'sanctum';
 
     protected $fillable = [
@@ -59,6 +64,8 @@ class User extends BaseModel implements AuthenticatableContract, HasMedia, Acces
         'password',
         'air_caller_id',
         'is_active',
+        'company_id',
+        'is_associated_with_company',
         'phone_number_aircall',
         'aircall_email_address',
         'created_by_id',
@@ -78,6 +85,7 @@ class User extends BaseModel implements AuthenticatableContract, HasMedia, Acces
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
         'is_active' => 'boolean',
+        'is_associated_with_company' => 'boolean'
     ];
 
     protected array $allowedIncludes = [
@@ -85,11 +93,11 @@ class User extends BaseModel implements AuthenticatableContract, HasMedia, Acces
         'leadGeneratorAssignments',
         'notifications',
         'authentications',
-        'installerCompany',
+        'company',
         'additional.bank',
     ];
 
-    protected $appends = ['rights', 'top_role', 'user_agents'];
+    protected $appends = ['rights', 'top_role', 'user_agents', 'first_name', 'last_name'];
 
     public function notifyAuthenticationLogVia()
     {
@@ -148,6 +156,16 @@ class User extends BaseModel implements AuthenticatableContract, HasMedia, Acces
         return null;
     }
 
+    public function getFirstNameAttribute()
+    {
+        return split_name($this->name)['first_name'];
+    }
+
+    public function getLastNameAttribute()
+    {
+        return split_name($this->name)['last_name'];
+    }
+
     public function additional()
     {
         return $this->hasOne(UserAdditional::class);
@@ -180,9 +198,9 @@ class User extends BaseModel implements AuthenticatableContract, HasMedia, Acces
             ->withTimestamps();
     }
 
-    public function installerCompany()
+    public function company()
     {
-        return $this->hasOne(InstallerCompany::class);
+        return $this->belongsTo(Company::class);
     }
 
     public function installationTypes()

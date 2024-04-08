@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Actions\Common\BaseModel;
 use App\Enums\Permissions\RoleEnum;
+use App\Filters\Leads\FilterByBookedBy;
 use App\Filters\Leads\FilterByName;
 use App\Filters\Leads\FilterByPostcode;
 use App\Filters\Leads\FilterByStatus;
@@ -22,14 +23,20 @@ use Spatie\QueryBuilder\AllowedFilter;
 
 class Lead extends BaseModel implements HasMedia
 {
-    use HasCalenderEvent, HasComments, HasFactory, HasRecordCreator, HasStatuses, Notifiable;
-
-    use HasTeamTrait, InteractsWithMedia;
 
 
-    public $ScopeColumn = 'surveyor_id';    // the coloumn on which whereIn condition will be used for teams
 
 
+    use HasCalenderEvent,
+        HasComments,
+        HasFactory,
+        HasRecordCreator,
+        HasStatuses,
+        Notifiable,
+        InteractsWithMedia,
+        HasTeamTrait;
+
+    public $ScopeColumn = 'surveyor_id';
 
     protected $fillable = [
         'title',
@@ -40,12 +47,14 @@ class Lead extends BaseModel implements HasMedia
         'phone_no',
         'dob',
         'post_code',
+        'actual_post_code',
         'plain_address',
         'city',
         'county',
         'country',
         'address',
         'is_marked_as_job',
+        'has_second_receipent',
         'job_type_id',
         'fuel_type_id',
         // 'surveyor_id',
@@ -57,6 +66,7 @@ class Lead extends BaseModel implements HasMedia
         'sub_building',
         'building_number',
         'reference_number',
+        'raw_api_response'
 
     ];
 
@@ -64,6 +74,8 @@ class Lead extends BaseModel implements HasMedia
 
     protected $casts = [
         'is_marked_as_job' => 'boolean',
+        'has_second_receipent' => 'boolean',
+        'raw_api_response' => 'json',
     ];
 
     protected array $allowedIncludes = [
@@ -80,7 +92,10 @@ class Lead extends BaseModel implements HasMedia
         'callCenters.callCenterStatus',
         'comments.commentator',
         'leadAdditional',
-        'notifications'
+        'notifications',
+        'secondReceipent',
+        'submission',
+        'mobileAssetSyncs'
     ];
 
     protected array $discardedFieldsInFilter = [
@@ -105,8 +120,6 @@ class Lead extends BaseModel implements HasMedia
                     $query->where('surveyor_id', $user->id);
                 });
             });
-
-
         }
 
         return $query;
@@ -147,6 +160,7 @@ class Lead extends BaseModel implements HasMedia
             $latest['lead_status_model'] = null;
         }
 
+        $latest['survey_booked'] = $this->latestStatus('Survey Booked');
         return $latest;
     }
 
@@ -157,6 +171,7 @@ class Lead extends BaseModel implements HasMedia
             AllowedFilter::custom('name', new FilterByName()),
             AllowedFilter::custom('statuses', new FilterByStatus()),
             AllowedFilter::custom('surveyor_id', new FilterBySurveyor()),
+            AllowedFilter::custom('survey_booked_by', new FilterByBookedBy()),
         ];
     }
 
@@ -229,6 +244,11 @@ class Lead extends BaseModel implements HasMedia
         return $this->hasOne(SecondReceipent::class);
     }
 
+    public function submission()
+    {
+        return $this->hasOne(Submission::class);
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class);
@@ -252,6 +272,11 @@ class Lead extends BaseModel implements HasMedia
     public function callCenters()
     {
         return $this->hasMany(CallCenter::class);
+    }
+
+    public function mobileAssetSyncs()
+    {
+        return $this->hasMany(MobileAssetSync::class);
     }
 
     public function benefits()

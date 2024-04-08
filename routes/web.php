@@ -1,20 +1,15 @@
 <?php
 
-use App\Classes\GetAddress;
-use App\Enums\DataMatch\DataMatchEnum;
-use App\Exports\Leads\DatamatchExport;
-use App\Fascade\AirCallFascade;
 use App\Http\Controllers\AirCallWebhookController;
-use App\Models\Lead;
 use App\Models\User;
-use Carbon\Carbon;
-use Illuminate\Support\Str;
+use App\Notifications\TextExponentNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use App\Classes\LeadResponseClass;
 use Aloha\Twilio\Twilio;
 use App\Enums\AppEnum;
 use App\Imports\Leads\LeadsImport;
+use App\Models\Lead;
 use App\Notifications\Customer\CustomerLeadTrackingMail;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
@@ -27,6 +22,7 @@ use function App\Helpers\replaceFirst;
 use function App\Helpers\getOnlyNumersFromString;
 use function App\Helpers\meg_encrypt;
 
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -37,12 +33,16 @@ use function App\Helpers\meg_encrypt;
 | contains the "web" middleware group. Now create something great!
 |
 */
+
 if (app()->isLocal()) {
-    Route::get('test', function (Request $request) {
+Route::get('test', function (Request $request) {
+    $userId = request()->get('user_id', 1);
+    $user = User::find($userId);
 
+    $user->notify(new TextExponentNotification());
 
-
-    });
+    dd("done");
+});
 
     Route::get('test-lead-track', function (Request $request) {
 

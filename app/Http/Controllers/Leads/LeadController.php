@@ -15,9 +15,11 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\DataMatch\UploadDataMatchRequest;
 use App\Http\Requests\Leads\StoreLeadCommentsRequest;
 use App\Http\Requests\Leads\StoreLeadRequest;
+use App\Http\Requests\Leads\StoreMobileAssetSyncRequest;
 use App\Http\Requests\Leads\UpdateLeadRequest;
 use App\Http\Requests\Leads\UpdateLeadStatusRequest;
 use App\Http\Requests\Leads\UploadLeadFileRequest;
+use App\Http\Requests\Users\UploadDocumentsToCollectionRequest;
 use App\Models\Lead;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -28,10 +30,9 @@ use function App\Helpers\null_resource;
 
 class LeadController extends Controller
 {
-
     public function __construct()
     {
-        $this->authorizeResource(Lead::class, 'lead');
+        // $this->authorizeResource(Lead::class, 'lead');
     }
     public function index(ListLeadAction $action): ResourceCollection
     {
@@ -49,7 +50,6 @@ class LeadController extends Controller
 
     public function show(Lead $lead, FindLeadAction $action)
     {
-        // $this->authorize('view', $lead);
         $action->enableQueryBuilder();
 
         return $action->individualResource($action->findOrFail($lead->id));
@@ -86,6 +86,12 @@ class LeadController extends Controller
         return $this->success(data: (new GetLeadExtrasAction(auth()->user()))->execute());
     }
 
+    public function storeMobileAssetsId(Lead $lead, string $assetId)
+    {
+        $lead->mobileAssetSyncs()->firstOrCreate(['asset_id' => $assetId, 'created_by_id' => auth()->id()]);
+        return $this->success(data: $lead->load('mobileAssetSyncs'));
+    }
+
     public function updateStatus(Lead $lead, UpdateLeadStatusRequest $request)
     {
         if (
@@ -99,6 +105,24 @@ class LeadController extends Controller
         }
 
         $lead->setStatus($request->status, $request->comments);
+
+        return null_resource();
+    }
+
+    public function uploadDocumentToCollection(Lead $lead, UploadDocumentsToCollectionRequest $request)
+    {
+        $existingMedia = $lead->getMedia($request->collection);
+
+        $existingMedia->each(function ($oldMedia) {
+            $fileName = pathinfo(request()->file('file')->getClientOriginalName(), PATHINFO_FILENAME);
+
+            if ($fileName === $oldMedia->name) {
+                $oldMedia->delete();
+            }
+        });
+
+        $lead->addMediaFromRequest('file')
+            ->toMediaCollection($request->collection);
 
         return null_resource();
     }

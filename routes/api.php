@@ -9,6 +9,7 @@ use App\Http\Controllers\CallCenterController;
 use App\Http\Controllers\CallCenterStatusesController;
 use App\Http\Controllers\Customer\CustomerController;
 use App\Http\Controllers\File\FileHanlderController;
+use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\FuelTypeController;
 use App\Http\Controllers\InstallationTypeController;
 use App\Http\Controllers\JobTypeController;
@@ -64,6 +65,7 @@ Route::middleware('signed')->group(function () {
     Route::post('/file-delete/{Model}/{ID}', [FileHanlderController::class, 'delete'])->middleware('throttle:customer-file-upload')->name('file_delete');
     Route::post('/file-data/{Model}/{ID}', [FileHanlderController::class, 'getAllFilesAssocaiatedWithModel'])->middleware('throttle:customer-file-upload')->name('file_data');
     Route::get('customer-lead-status-view/{lead}', [CustomerController::class, 'lead_view'])->name('customer.lead-status')->middleware('verify_domain');
+Route::get('/leads-links/council-tax/{postcode}', [LeadController::class, 'getCouncilTaxLink'])->name('leads.council-tax-link');
 
 });
 Route::get('/file-load/{Media:uuid}', [FileHanlderController::class, 'load'])->name('file_load');
@@ -77,6 +79,23 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
         ]);
     });
 
+    Route::get('/getSuggestions', function (GetAddressRequest $request) {
+        $getAddress = new GetAddress();
+
+        try {
+            return response()->json([
+                'data' => $getAddress->getSuggestions($request->post_code),
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+                'data' => [],
+            ]);
+        }
+    });
+
+
     Route::get('/user', [UserController::class, 'currentUser']);
     Route::post('/users/{user}/collections/docs/upload', [UserController::class, 'uploadDocumentToCollection'])->name('users.documents-to-collections');
     Route::post('/users/{user}/documents/upload', [UserController::class, 'uploadDocument'])->name('users.documents-upload');
@@ -84,9 +103,14 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::apiResource('/permissions', PermissionController::class);
     Route::apiResource('/roles', RoleController::class);
     Route::apiResource('/users', UserController::class);
+    Route::apiResource('/companies', CompanyController::class);
+    Route::post('/companies/{company}/collections/docs/upload', [CompanyController::class, 'uploadDocumentToCollection'])->name('companies.documents-to-collections');
+    Route::post('/companies/{media}/expiry/update', [CompanyController::class, 'updateDocumentExpiry'])->name('companies.update-document-expiry');
     Route::put('/users/{user}/profile', [UserController::class, 'updateUserProfile'])->name('users.profile');
     Route::apiResource('/leads', LeadController::class);
+    Route::post('/leads/{lead}/collections/docs/upload', [LeadController::class, 'uploadDocumentToCollection'])->name('leads.documents-to-collections');
     Route::post('/leads/{lead}/comments', [LeadController::class, 'storeComments'])->name('leads.add-comments');
+    Route::get('/leads/{lead}/mobile-asset/{assetId}', [LeadController::class, 'storeMobileAssetsId'])->name('leads.add-asset-ids');
     Route::get('/leads-datamatch-download', [LeadController::class, 'downloadDatamatch'])->name('leads.download-datamatch');
     Route::post('/leads-datamatch-upload', [LeadController::class, 'uploadDatamatch'])->name('leads.upload-datamatch');
     Route::get('/lead-jobs', [LeadJobController::class, 'index'])->name('lead-jobs.index');
@@ -120,5 +144,4 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::get('/lead-extras', [LeadController::class, 'getExtras'])->name('leads.extras');
     Route::post('/lead-status/{lead}', [LeadController::class, 'updateStatus'])->name('leads.set-lead-status');
     Route::apiResource('/team', TeamController::class);
-
 });

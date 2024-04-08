@@ -27,8 +27,12 @@ trait HasTeamTrait
             // get all the team members ids and then get those leads
             // if its admin add  lead generator as well
             $query->where(function ($q) {
-                return $q->whereIn($this->ScopeColumn ?? 'user_id', Arr::get($this->getTeams(), 'members', []))
-                    ->orWhereIn('lead_generator_id', Arr::get($this->getTeams(), 'lead_generators', []));
+                $teamsIds = Arr::get($this->getTeams(), 'members', []);
+                return $q->whereIn($this->ScopeColumn ?? 'user_id', $teamsIds)
+                    ->orWhereIn('lead_generator_id', Arr::get($this->getTeams(), 'lead_generators', []))
+                    ->orWhereHas('surveyBooking', function ($query) use ($teamsIds) {
+                        $query->whereIn('surveyor_id', $teamsIds);
+                    });
             });
             // $query->whereIn($this->ScopeColumn ?? 'user_id', Arr::get($this->getTeams(), 'members', []));
         } else {

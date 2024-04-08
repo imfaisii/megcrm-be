@@ -21,6 +21,30 @@ class UpdateLeadRequest extends BaseFormRequest
             'measures' => ['sometimes', 'array'],
             'has_second_receipent' => ['sometimes', 'required', 'boolean'],
             'second_receipent' => ['sometimes', 'required', 'array'],
+            'second_receipent.first_name' => [
+                'sometimes',
+                'nullable',
+                'required_if:has_second_receipent,true',
+                'string',
+            ],
+            'second_receipent.last_name' => [
+                'sometimes',
+                'nullable',
+                'required_if:has_second_receipent,true',
+                'string',
+            ],
+            'second_receipent.middle_name' => [
+                'sometimes',
+                'nullable',
+                'nullable',
+                'string',
+            ],
+            'second_receipent.dob' => [
+                'sometimes',
+                'nullable',
+                'required_if:has_second_receipent,true',
+                'date',
+            ],
             'is_marked_as_job' => ['sometimes', 'required', 'boolean'],
             'job_type_id' => ['sometimes', 'nullable', 'exists:job_types,id'],
             'fuel_type_id' => ['sometimes', 'nullable', 'exists:fuel_types,id'],
@@ -41,12 +65,26 @@ class UpdateLeadRequest extends BaseFormRequest
             'lead_customer_additional_detail.datamatch_progress_date' => ['nullable', 'date'],
             'lead_customer_additional_detail.lead_id' => ['required', 'exists:leads,id'],
             'survey_booking' => ['required', 'array'],
+            'submission' => ['required', 'array'],
             'lead_additional' => ['required', 'array'],
             'lead_additional.datamatch_confirmed' => ['nullable', 'boolean'],
             'lead_additional.land_registry_confirmed' => ['nullable', 'boolean'],
             'lead_additional.proof_of_address_confirmed' => ['nullable', 'boolean'],
             'lead_additional.epr_report_confirmed' => ['nullable', 'boolean'],
+            'lead_additional.is_pre_checking_confirmed' => ['nullable', 'boolean'],
+            'lead_additional.gas_connection_before_april_2022' => ['nullable', 'boolean'],
             'installation_bookings' => ['nullable', 'array'],
+        ];
+    }
+
+    public function attributes()
+    {
+        return [
+            'has_second_receipent' => 'second receipent',
+            'second_receipent.first_name' => 'second receipent first name',
+            'second_receipent.middle_name' => 'second receipent middle name',
+            'second_receipent.last_name' => 'second receipent last name',
+            'second_receipent.dob' => 'second receipent date of birth',
         ];
     }
 }

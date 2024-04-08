@@ -38,11 +38,11 @@ class GetAddress
                 foreach ($addresses as $key => $address) {
                     $transformedAddress = implode(' ', $address['address']);
 
-                    if (isset($address['city'])) {
+                    if (isset ($address['city'])) {
                         $transformedAddress .= ', ' . $address['city'];
                     }
 
-                    if (isset($address['county'])) {
+                    if (isset ($address['county'])) {
                         $transformedAddress .= ', ' . $address['county'];
                     }
 
@@ -57,6 +57,10 @@ class GetAddress
                         'city' => $address['city'] ?? null,
                         'county' => $address['county'] ?? null,
                         'country' => $postCodeResponseCountry ?? null,
+                        'building_number' => $address['buildingnumber'] ?? null,
+                        'sub_building' => $address['subbuilding'] ?? null,
+                        'raw_api_response' => $address,
+                        'actual_post_code' => $address['postcode'],
                     ];
                 }
 
@@ -110,13 +114,13 @@ class GetAddress
 
 
                 $address = $exactCheck;
-                $transformedAddress =  $address['address'];
+                $transformedAddress = $address['address'];
 
-                if (isset($address['city'])) {
+                if (isset ($address['city'])) {
                     $transformedAddress .= ', ' . $address['city'];
                 }
 
-                if (isset($address['county'])) {
+                if (isset ($address['county'])) {
                     $transformedAddress .= ', ' . $address['county'];
                 }
 
@@ -127,12 +131,15 @@ class GetAddress
                 return [
                     str_replace(' ', '', $address['postcode']),
                     $transformedAddress,
-                   $address['address'],
+                    $address['address'],
                     $address['city'] ?? null,
                     $address['county'] ?? null,
                     $postCodeResponseCountry ?? null,
                     $address['buildingnumber'] ?? null,
                     $address['subbuilding'] ?? null,
+                    $address,
+                    $address['postcode'],
+
 
                 ];
             } else {
@@ -140,13 +147,12 @@ class GetAddress
                 Log::channel('addresso_api')
                     ->info("Error in postcode:: $postCode and address:: $query");
 
-                return [$postCode, $query, $query, null, null, null, null, null];
-
+                return [$postCode, $query, $query, null, null, null, null, null, null, null];
             }
         } catch (Exception $e) {
             Log::channel('addresso_api')
                 ->info("Exception in postcode:: $postCode and address:: $query {$e->getMessage()}");
-            return [$postCode, $query, $query, null, null, null, null, null];
+            return [$postCode, $query, $query, null, null, null, null, null, null, null];
         }
     }
 }
