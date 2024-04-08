@@ -33,11 +33,13 @@ use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\Permission\Traits\HasPermissions;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\AllowedInclude;
+use Illuminate\Auth\Passwords\CanResetPassword;
+use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
 
 use function App\Helpers\is_append_present;
 use function App\Helpers\split_name;
 
-class User extends BaseModel implements AuthenticatableContract, HasMedia, AccessAuthorizable
+class User extends BaseModel implements AuthenticatableContract, HasMedia, AccessAuthorizable, CanResetPasswordContract
 {
     use Authenticatable,
         AuthenticationLoggable,
@@ -50,8 +52,9 @@ class User extends BaseModel implements AuthenticatableContract, HasMedia, Acces
         InteractsWithMedia,
         Authorizable,
         LaravelPermissionToVueJS,
-        Notifiable;
-    use EagerLoadPivotTrait;
+        Notifiable,
+        CanResetPassword,
+        EagerLoadPivotTrait;
 
     protected $guard_name = 'sanctum';
 
