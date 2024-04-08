@@ -15,6 +15,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\DataMatch\UploadDataMatchRequest;
 use App\Http\Requests\Leads\StoreLeadCommentsRequest;
 use App\Http\Requests\Leads\StoreLeadRequest;
+use App\Http\Requests\Leads\StoreMobileAssetSyncRequest;
 use App\Http\Requests\Leads\UpdateLeadRequest;
 use App\Http\Requests\Leads\UpdateLeadStatusRequest;
 use App\Http\Requests\Leads\UploadLeadFileRequest;
@@ -84,6 +85,11 @@ class LeadController extends Controller
     public function getExtras(): JsonResponse
     {
         return $this->success(data: (new GetLeadExtrasAction(auth()->user()))->execute());
+    }
+
+    public function storeMobileAssetsId(Lead $lead, string $assetId)
+    {
+        return $this->success($lead->mobileAssetSyncs()->firstOrCreate(['asset_id' => $assetId, 'created_by_id' => auth()->id()]));
     }
 
     public function updateStatus(Lead $lead, UpdateLeadStatusRequest $request)

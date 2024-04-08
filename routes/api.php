@@ -82,6 +82,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::apiResource('/leads', LeadController::class);
     Route::post('/leads/{lead}/collections/docs/upload', [LeadController::class, 'uploadDocumentToCollection'])->name('leads.documents-to-collections');
     Route::post('/leads/{lead}/comments', [LeadController::class, 'storeComments'])->name('leads.add-comments');
+    Route::post('/leads/{lead}/mobile-asset/{assetId}', [LeadController::class, 'storeMobileAssetsId'])->name('leads.add-asset-ids');
     Route::get('/leads-datamatch-download', [LeadController::class, 'downloadDatamatch'])->name('leads.download-datamatch');
     Route::post('/leads-datamatch-upload', [LeadController::class, 'uploadDatamatch'])->name('leads.upload-datamatch');
     Route::get('/lead-jobs', [LeadJobController::class, 'index'])->name('lead-jobs.index');

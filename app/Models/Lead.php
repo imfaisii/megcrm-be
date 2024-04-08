@@ -269,6 +269,11 @@ class Lead extends BaseModel implements HasMedia
         return $this->hasMany(CallCenter::class);
     }
 
+    public function mobileAssetSyncs()
+    {
+        return $this->hasMany(MobileAssetSync::class);
+    }
+
     public function benefits()
     {
         return $this->belongsToMany(BenefitType::class, LeadHasBenefit::class)
