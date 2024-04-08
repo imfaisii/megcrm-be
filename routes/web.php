@@ -40,12 +40,10 @@ use function App\Helpers\meg_encrypt;
 if (app()->isLocal()) {
     Route::get('test', function (Request $request) {
 
-        dump(meg_encrypt("Lead"));
-        dump(meg_encrypt(11));
 
         // Define the trait with multiple methods
         $lead = Lead::find(11);
-        return ($ans = $lead->getMedia("customer_survey_images"));
+        // return ($ans = $lead->getMedia("customer_survey_images"));
         // return URL::signedRoute('customer.lead-status', ['lead' => meg_encrypt(11)]);
         return URL::signedRoute('file_upload', ['ID' => meg_encrypt(11), 'Model' => 'Lead']);
 
@@ -54,14 +52,29 @@ if (app()->isLocal()) {
 
     Route::get('test-lead-track', function (Request $request) {
 
+        $time = now()->addDays(AppEnum::LEAD_TRACKNG_DAYS_ALLOWED);
         $lead = Lead::first();
-        $encryptedID =meg_encrypt($lead->id);
-         $route = URL::temporarySignedRoute('customer.lead-status', now()->addDays(AppEnum::LEAD_TRACKNG_DAYS_ALLOWED), ['lead' =>$encryptedID ]);
+        $encryptedID = meg_encrypt($lead->id);
+        $encryptedModel = meg_encrypt('Lead');
+        $route = URL::temporarySignedRoute('customer.lead-status', $time, ['lead' => $encryptedID]);
         $request = Request::create($route);
+        $routeForFiles = URL::temporarySignedRoute('file_upload', $time, ['ID' => $encryptedID, 'Model' => $encryptedModel]);
+        $requestForFilesUpload = Request::create($routeForFiles);
+        $requestForFilesDelete = Request::create(URL::temporarySignedRoute('file_delete', $time, ['ID' => $encryptedID, 'Model' => $encryptedModel]));
+        $requestForFilesData = Request::create(URL::temporarySignedRoute('file_data', $time, ['ID' => $encryptedID, 'Model' => $encryptedModel]));
+
+        $requestForFiles = Request::create($route);
 
         $lead->notify((new CustomerLeadTrackingMail([
             ...$request->query(),
-            'lead'=>$encryptedID
+            'lead' => $encryptedID,
+            'model' => $encryptedModel,
+            'SignatureForUpload' => $requestForFilesUpload->query('signature'),
+            'SignatureForDelete' => $requestForFilesDelete->query('signature'),
+            'SignatureForData' => $requestForFilesData->query('signature'),
+
+
+
         ])));
 
 

@@ -114,13 +114,12 @@ class FileHanlderController extends Controller
             $mediaObjects = $modelObject->getMedia($request->get('collection_name', AppEnum::Default_MediaType));
             $mediaObjects = $mediaObjects->map(function (Media $Media) use ($type) {
                 if ($type === 'files') {
-                    return [
-                        $Media->getUrl(),
-                    ];
+                    return
+                        $Media->getUrl();
+                    ;
                 } else {
-                    return [
-                        $Media->uuid,
-                    ];
+                    return
+                        $Media->uuid;
                 }
             });
             return $this->success(data: $mediaObjects);
