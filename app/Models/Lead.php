@@ -90,7 +90,8 @@ class Lead extends BaseModel implements HasMedia
         'leadAdditional',
         'notifications',
         'secondReceipent',
-        'submission'
+        'submission',
+        'mobileAssetSyncs'
     ];
 
     protected array $discardedFieldsInFilter = [

@@ -30,7 +30,6 @@ use function App\Helpers\null_resource;
 
 class LeadController extends Controller
 {
-
     public function __construct()
     {
         // $this->authorizeResource(Lead::class, 'lead');
@@ -89,7 +88,8 @@ class LeadController extends Controller
 
     public function storeMobileAssetsId(Lead $lead, string $assetId)
     {
-        return $this->success($lead->mobileAssetSyncs()->firstOrCreate(['asset_id' => $assetId, 'created_by_id' => auth()->id()]));
+        $lead->mobileAssetSyncs()->firstOrCreate(['asset_id' => $assetId, 'created_by_id' => auth()->id()]);
+        return $this->success(data: $lead->load('mobileAssetSyncs'));
     }
 
     public function updateStatus(Lead $lead, UpdateLeadStatusRequest $request)
