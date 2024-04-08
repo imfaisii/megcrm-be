@@ -41,12 +41,6 @@ if (app()->isLocal()) {
     Route::get('test', function (Request $request) {
 
 
-        // Define the trait with multiple methods
-        $lead = Lead::find(11);
-        // return ($ans = $lead->getMedia("customer_survey_images"));
-        // return URL::signedRoute('customer.lead-status', ['lead' => meg_encrypt(11)]);
-        return URL::signedRoute('file_upload', ['ID' => meg_encrypt(11), 'Model' => 'Lead']);
-
 
     });
 
