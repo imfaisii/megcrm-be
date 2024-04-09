@@ -164,8 +164,14 @@ return [
             'path' => storage_path('logs/data_match_result_file_upload.log'),
             'level' => 'debug',
         ],
-
-
+        'data_match_slack' => [
+            'driver' => 'slack',
+            'url' => "https://hooks.slack.com/services/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",
+            'username' => 'Slack Application Logs',
+            'emoji' => ':boom:',
+            'level' => env('LOG_LEVEL', 'critical'),
+            'ignore_exceptions' => false,
+        ],
         'addresso_api' => [
             'driver' => 'daily',
             'path' => storage_path('logs/addresso.log'),

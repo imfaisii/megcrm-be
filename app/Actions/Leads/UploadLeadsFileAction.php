@@ -89,8 +89,9 @@ class UploadLeadsFileAction
 
     private function CheckFileHeaderErrors(array $headersArray, $file, $headingRow = 1)
     {
-
         $headings = (new HeadingRowImport($headingRow))->toArray($file)[0][0];
+
+
         if (count($headings) < count($headersArray)) {
 
             throw new Exception('File has invalid header. (less headings)' . json_encode($headings));
@@ -99,6 +100,7 @@ class UploadLeadsFileAction
         $headings = array_map('strtolower', $headings);
 
         $headerDifference = array_diff($headersArray, $headings);
+
 
         throw_if(filled($headerDifference), new Exception('File has invalid header ( not matched ).' . json_encode($headerDifference)));
 
