@@ -160,7 +160,7 @@ class DatamatchExport implements FromCollection, Responsable, ShouldAutoSize, Wi
     {
         return [
             AfterSheet::class => function (AfterSheet $event) {
-                Log::channel('slack-crm')->info('the user '.auth()->user()->email.' has downloaded the file ');
+                Log::channel('data_match_slack')->info('the user '.auth()->user()->email.' has downloaded the file ');
                 // Style the first row as bold text.
                 // $event->sheet->getStyle('A1')->getFont()->setBold(true);
 
