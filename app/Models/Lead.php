@@ -23,6 +23,10 @@ use Spatie\QueryBuilder\AllowedFilter;
 
 class Lead extends BaseModel implements HasMedia
 {
+
+
+
+
     use HasCalenderEvent,
         HasComments,
         HasFactory,

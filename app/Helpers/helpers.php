@@ -4,7 +4,9 @@ namespace App\Helpers;
 
 use App\Actions\Common\BaseJsonResource;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 function null_resource(): JsonResource
@@ -81,7 +83,7 @@ function get_all_includes_in_camel_case(): array
     return collect(get_all_includes())
         ->map(function (string $includes) {
             return collect(explode('.', $includes))
-                ->map(fn (string $include) => Str::camel($include))
+                ->map(fn(string $include) => Str::camel($include))
                 ->join('.');
         })
         ->toArray();
@@ -230,6 +232,82 @@ function generateUniqueRandomString(): string
     return str()->upper(Str::random(10));
 }
 
+function generateUniqueRandomStringWithTimeStamp(): string
+{
+    // Generate a random string of length 9 (10 - length of timestamp)
+    $randomString = Str::random(9);
+
+    // Get the current timestamp
+    $timestamp = time();
+
+    // Randomly choose a position to insert the timestamp
+    $position = rand(0, 9); // Random position between 0 and 9 (inclusive)
+
+    // Insert the timestamp into the random string at the chosen position
+    $uniqueString = substr_replace($randomString, $timestamp, $position, 0);
+
+    return strtoupper($uniqueString);
+}
+
+function base64url_encode($data): string
+{
+    return rtrim(strtr(base64_encode($data), '+/', '-_'), '=');
+}
+
+function base64url_decode($data): bool|string
+{
+    return base64_decode(str_pad(strtr($data, '-_', '+/'), strlen($data) % 4, '='));
+}
+
+function meg_encrypt($data): string
+{
+    // it get the string, replace each character with our specified ascii value from config array
+    $str = json_encode($data);
+    $ourAsciiArray = config("encrypt.ascii_char");
+    $result = '';
+    for ($i = 0; $i < strlen($str); $i++) {
+        $stringChar = substr($str, $i, 1);
+        $result .= chr(Arr::get($ourAsciiArray, ord($stringChar)));
+        // $result .= chr(ord($stringChar) + 33);  // if the above not working we could replace it with a simple addition of a random ascii character
+
+    }
+    return base64url_encode($result);
+}
+
+function meg_decrypts($data)
+{
+    $str = base64url_decode($data);
+
+    $ourAsciiArray = config("encrypt.ascii_char");
+
+    $result = '';
+    for ($i = 0; $i < strlen($str); $i++) {
+        $stringChar = substr($str, $i, 1);
+        $result .= chr(Arr::get($ourAsciiArray, ord($stringChar)));
+        // $result .= chr(ord($stringChar) - 33);
+
+    }
+
+    return json_decode($result, true);
+}
+
+
+function CopyFilefromSourceToDestination($source, $destination, $disk = 'public')
+{
+    /* based on your disk , set path ,if its local add public in the string , and if its public don't add . so bascically based on your disk, it starting path starts */
+    if (!Storage::disk($disk)->exists($source)) {
+        return [
+            'success' => false,
+            'message' => 'File not found',
+        ];
+    } else {
+
+        $response = Storage::disk($disk)->copy($source, $destination);
+        return [
+            'success' => $response,
+            'message' => 'File operation was ' . $response ? ' successful' : 'unsuccessful',
+        ];
+    }
 /**
  * Removes all characters from a string after the first numeric character is found like 28A fron Address 28a road wala ghr
  *

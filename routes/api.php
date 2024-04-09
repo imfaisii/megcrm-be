@@ -7,6 +7,8 @@ use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\CalenderEventsController;
 use App\Http\Controllers\CallCenterController;
 use App\Http\Controllers\CallCenterStatusesController;
+use App\Http\Controllers\Customer\CustomerController;
+use App\Http\Controllers\File\FileHanlderController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\FuelTypeController;
 use App\Http\Controllers\InstallationTypeController;
@@ -26,6 +28,7 @@ use App\Http\Controllers\SurveyorController;
 use App\Http\Controllers\TeamController;
 use App\Http\Controllers\Users\UserController;
 use App\Http\Requests\Leads\GetAddressRequest;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -41,8 +44,33 @@ use Illuminate\Support\Facades\Route;
 
 require __DIR__ . '/auth.php';
 
+Route::get('/getSuggestions', function (GetAddressRequest $request) {
+    $getAddress = new GetAddress();
+
+    try {
+        return response()->json([
+            'data' => $getAddress->getSuggestions($request->post_code),
+        ]);
+    } catch (Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => $e->getMessage(),
+            'data' => [],
+        ]);
+    }
+});
+
+Route::middleware('signed')->group(function () {
+    Route::post('/file-upload/{Model}/{ID}', [FileHanlderController::class, 'upload'])->name('file_upload')->middleware('throttle:customer-file-upload');
+    Route::post('/file-delete/{Model}/{ID}', [FileHanlderController::class, 'delete'])->middleware('throttle:customer-file-upload')->name('file_delete');
+    Route::post('/file-data/{Model}/{ID}', [FileHanlderController::class, 'getAllFilesAssocaiatedWithModel'])->middleware('throttle:customer-file-upload')->name('file_data');
+    Route::get('customer-lead-status-view/{lead}', [CustomerController::class, 'lead_view'])->name('customer.lead-status')->middleware('verify_domain');
 Route::get('/leads-links/council-tax/{postcode}', [LeadController::class, 'getCouncilTaxLink'])->name('leads.council-tax-link');
 
+});
+Route::get('/file-load/{Media:uuid}', [FileHanlderController::class, 'load'])->name('file_load');
+
+Route::get('/leads-links/council-tax/{postcode}', [LeadController::class, 'getCouncilTaxLink'])->name('leads.council-tax-link');
 Route::group(['middleware' => 'auth:sanctum'], function () {
 
     Route::get('/get-permissions', function () {

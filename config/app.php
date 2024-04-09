@@ -16,7 +16,8 @@ return [
     |
     */
 
-    'name' => env('APP_NAME', 'Laravel'),
+    'name' => env('APP_NAME', 'MEG'),
+    'CUSTOMER_URL' => env('CUSTOMER_URL',''),
 
     /*
     |--------------------------------------------------------------------------
@@ -196,5 +197,10 @@ return [
         // 'Example' => App\Facades\Example::class,
         'AirCallFascade' => App\Fascade\AirCallFascade::class,
     ])->toArray(),
+
+    'allowed_domains' => env('allowed_domains', [
+        'megcrm.co.uk',
+        'localhost:5173'
+    ])
 
 ];
