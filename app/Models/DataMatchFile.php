@@ -10,6 +10,8 @@ class DataMatchFile extends BaseModel
 {
     use HasFactory;
 
+    public bool $enableLoggingModelsEvents = false;
+
     protected $table = 'data_match_files';
 
     protected $keyType = 'string';
