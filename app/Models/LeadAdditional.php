@@ -16,6 +16,7 @@ class LeadAdditional extends BaseModel
         'proof_of_address_confirmed',
         'epr_report_confirmed',
         'is_pre_checking_confirmed',
+        'gas_connection_before_april_2022',
         'created_by_id',
         'lead_id',
     ];
@@ -25,7 +26,8 @@ class LeadAdditional extends BaseModel
         'land_registry_confirmed' => 'boolean',
         'proof_of_address_confirmed' => 'boolean',
         'epr_report_confirmed' => 'boolean',
-        'is_pre_checking_confirmed' => 'boolean'
+        'is_pre_checking_confirmed' => 'boolean',
+        'gas_connection_before_april_2022' => 'boolean',
     ];
 
     public function lead()

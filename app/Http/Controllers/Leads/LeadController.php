@@ -90,6 +90,13 @@ class LeadController extends Controller
         return $this->success(data: (new GetLeadExtrasAction(auth()->user()))->execute());
     }
 
+    public function storeMobileAssetsId(Lead $lead, string $assetId)
+    {
+        $lead->mobileAssetSyncs()->firstOrCreate(['asset_id' => $assetId, 'created_by_id' => auth()->id()]);
+
+        return $this->success(data: $lead->load('mobileAssetSyncs'));
+    }
+
     public function updateStatus(Lead $lead, UpdateLeadStatusRequest $request)
     {
         if (

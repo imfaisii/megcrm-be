@@ -1,17 +1,17 @@
 <?php
 
-namespace App\Http\Requests\DataMatch;
+namespace App\Http\Requests\File;
 
+use App\Enums\AppEnum;
 use Illuminate\Foundation\Http\FormRequest;
 
-class UploadDataMatchRequest extends FormRequest
+class FileUploadRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        // return auth()->user()->can('upload_data_match');/
         return true;
     }
 
@@ -23,7 +23,8 @@ class UploadDataMatchRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'file' => ['required', 'file', 'mimes:csv', 'extensions:csv'],
+            'image' => ['required', 'max:8192', 'file'],
+            'collection_name' => ['required', 'string', 'in:'.implode(',', AppEnum::CustomerLeadCollectionsList()).''],
         ];
     }
 }

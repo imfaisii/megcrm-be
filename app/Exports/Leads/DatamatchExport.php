@@ -111,8 +111,8 @@ class DatamatchExport implements FromCollection, Responsable, ShouldAutoSize, Wi
         return [
             '', // for empty column
             '', // surname
-            $lead->first_name,
             $lead->last_name,
+            $lead->first_name,
             Carbon::parse($lead->dob)->format('d/m/Y'),
             /* the beneath line first check if the sub building then that else building_number else buildingname else fir plain address s exact first number
             // $lead->sub_building ?: ($lead->building_number ?: (array_key_exists('buildingname', $lead->raw_api_response) ? $lead->raw_api_response['buildingname'] : extractFirstNumericNumber(getOnlyNumersFromString($lead->plain_address)))),
@@ -160,7 +160,7 @@ class DatamatchExport implements FromCollection, Responsable, ShouldAutoSize, Wi
     {
         return [
             AfterSheet::class => function (AfterSheet $event) {
-                Log::channel('slack-crm')->info('the user '.auth()->user()->email.' has downloaded the file ');
+                Log::channel('data_match_slack')->info('the user '.auth()->user()->email.' has downloaded the file ');
                 // Style the first row as bold text.
                 // $event->sheet->getStyle('A1')->getFont()->setBold(true);
 

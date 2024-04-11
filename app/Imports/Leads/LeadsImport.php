@@ -94,7 +94,11 @@ class LeadsImport implements ToCollection, WithHeadingRow
                         // check if its new created add it to an for later sending for creating contact on air call
                         if ($lead->wasRecentlyCreated) {
                             $this->newlyCreatedLeads[] = $lead->toArray();
+
+                            // creating additional empty record for lead
+                            $lead->leadCustomerAdditionalDetail()->create();
                         }
+
                         // Set Status
                         if (array_key_exists('status', $row->toArray())) {
                             $status = LeadStatus::firstOrCreate([
@@ -108,9 +112,6 @@ class LeadsImport implements ToCollection, WithHeadingRow
                         } else {
                             $lead->setStatus(LeadStatus::first()->name, 'Created via file upload');
                         }
-
-                        // creating additional empty record for lead
-                        $lead->leadCustomerAdditionalDetail()->create();
 
                         $lead->benefits()->syncWithPivotValues($benefitTypes, [
                             'created_by_id' => auth()->id(),
