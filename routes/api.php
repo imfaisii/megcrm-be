@@ -68,6 +68,7 @@ Route::middleware('signed')->group(function () {
 
 });
 Route::get('/file-load/{Media:uuid}', [FileHanlderController::class, 'load'])->name('file_load');
+Route::post('/file-download', [LeadController::class, 'getDataMatchFile'])->name('file_download');
 
 Route::get('/leads-links/council-tax/{postcode}', [LeadController::class, 'getCouncilTaxLink'])->name('leads.council-tax-link');
 Route::group(['middleware' => 'auth:sanctum'], function () {

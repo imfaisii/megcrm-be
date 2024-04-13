@@ -11,6 +11,7 @@ use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 use Maatwebsite\Excel\Facades\Excel;
 use Maatwebsite\Excel\HeadingRowImport;
 
@@ -75,6 +76,14 @@ class UploadLeadsFileAction
 
             $this->CheckFileHeaderErrors($exampleHeader, $request->file('file'), 3);
             Excel::import(new LeadDataMatchImport($this->leadResponseClass), $request->file('file'));
+            $uuid = (string) str::uuid();
+
+            $fileName = 'data_match_file_uploaded'.now()->format('YmdHis').'.xlsx';
+            // Store on default disk
+            $path = $request->file('file')->store(
+                'DataMatchUploaded/'.$fileName,
+                'local'
+            );
 
             return $this->success('File was uploaded successfully.', data: $this->leadResponseClass);
         } catch (Exception $e) {

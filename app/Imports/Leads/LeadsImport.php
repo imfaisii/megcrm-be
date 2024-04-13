@@ -13,6 +13,7 @@ use App\Models\BenefitType;
 use App\Models\Lead;
 use App\Models\LeadGenerator;
 use App\Models\LeadStatus;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
@@ -56,6 +57,15 @@ class LeadsImport implements ToCollection, WithHeadingRow
                         $address = Arr::get($row, 'address', null);
                         $benefits = Arr::get($row, 'benefits', []);
                         $benefits = explode("\n", $benefits);
+                        try {
+                            $DataOfBirth = is_null($dob)
+                            ? now()->format('Y-m-d') : (is_int($dob)
+                                ? \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($dob)->format('Y-m-d')
+                                : (Carbon::parse($dob) ? Carbon::parse($dob)->format('Y-m-d') : null));
+                        } catch (Exception $e) {
+                            $DataOfBirth = null;
+                            Log::channel('slack_exceptions')->info("Address not Valid for Lead : $email with postcode $postCode");
+                        }
 
                         foreach ($benefits as $key => $benefit) {
                             $benefitTypes[] = BenefitType::firstOrCreate([
@@ -74,10 +84,7 @@ class LeadsImport implements ToCollection, WithHeadingRow
                             'middle_name' => $name['middle_name'] ?? '',
                             'last_name' => $name['last_name'] ?? '',
                             'email' => $email,
-                            'dob' => is_null($dob)
-                                ? now()->format('Y-m-d') : (is_int($dob)
-                                    ? \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($dob)->format('Y-m-d')
-                                    : $dob),
+                            'dob' => $DataOfBirth,
                             'phone_no' => $phoneNo ?? '00000',
                             'lead_generator_id' => $leadGenerator->id,
                             'user_id' => auth()->id(),

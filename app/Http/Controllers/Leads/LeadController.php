@@ -13,6 +13,7 @@ use App\Actions\Leads\UpdateLeadAction;
 use App\Actions\Leads\UploadLeadsFileAction;
 use App\Exports\Leads\DatamatchExport;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\DataMatch\GetFilesRequest;
 use App\Http\Requests\DataMatch\UploadDataMatchRequest;
 use App\Http\Requests\Lead\GetAllDataMatchFilesRequest;
 use App\Http\Requests\Leads\StoreLeadCommentsRequest;
@@ -23,9 +24,11 @@ use App\Http\Requests\Leads\UploadLeadFileRequest;
 use App\Http\Requests\Users\UploadDocumentsToCollectionRequest;
 use App\Models\DataMatchFile;
 use App\Models\Lead;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Resources\Json\ResourceCollection;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -144,7 +147,7 @@ class LeadController extends Controller
 
         $fileName = 'data_match_file_'.now()->format('YmdHis').'.xlsx';
         // Store on default disk
-        $result = Excel::store(new DatamatchExport(), "DataMatch/{$Model->id}/{$fileName}", 'public');
+        $result = Excel::store(new DatamatchExport(), "DataMatch/{$Model->id}/{$fileName}", 'local');
         if ($result) {
 
             $Model->file_name = $fileName;
@@ -160,6 +163,7 @@ class LeadController extends Controller
 
     public function uploadDatamatch(UploadDataMatchRequest $request, UploadLeadsFileAction $action)
     {
+
         return $action->executeLeadsDataMatchResultUpload($request);
     }
 
@@ -168,5 +172,18 @@ class LeadController extends Controller
         $action->enableQueryBuilder();
 
         return $action->resourceCollection($action->listOrPaginate());
+    }
+
+    public function getDataMatchFile(GetFilesRequest $request)
+    {
+        try {
+            if (Storage::disk('local')->exists("DataMatch/{$request->get('uuid')}/{$request->get('url')}")) {
+                return Storage::download("DataMatch/{$request->get('uuid')}/{$request->get('url')}", 'DataMatch');
+            } else {
+                return $this->error(message: 'File not found');
+            }
+        } catch (Exception $e) {
+            return $this->exception($e);
+        }
     }
 }

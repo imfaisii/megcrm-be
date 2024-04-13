@@ -6,7 +6,6 @@ use App\Enums\DataMatch\DataMatchEnum;
 use App\Models\Lead;
 use Carbon\Carbon;
 use Illuminate\Contracts\Support\Responsable;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\FromCollection;
@@ -22,6 +21,7 @@ use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 use function App\Helpers\formatPostCodeWithSpace;
+use function App\Helpers\generateARandomNumberNotInGivenArray;
 use function App\Helpers\removeStringFromString;
 use function App\Helpers\removetillFirstNuermicSpcae;
 
@@ -133,26 +133,29 @@ class DatamatchExport implements FromCollection, Responsable, ShouldAutoSize, Wi
      */
     public function collection()
     {
-        // if there is no new data match required then download the old result
-        $query = Lead::withWhereHas('leadCustomerAdditionalDetail', function ($query) {
-            $query->where('is_datamatch_required', true);
-        })->get();
-        if (blank($query) && Cache::store('file')->has('datamatch-download')) {
-            return Cache::store('file')->get('datamatch-download');
-        } else {
-            $lead = Lead::withWhereHas('leadCustomerAdditionalDetail', function ($query) {
-                $query->where('is_datamatch_required', true);
-            })->get()->each(function ($lead) {
-                $lead->leadCustomerAdditionalDetail->update([
-                    'datamatch_progress' => DataMatchEnum::StatusSent,
-                    'is_datamatch_required' => false,
-                    'data_match_sent_date' => now(),
-                ]);
-            });
-            Cache::store('file')->put('datamatch-download', $lead);
+        // leads with seond recipient must be included twice as it becomes another lead
 
-            return $lead;
-        }
+        $leads = Lead::withWhereHas('leadCustomerAdditionalDetail', function ($query) {
+            $query->where('is_datamatch_required', true);
+        })->with('secondReceipent')->get()->each(function ($lead) {
+            $lead->leadCustomerAdditionalDetail->update([
+                'datamatch_progress' => DataMatchEnum::StatusSent,
+                'is_datamatch_required' => false,
+                'data_match_sent_date' => now(),
+            ]);
+        });
+        $secondReceipetsLeads = $leads?->whereNotNull('secondReceipent')?->map(function ($lead) use ($leads) {
+            $clonedLead = unserialize(serialize($lead)); // Deep copy of the lead object
+            $clonedLead->id = generateARandomNumberNotInGivenArray($leads?->pluck('id')->all());
+            $clonedLead->first_name = $lead?->secondReceipent?->first_name;
+            $clonedLead->last_name = $lead?->secondReceipent?->last_name;
+            $clonedLead->dob = $lead?->secondReceipent?->dob;
+
+            return $clonedLead;
+        });
+        $mergedLeads = $leads?->merge($secondReceipetsLeads);
+
+        return filled($mergedLeads) ? $mergedLeads : collect([]);
 
     }
 

@@ -385,3 +385,15 @@ function split_name($name)
 
     return $name;
 }
+
+function generateARandomNumberNotInGivenArray($array = []): int
+{
+
+    // Generate a random number until it's not in the array
+    do {
+        $randomNumber = mt_rand(1, 999999); // Adjust range as needed
+    } while (in_array($randomNumber, $array));
+
+    return $randomNumber;
+
+}

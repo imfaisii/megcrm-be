@@ -26,6 +26,7 @@ use function App\Helpers\meg_encrypt;
 
 if (app()->isLocal()) {
     Route::get('test', function (Request $request) {
+
         $userId = request()->get('user_id', 1);
         $user = User::find($userId);
 
