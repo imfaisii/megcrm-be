@@ -24,7 +24,7 @@ class FileDeleteRequest extends FormRequest
     {
         return [
             'image' => ['required', 'string', 'exists:media,uuid'],
-            'collection_name' => ["required", "string", "in:" . implode(",", AppEnum::CustomerLeadCollectionsList()) . ""],
+            'collection_name' => ['required', 'string', 'in:'.implode(',', AppEnum::CustomerLeadCollectionsList()).''],
         ];
     }
 }

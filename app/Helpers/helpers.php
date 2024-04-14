@@ -21,7 +21,7 @@ function get_permissions_by_routes(): array
 
     foreach ($routeCollection as $item) {
         $name = $item->action;
-        if (!empty($name['as'])) {
+        if (! empty($name['as'])) {
             $permission = $name['as'];
             $permission = trim(strtolower($permission));
             $ignoreRoutesStartingWith = 'sanctum|livewire|ignition|notifications|log-viewer|debugbar';
@@ -50,11 +50,11 @@ function get_modules_array_from_permissions(array $permissions): array
         $module = $parts[0];
         $submodule = implode('.', array_slice($parts, 1));
 
-        if (!isset($modules[$module])) {
+        if (! isset($modules[$module])) {
             $modules[$module] = [];
         }
 
-        if (!in_array($submodule, $modules[$module])) {
+        if (! in_array($submodule, $modules[$module])) {
             array_push($modules[$module], ['name' => $submodule, 'method' => $item['method']]);
         }
     }
@@ -83,7 +83,7 @@ function get_all_includes_in_camel_case(): array
     return collect(get_all_includes())
         ->map(function (string $includes) {
             return collect(explode('.', $includes))
-                ->map(fn(string $include) => Str::camel($include))
+                ->map(fn (string $include) => Str::camel($include))
                 ->join('.');
         })
         ->toArray();
@@ -120,7 +120,7 @@ function get_permissions_as_modules_array(mixed $permissions): array
     foreach ($modulesThroughSubmodules as $key => $submodule) {
         try {
             $moduleName = explode('.', $submodule)[0];
-            if (!in_array($moduleName, $modules)) {
+            if (! in_array($moduleName, $modules)) {
                 $modules[] = $moduleName;
             }
         } catch (\Exception $e) {
@@ -166,7 +166,7 @@ function shouldAppend(string $append): bool
         $appends = explode(',', request()->get('append'));
     }
 
-    if (!in_array($append, $appends)) {
+    if (! in_array($append, $appends)) {
         return false;
     }
 
@@ -208,7 +208,7 @@ function removeStringFromString(?string $needle, string $string, string $replace
  */
 function getOnlyNumersFromString(?string $string): string
 {
-    if (!$string) {
+    if (! $string) {
         $string = '';
     }
     $cleanedString = preg_replace('/[^0-9.,\/-]/', ' ', $string);
@@ -219,7 +219,7 @@ function getOnlyNumersFromString(?string $string): string
 
 function replaceFirst(string $search, string $replace, string $subject): string
 {
-    return preg_replace('/' . preg_quote($search, '/') . '/', $replace, $subject, 1);
+    return preg_replace('/'.preg_quote($search, '/').'/', $replace, $subject, 1);
 }
 
 function fixNumberForAirCall(string $number): string
@@ -263,7 +263,7 @@ function meg_encrypt($data): string
 {
     // it get the string, replace each character with our specified ascii value from config array
     $str = json_encode($data);
-    $ourAsciiArray = config("encrypt.ascii_char");
+    $ourAsciiArray = config('encrypt.ascii_char');
     $result = '';
     for ($i = 0; $i < strlen($str); $i++) {
         $stringChar = substr($str, $i, 1);
@@ -271,6 +271,7 @@ function meg_encrypt($data): string
         // $result .= chr(ord($stringChar) + 33);  // if the above not working we could replace it with a simple addition of a random ascii character
 
     }
+
     return base64url_encode($result);
 }
 
@@ -278,7 +279,7 @@ function meg_decrypts($data)
 {
     $str = base64url_decode($data);
 
-    $ourAsciiArray = config("encrypt.ascii_char");
+    $ourAsciiArray = config('encrypt.ascii_char');
 
     $result = '';
     for ($i = 0; $i < strlen($str); $i++) {
@@ -291,11 +292,10 @@ function meg_decrypts($data)
     return json_decode($result, true);
 }
 
-
 function CopyFilefromSourceToDestination($source, $destination, $disk = 'public')
 {
     /* based on your disk , set path ,if its local add public in the string , and if its public don't add . so bascically based on your disk, it starting path starts */
-    if (!Storage::disk($disk)->exists($source)) {
+    if (! Storage::disk($disk)->exists($source)) {
         return [
             'success' => false,
             'message' => 'File not found',
@@ -303,84 +303,97 @@ function CopyFilefromSourceToDestination($source, $destination, $disk = 'public'
     } else {
 
         $response = Storage::disk($disk)->copy($source, $destination);
+
         return [
             'success' => $response,
-            'message' => 'File operation was ' . $response ? ' successful' : 'unsuccessful',
+            'message' => 'File operation was '.$response ? ' successful' : 'unsuccessful',
         ];
     }
 }
-    /**
-     * Removes all characters from a string after the first numeric character is found like 28A fron Address 28a road wala ghr
-     *
-     *
-     * @return string
-     */
-    function removetillFirstNuermicSpcae(?string $string)
-    {
-        if (!$string) {
-            $string = '';
+/**
+ * Removes all characters from a string after the first numeric character is found like 28A fron Address 28a road wala ghr
+ *
+ *
+ * @return string
+ */
+function removetillFirstNuermicSpcae(?string $string)
+{
+    if (! $string) {
+        $string = '';
+    }
+    if (! Str::endsWith($string, ' ')) {  // add a space at end if not present just to handle a case where number could be last in the string
+        $string .= ' ';
+    }
+    $resultingString = '';
+    $isNumericFound = '';
+    for ($i = 0; $i < strlen($string); $i++) {
+        $stringChar = substr($string, $i, 1);
+        if (! $isNumericFound) {
+            $isNumericFound = is_numeric($stringChar);
+        }   // only check if its not found yet
+        if ($isNumericFound && $stringChar === ' ') {
+            $resultingString = substr($string, 0, $i);
+            break;
         }
-        if (!Str::endsWith($string, ' ')) {  // add a space at end if not present just to handle a case where number could be last in the string
-            $string .= ' ';
-        }
-        $resultingString = '';
-        $isNumericFound = '';
-        for ($i = 0; $i < strlen($string); $i++) {
-            $stringChar = substr($string, $i, 1);
-            if (!$isNumericFound) {
-                $isNumericFound = is_numeric($stringChar);
-            }   // only check if its not found yet
-            if ($isNumericFound && $stringChar === ' ') {
-                $resultingString = substr($string, 0, $i);
-                break;
-            }
-            // $result .= chr(Arr::get($ourAsciiArray, ord($stringChar)));
-            // $result .= chr(ord($stringChar) + 33);  // if the above not working we could replace it with a simple addition of a random ascii character
-        }
-
-        return $resultingString;
+        // $result .= chr(Arr::get($ourAsciiArray, ord($stringChar)));
+        // $result .= chr(ord($stringChar) + 33);  // if the above not working we could replace it with a simple addition of a random ascii character
     }
 
-    /**
-     * takes a postcode and add a space before last three characters
-     *
-     *
-     * @param  string  $string
-     */
-    function formatPostCodeWithSpace(string $postCode, int $indexFromLast = 3): string
-    {
-        $postCode = rtrim($postCode);
-        if (Str::contains($postCode, ' ')) {
-            return $postCode;
-        }
+    return $resultingString;
+}
 
-        $length = strlen($postCode);
-        $reversedPostCode = strrev($postCode);
-        $reversedPostCode = Str::substrReplace($reversedPostCode, ' ', 3, 0);
-
-        return strrev($reversedPostCode);
+/**
+ * takes a postcode and add a space before last three characters
+ *
+ *
+ * @param  string  $string
+ */
+function formatPostCodeWithSpace(string $postCode, int $indexFromLast = 3): string
+{
+    $postCode = rtrim($postCode);
+    if (Str::contains($postCode, ' ')) {
+        return $postCode;
     }
 
-    function split_name($name)
-    {
-        $parts = [];
+    $length = strlen($postCode);
+    $reversedPostCode = strrev($postCode);
+    $reversedPostCode = Str::substrReplace($reversedPostCode, ' ', 3, 0);
 
-        while (strlen(trim($name)) > 0) {
-            $name = trim($name);
-            $string = preg_replace('#.*\s([\w-]*)$#', '$1', $name);
-            $parts[] = $string;
-            $name = trim(preg_replace('#' . preg_quote($string, '#') . '#', '', $name));
-        }
+    return strrev($reversedPostCode);
+}
 
-        if (empty($parts)) {
-            return false;
-        }
+function split_name($name)
+{
+    $parts = [];
 
-        $parts = array_reverse($parts);
-        $name = [];
-        $name['first_name'] = $parts[0];
-        $name['middle_name'] = (isset($parts[2])) ? $parts[1] : '';
-        $name['last_name'] = (isset($parts[2])) ? $parts[2] : (isset($parts[1]) ? $parts[1] : '');
-
-        return $name;
+    while (strlen(trim($name)) > 0) {
+        $name = trim($name);
+        $string = preg_replace('#.*\s([\w-]*)$#', '$1', $name);
+        $parts[] = $string;
+        $name = trim(preg_replace('#'.preg_quote($string, '#').'#', '', $name));
     }
+
+    if (empty($parts)) {
+        return false;
+    }
+
+    $parts = array_reverse($parts);
+    $name = [];
+    $name['first_name'] = $parts[0];
+    $name['middle_name'] = (isset($parts[2])) ? $parts[1] : '';
+    $name['last_name'] = (isset($parts[2])) ? $parts[2] : (isset($parts[1]) ? $parts[1] : '');
+
+    return $name;
+}
+
+function generateARandomNumberNotInGivenArray($array = []): int
+{
+
+    // Generate a random number until it's not in the array
+    do {
+        $randomNumber = mt_rand(1, 999999); // Adjust range as needed
+    } while (in_array($randomNumber, $array));
+
+    return $randomNumber;
+
+}

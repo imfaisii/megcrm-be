@@ -24,7 +24,7 @@ class FileUploadRequest extends FormRequest
     {
         return [
             'image' => ['required', 'max:8192', 'file'],
-            'collection_name' => ["required", "string", "in:" . implode(",", AppEnum::CustomerLeadCollectionsList()) . ""],
+            'collection_name' => ['required', 'string', 'in:'.implode(',', AppEnum::CustomerLeadCollectionsList()).''],
         ];
     }
 }

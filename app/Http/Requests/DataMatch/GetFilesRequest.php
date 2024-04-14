@@ -1,8 +1,7 @@
 <?php
 
-namespace App\Http\Requests\File;
+namespace App\Http\Requests\DataMatch;
 
-use App\Enums\AppEnum;
 use Illuminate\Foundation\Http\FormRequest;
 
 class GetFilesRequest extends FormRequest
@@ -13,6 +12,7 @@ class GetFilesRequest extends FormRequest
     public function authorize(): bool
     {
         return true;
+        // return auth()->user()->can('view_data_match_files');
     }
 
     /**
@@ -23,8 +23,8 @@ class GetFilesRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'type' => 'sometimes|required|in:files,ids|string',
-            'collection_name' => ['required', 'string', 'in:'.implode(',', AppEnum::CustomerLeadCollectionsList()).''],
+            'url' => ['required', 'string'],
+            'uuid' => ['required', 'string', 'exists:data_match_files,id'],
         ];
     }
 }

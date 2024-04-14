@@ -17,7 +17,7 @@ return [
     */
 
     'name' => env('APP_NAME', 'MEG'),
-    'CUSTOMER_URL' => env('CUSTOMER_URL',''),
+    'CUSTOMER_URL' => env('CUSTOMER_URL', ''),
 
     /*
     |--------------------------------------------------------------------------
@@ -133,9 +133,9 @@ return [
 
     'date_time_format' => 'l jS \of F Y h:i:s A',
 
-    'visa_expiry_alert_emails' => explode(",", env('VISA_DOCUMENTS_ALERT_EMAILS', '')),
+    'visa_expiry_alert_emails' => explode(',', env('VISA_DOCUMENTS_ALERT_EMAILS', '')),
 
-    'company_documents_alert_emails' => explode(",", env('COMPANY_DOCUMENTS_ALERT_EMAILS', '')),
+    'company_documents_alert_emails' => explode(',', env('COMPANY_DOCUMENTS_ALERT_EMAILS', '')),
 
     /*
     |--------------------------------------------------------------------------
@@ -200,7 +200,7 @@ return [
 
     'allowed_domains' => env('allowed_domains', [
         'megcrm.co.uk',
-        'localhost:5173'
-    ])
+        'localhost:5173',
+    ]),
 
 ];

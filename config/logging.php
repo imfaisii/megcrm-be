@@ -116,7 +116,7 @@ return [
             'handler_with' => [
                 'host' => env('PAPERTRAIL_URL'),
                 'port' => env('PAPERTRAIL_PORT'),
-                'connectionString' => 'tls://' . env('PAPERTRAIL_URL') . ':' . env('PAPERTRAIL_PORT'),
+                'connectionString' => 'tls://'.env('PAPERTRAIL_URL').':'.env('PAPERTRAIL_PORT'),
             ],
             'processors' => [PsrLogMessageProcessor::class],
         ],
@@ -166,7 +166,7 @@ return [
         ],
         'data_match_slack' => [
             'driver' => 'slack',
-            'url' => "https://hooks.slack.com/services/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",
+            'url' => 'https://hooks.slack.com/services/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',
             'username' => 'Slack Application Logs',
             'emoji' => ':boom:',
             'level' => env('LOG_LEVEL', 'critical'),

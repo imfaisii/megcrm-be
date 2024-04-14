@@ -7,13 +7,11 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\File\FileDeleteRequest;
 use App\Http\Requests\File\FileUploadRequest;
 use App\Http\Requests\File\GetFilesRequest;
-use App\Models\Lead;
 use App\traits\Jsonify;
-use Illuminate\Support\Str;
-use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 use function App\Helpers\CopyFilefromSourceToDestination;
@@ -23,6 +21,7 @@ use function App\Helpers\meg_decrypts;
 class FileHanlderController extends Controller
 {
     use Jsonify;
+
     public function upload(string $Model, string $ID, FileUploadRequest $request)
     {
         try {
@@ -31,14 +30,13 @@ class FileHanlderController extends Controller
             $modelObject = resolve("App\Models\\$Model")->findOrFail($decryptedId);
             $mediaObjects = $modelObject->getMedia($request->get('collection_name', AppEnum::Default_MediaType));
             if ($request->collection_name == AppEnum::CUSTOMER_LEAD_IMAGES && $mediaObjects->count() > AppEnum::DEFAULT_LIMIT_FOR_MEDIA_FILE_CUSTOMER) {
-                return $this->error('You cannot upload more than' . AppEnum::DEFAULT_LIMIT_FOR_MEDIA_FILE_CUSTOMER . ' images.');
-            } else if ($request->collection_name == AppEnum::CUSTOMER_LEAD_DOCUMENTS && $mediaObjects->count() > AppEnum::DEFAULT_LIMIT_FOR_SUPPORTING_DOCUMENTS_FILE_CUSTOMER) {
-                return $this->error('You cannot upload more than' . AppEnum::DEFAULT_LIMIT_FOR_SUPPORTING_DOCUMENTS_FILE_CUSTOMER . ' docuements.');
+                return $this->error('You cannot upload more than'.AppEnum::DEFAULT_LIMIT_FOR_MEDIA_FILE_CUSTOMER.' images.');
+            } elseif ($request->collection_name == AppEnum::CUSTOMER_LEAD_DOCUMENTS && $mediaObjects->count() > AppEnum::DEFAULT_LIMIT_FOR_SUPPORTING_DOCUMENTS_FILE_CUSTOMER) {
+                return $this->error('You cannot upload more than'.AppEnum::DEFAULT_LIMIT_FOR_SUPPORTING_DOCUMENTS_FILE_CUSTOMER.' docuements.');
             }
 
-
             $response = $modelObject->addMediaFromRequest('image')
-                ->usingFileName(generateUniqueRandomStringWithTimeStamp() . $request->file('image')->getClientOriginalName())
+                ->usingFileName(generateUniqueRandomStringWithTimeStamp().$request->file('image')->getClientOriginalName())
                 ->withCustomProperties([
                     'ip' => $request->ip(),
                     'agent' => $request->header('User-Agent'),
@@ -46,6 +44,7 @@ class FileHanlderController extends Controller
                     'original_extension' => $request->file('image')->getClientOriginalExtension(),
                 ])
                 ->toMediaCollection($request->get('collection_name', AppEnum::Default_MediaType), 'public');
+
             return $response->uuid ?: '';
         } catch (Exception $e) {
             return $this->exception($e);
@@ -63,9 +62,10 @@ class FileHanlderController extends Controller
             $toDelMedia = $mediaObjects->firstOrFail(function ($object, int $key) use ($request) {
                 return $object->uuid === $request->get('image');
             });
-            $copyResponse = CopyFilefromSourceToDestination(Str::after($toDelMedia->getUrl(), 'storage/'), AppEnum::DEFAULT_MEDIA_DELETED_LOCATION . "/{$Model}/{$decryptedId}/" . $toDelMedia->file_name);
+            $copyResponse = CopyFilefromSourceToDestination(Str::after($toDelMedia->getUrl(), 'storage/'), AppEnum::DEFAULT_MEDIA_DELETED_LOCATION."/{$Model}/{$decryptedId}/".$toDelMedia->file_name);
             if ($copyResponse['success']) {
                 $toDelMedia->delete(); // all associated files will be preserved
+
                 return $this->success($copyResponse['message']);
             } else {
                 return $this->error($copyResponse['message']);
@@ -76,13 +76,12 @@ class FileHanlderController extends Controller
         }
     }
 
-
     public function load(Media $Media, Request $request)
     {
         // this is supposed to send an file object , as being used by the file pond load
         try {
             if (blank($Media)) {
-                return $this->error("file not found ");
+                return $this->error('file not found ');
             }
             if (Storage::disk('public')->exists(Str::after($Media?->getUrl(), 'storage/'))) {
                 // Get the file's MIME type
@@ -90,13 +89,13 @@ class FileHanlderController extends Controller
                 $mimeType = Storage::disk('public')->mimeType($imagePath);
 
                 // Return the file as a response with appropriate headers
-                return response()->file(public_path('storage/' . $imagePath), [
-                    'Content-Disposition' => 'inline; filename="' . basename($imagePath) . '"',
+                return response()->file(public_path('storage/'.$imagePath), [
+                    'Content-Disposition' => 'inline; filename="'.basename($imagePath).'"',
 
-                    'Content-Type' => $mimeType
+                    'Content-Type' => $mimeType,
                 ]);
             } else {
-                return $this->error("file not found ");
+                return $this->error('file not found ');
             }
         } catch (Exception $e) {
             return $this->exception($e);
@@ -114,20 +113,17 @@ class FileHanlderController extends Controller
             $mediaObjects = $modelObject->getMedia($request->get('collection_name', AppEnum::Default_MediaType));
             $mediaObjects = $mediaObjects->map(function (Media $Media) use ($type) {
                 if ($type === 'files') {
-                    return
-                        $Media->getUrl();
-                    ;
+                    return $Media->getUrl();
+
                 } else {
-                    return
-                        $Media->uuid;
+                    return $Media->uuid;
                 }
             });
+
             return $this->success(data: $mediaObjects);
         } catch (Exception $e) {
             return $this->exception($e);
 
         }
     }
-
-
 }

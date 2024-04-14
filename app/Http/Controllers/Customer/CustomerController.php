@@ -10,7 +10,6 @@ use function App\Helpers\meg_decrypts;
 
 class CustomerController extends Controller
 {
-
     public function lead_view(string $leadId, ListCustomerLeadStatusAction $action): JsonResource
     {
         $action->enableQueryBuilder();

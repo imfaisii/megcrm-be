@@ -1,11 +1,10 @@
 <?php
 
-namespace App\Http\Requests\File;
+namespace App\Http\Requests\Lead;
 
-use App\Enums\AppEnum;
 use Illuminate\Foundation\Http\FormRequest;
 
-class GetFilesRequest extends FormRequest
+class GetAllDataMatchFilesRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -13,6 +12,7 @@ class GetFilesRequest extends FormRequest
     public function authorize(): bool
     {
         return true;
+        // return auth()->user()->hasPermissionTo('view_data_match_files');
     }
 
     /**
@@ -23,8 +23,7 @@ class GetFilesRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'type' => 'sometimes|required|in:files,ids|string',
-            'collection_name' => ['required', 'string', 'in:'.implode(',', AppEnum::CustomerLeadCollectionsList()).''],
+            //
         ];
     }
 }

@@ -7,9 +7,9 @@ use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\CalenderEventsController;
 use App\Http\Controllers\CallCenterController;
 use App\Http\Controllers\CallCenterStatusesController;
+use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\Customer\CustomerController;
 use App\Http\Controllers\File\FileHanlderController;
-use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\FuelTypeController;
 use App\Http\Controllers\InstallationTypeController;
 use App\Http\Controllers\JobTypeController;
@@ -28,7 +28,6 @@ use App\Http\Controllers\SurveyorController;
 use App\Http\Controllers\TeamController;
 use App\Http\Controllers\Users\UserController;
 use App\Http\Requests\Leads\GetAddressRequest;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -42,7 +41,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-require __DIR__ . '/auth.php';
+require __DIR__.'/auth.php';
 
 Route::get('/getSuggestions', function (GetAddressRequest $request) {
     $getAddress = new GetAddress();
@@ -65,7 +64,8 @@ Route::middleware('signed')->group(function () {
     Route::post('/file-delete/{Model}/{ID}', [FileHanlderController::class, 'delete'])->middleware('throttle:customer-file-upload')->name('file_delete');
     Route::post('/file-data/{Model}/{ID}', [FileHanlderController::class, 'getAllFilesAssocaiatedWithModel'])->middleware('throttle:customer-file-upload')->name('file_data');
     Route::get('customer-lead-status-view/{lead}', [CustomerController::class, 'lead_view'])->name('customer.lead-status')->middleware('verify_domain');
-Route::get('/leads-links/council-tax/{postcode}', [LeadController::class, 'getCouncilTaxLink'])->name('leads.council-tax-link');
+    Route::get('/leads-links/council-tax/{postcode}', [LeadController::class, 'getCouncilTaxLink'])->name('leads.council-tax-link');
+    Route::get('/file-download/{uuid}/{url}', [LeadController::class, 'getDataMatchFile'])->name('data_match.file_download');
 
 });
 Route::get('/file-load/{Media:uuid}', [FileHanlderController::class, 'load'])->name('file_load');
@@ -95,7 +95,6 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
         }
     });
 
-
     Route::get('/user', [UserController::class, 'currentUser']);
     Route::post('/users/{user}/collections/docs/upload', [UserController::class, 'uploadDocumentToCollection'])->name('users.documents-to-collections');
     Route::post('/users/{user}/documents/upload', [UserController::class, 'uploadDocument'])->name('users.documents-upload');
@@ -110,8 +109,9 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::apiResource('/leads', LeadController::class);
     Route::post('/leads/{lead}/collections/docs/upload', [LeadController::class, 'uploadDocumentToCollection'])->name('leads.documents-to-collections');
     Route::post('/leads/{lead}/comments', [LeadController::class, 'storeComments'])->name('leads.add-comments');
+    Route::get('/leads-datamatch-files', [LeadController::class, 'getDataMatchResultsFileLink'])->name('leads.view_data_match_files');
     Route::get('/leads/{lead}/mobile-asset/{assetId}', [LeadController::class, 'storeMobileAssetsId'])->name('leads.add-asset-ids');
-    Route::get('/leads-datamatch-download', [LeadController::class, 'downloadDatamatch'])->name('leads.download-datamatch');
+    Route::get('/leads-datamatch-download', [LeadController::class, 'downloadDatamatch'])->name('data_match.download-datamatch');
     Route::post('/leads-datamatch-upload', [LeadController::class, 'uploadDatamatch'])->name('leads.upload-datamatch');
     Route::get('/lead-jobs', [LeadJobController::class, 'index'])->name('lead-jobs.index');
     Route::post('/send-sms/{lead}', [SmsController::class, 'sendSmsToLead'])->name('leads.send-sms-to-lead');
