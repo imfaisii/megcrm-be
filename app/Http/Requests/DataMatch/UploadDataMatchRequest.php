@@ -23,7 +23,7 @@ class UploadDataMatchRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'file' => ['required', 'file', 'mimes:csv', 'extensions:csv'],
+            'file' => ['required', 'file', 'extensions:csv'],
         ];
     }
 }
