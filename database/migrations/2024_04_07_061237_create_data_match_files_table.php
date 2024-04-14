@@ -16,7 +16,7 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->string('file_name');
             $table->string('file_path');
-            $table->foreignIdFor(User::class, 'created_by');
+            $table->foreignIdFor(User::class, 'created_by_id');
             $table->timestamps();
         });
     }

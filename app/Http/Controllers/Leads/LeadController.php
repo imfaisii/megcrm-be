@@ -13,7 +13,6 @@ use App\Actions\Leads\UpdateLeadAction;
 use App\Actions\Leads\UploadLeadsFileAction;
 use App\Exports\Leads\DatamatchExport;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\DataMatch\GetFilesRequest;
 use App\Http\Requests\DataMatch\UploadDataMatchRequest;
 use App\Http\Requests\Lead\GetAllDataMatchFilesRequest;
 use App\Http\Requests\Leads\StoreLeadCommentsRequest;
@@ -27,8 +26,10 @@ use App\Models\Lead;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\ResourceCollection;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -152,10 +153,19 @@ class LeadController extends Controller
 
             $Model->file_name = $fileName;
             $Model->file_path = asset("storage/DataMatch/{$Model->id}/{$fileName}");
-            $Model->created_by = auth()->user()->id;
+            $Model->created_by_id = auth()->user()->id;
             $Model->save();
+            $Model->file_path = URL::temporarySignedRoute(
+                'data_match.file_download',
+                now()->addMinutes(10),
+                [
+                    'uuid' => $Model->id,
+                    'url' => $Model->file_name,
 
-            return $this->success(data: asset("storage/DataMatch/{$Model->id}/{$fileName}"));
+                ]
+            );
+
+            return $this->success(data: $Model);
         } else {
             return $this->error(message: 'Something went wrong');
         }
@@ -170,15 +180,29 @@ class LeadController extends Controller
     public function getDataMatchResultsFileLink(GetAllDataMatchFilesRequest $request, ListDataMatchAction $action)
     {
         $action->enableQueryBuilder();
+        $paginator = $action->listOrPaginate();
+        $paginator->getCollection()->map(function ($file) {
+            $file->file_path = URL::temporarySignedRoute(
+                'data_match.file_download',
+                now()->addMinutes(10),
+                [
+                    'uuid' => $file->id,
+                    'url' => $file->file_name,
 
-        return $action->resourceCollection($action->listOrPaginate());
+                ]
+            );
+
+            return $file;
+        });
+
+        return $action->resourceCollection($paginator);
     }
 
-    public function getDataMatchFile(GetFilesRequest $request)
+    public function getDataMatchFile(Request $request, string $uuid, string $url)
     {
         try {
-            if (Storage::disk('local')->exists("DataMatch/{$request->get('uuid')}/{$request->get('url')}")) {
-                return Storage::download("DataMatch/{$request->get('uuid')}/{$request->get('url')}", 'DataMatch');
+            if (File::exists(storage_path("/app/DataMatch/{$uuid}/{$url}"))) {
+                return response()->download(storage_path("/app/DataMatch/{$uuid}/{$url}"));
             } else {
                 return $this->error(message: 'File not found');
             }
