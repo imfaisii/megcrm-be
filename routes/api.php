@@ -41,7 +41,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
 
 Route::get('/getSuggestions', function (GetAddressRequest $request) {
     $getAddress = new GetAddress();
@@ -64,6 +64,8 @@ Route::middleware('signed')->group(function () {
     Route::post('/file-delete/{Model}/{ID}', [FileHanlderController::class, 'delete'])->middleware('throttle:customer-file-upload')->name('file_delete');
     Route::post('/file-data/{Model}/{ID}', [FileHanlderController::class, 'getAllFilesAssocaiatedWithModel'])->middleware('throttle:customer-file-upload')->name('file_data');
     Route::get('customer-lead-status-view/{lead}', [CustomerController::class, 'lead_view'])->name('customer.lead-status')->middleware('verify_domain');
+    Route::post('customer-support-email/{ID}', [CustomerController::class, 'supportEmail'])->name('customer.support-email')->middleware('verify_domain')->middleware('throttle:customer-email');
+
     Route::get('/leads-links/council-tax/{postcode}', [LeadController::class, 'getCouncilTaxLink'])->name('leads.council-tax-link');
     Route::get('/file-download/{uuid}/{url}', [LeadController::class, 'getDataMatchFile'])->name('data_match.file_download');
 

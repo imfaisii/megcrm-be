@@ -108,6 +108,9 @@ class LeadController extends Controller
             ||
             str_contains(str()->lower($request->status), 'survey done')
         ) {
+            if (str_contains(str()->lower($request->status), 'survey booked')) {
+                $lead->sendStatusEmailToCustomer();
+            }
             $lead->update([
                 'is_marked_as_job' => true,
             ]);
@@ -146,7 +149,7 @@ class LeadController extends Controller
         $Model = DataMatchFile::make();
         $Model->id = (string) Str::uuid();
 
-        $fileName = 'data_match_file_'.now()->format('YmdHis').'.xlsx';
+        $fileName = 'data_match_file_' . now()->format('YmdHis') . '.xlsx';
         // Store on default disk
         $result = Excel::store(new DatamatchExport(), "DataMatch/{$Model->id}/{$fileName}", 'local');
         if ($result) {
