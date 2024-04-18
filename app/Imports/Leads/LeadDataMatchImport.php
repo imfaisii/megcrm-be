@@ -82,7 +82,6 @@ class LeadDataMatchImport extends DefaultValueBinder implements ToCollection, Wi
                                 'urn' => $eachLead['urn'],
                                 'data_match_sent_date' => $eachLead['date_uploaded'],
                                 'date_processed_by_dwp' => $eachLead['date_processed_by_dwp'],
-
                             ]);
                             if ($result) {
 

@@ -38,11 +38,11 @@ class GetAddress
                 foreach ($addresses as $key => $address) {
                     $transformedAddress = implode(' ', $address['address']);
 
-                    if (isset ($address['city'])) {
+                    if (isset($address['city'])) {
                         $transformedAddress .= ', ' . $address['city'];
                     }
 
-                    if (isset ($address['county'])) {
+                    if (isset($address['county'])) {
                         $transformedAddress .= ', ' . $address['county'];
                     }
 
@@ -57,7 +57,7 @@ class GetAddress
                         'city' => $address['city'] ?? null,
                         'county' => $address['county'] ?? null,
                         'country' => $postCodeResponseCountry ?? null,
-                        'building_number' => $address['buildingnumber'] ?? null,
+                        'building_number' => $address['buildingnumber'] ?? $address['buildingname'] ?? null,
                         'sub_building' => $address['subbuilding'] ?? null,
                         'raw_api_response' => $address,
                         'actual_post_code' => $address['postcode'],
@@ -116,11 +116,11 @@ class GetAddress
                 $address = $exactCheck;
                 $transformedAddress = $address['address'];
 
-                if (isset ($address['city'])) {
+                if (isset($address['city'])) {
                     $transformedAddress .= ', ' . $address['city'];
                 }
 
-                if (isset ($address['county'])) {
+                if (isset($address['county'])) {
                     $transformedAddress .= ', ' . $address['county'];
                 }
 
@@ -135,7 +135,7 @@ class GetAddress
                     $address['city'] ?? null,
                     $address['county'] ?? null,
                     $postCodeResponseCountry ?? null,
-                    $address['buildingnumber'] ?? null,
+                    $address['buildingnumber'] ?? $address['buildingname'] ?? null,
                     $address['subbuilding'] ?? null,
                     $address,
                     $address['postcode'],
