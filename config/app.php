@@ -17,7 +17,9 @@ return [
     */
 
     'name' => env('APP_NAME', 'MEG'),
-    'CUSTOMER_URL' => env('CUSTOMER_URL', ''),
+
+    'CUSTOMER_URL' => env('CUSTOMER_URL','https://ecograntdocuments.co.uk/'),
+
 
     /*
     |--------------------------------------------------------------------------
@@ -201,6 +203,8 @@ return [
     'allowed_domains' => env('allowed_domains', [
         'megcrm.co.uk',
         'localhost:5173',
-    ]),
+        'ecograntdocuments.co.uk'
+    ])
+
 
 ];
