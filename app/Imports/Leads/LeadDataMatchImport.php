@@ -62,7 +62,7 @@ class LeadDataMatchImport extends DefaultValueBinder implements ToCollection, Wi
                                 ['first_name', '=', $eachLead['surname']],
                                 ['post_code', '=', strtoupper(removeSpace($eachLead['postcode']))],
                             ])->orWhere([
-                                ['building_nmber', '=', $eachLead['property_name_or_number']],
+                                ['building_number', '=', $eachLead['property_name_or_number']],
                                 ['post_code', '=', strtoupper(removeSpace($eachLead['postcode']))],
                                 [
                                     'dob',
@@ -70,7 +70,6 @@ class LeadDataMatchImport extends DefaultValueBinder implements ToCollection, Wi
                                     $eachLead['date_of_birth'],
                                 ],
                             ])
-
                             ->get();
                         if ($lead->count() > 1) {
 
