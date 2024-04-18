@@ -42,4 +42,12 @@ final class AppEnum extends Enum
             self::CUSTOMER_LEAD_DOCUMENTS,
         ];
     }
+
+    public static function customerSupportEmails(): array
+    {
+        return [
+            'sabkaur.meg@gmail.com',
+            'haamzaaay@gmail.com'
+        ];
+    }
 }

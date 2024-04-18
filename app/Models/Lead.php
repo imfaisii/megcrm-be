@@ -3,23 +3,29 @@
 namespace App\Models;
 
 use App\Actions\Common\BaseModel;
+use App\Enums\AppEnum;
 use App\Enums\Permissions\RoleEnum;
 use App\Filters\Leads\FilterByBookedBy;
 use App\Filters\Leads\FilterByName;
 use App\Filters\Leads\FilterByPostcode;
 use App\Filters\Leads\FilterByStatus;
 use App\Filters\Leads\FilterBySurveyor;
+use App\Notifications\Customer\CustomerLeadTrackingMail;
 use App\Traits\Common\HasCalenderEvent;
 use App\Traits\Common\HasRecordCreator;
 use App\Traits\HasTeamTrait;
 use BeyondCode\Comments\Traits\HasComments;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Http\Request;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\URL;
 use Imfaisii\ModelStatus\HasStatuses;
 use Spatie\Activitylog\Models\Activity;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\QueryBuilder\AllowedFilter;
+
+use function App\Helpers\meg_encrypt;
 
 class Lead extends BaseModel implements HasMedia
 {
@@ -287,5 +293,36 @@ class Lead extends BaseModel implements HasMedia
         return $this->belongsToMany(Measure::class, LeadHasMeasure::class)
             ->withPivot('created_by_id')
             ->withTimestamps();
+    }
+
+
+    public function sendStatusEmailToCustomer()
+    {
+        $time = now()->addDays(AppEnum::LEAD_TRACKNG_DAYS_ALLOWED);
+        $lead = $this;
+        $encryptedID = meg_encrypt($lead->id);
+        $encryptedModel = meg_encrypt('Lead');
+        $route = URL::temporarySignedRoute('customer.lead-status', $time, ['lead' => $encryptedID]);
+        $request = Request::create($route);
+        $routeForFiles = URL::temporarySignedRoute('file_upload', $time, ['ID' => $encryptedID, 'Model' => $encryptedModel]);
+        $requestForFilesUpload = Request::create($routeForFiles);
+        $requestForFilesDelete = Request::create(URL::temporarySignedRoute('file_delete', $time, ['ID' => $encryptedID, 'Model' => $encryptedModel]));
+
+        $requestForFilesData = Request::create(URL::temporarySignedRoute('file_data', $time, ['ID' => $encryptedID, 'Model' => $encryptedModel]));
+        $requestForSupport = Request::create(URL::temporarySignedRoute('customer.support-email', $time, ['ID' => $encryptedID]));
+
+        $requestForFiles = Request::create($route);
+
+        $lead->notify((new CustomerLeadTrackingMail([
+            ...$request->query(),
+            'lead' => $encryptedID,
+            'model' => $encryptedModel,
+            'SignatureForUpload' => $requestForFilesUpload->query('signature'),
+            'SignatureForDelete' => $requestForFilesDelete->query('signature'),
+            'SignatureForData' => $requestForFilesData->query('signature'),
+            'SignatureForSupport' => $requestForSupport->query('signature'),
+
+        ])));
+        return $this;
     }
 }
