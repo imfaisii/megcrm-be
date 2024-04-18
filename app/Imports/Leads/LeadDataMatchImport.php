@@ -61,7 +61,17 @@ class LeadDataMatchImport extends DefaultValueBinder implements ToCollection, Wi
                                 ['last_name', '=', $eachLead['forename']],
                                 ['first_name', '=', $eachLead['surname']],
                                 ['post_code', '=', strtoupper(removeSpace($eachLead['postcode']))],
-                            ])->get();
+                            ])->orWhere([
+                                ['building_nmber', '=', $eachLead['property_name_or_number']],
+                                ['post_code', '=', strtoupper(removeSpace($eachLead['postcode']))],
+                                [
+                                    'dob',
+                                    '=',
+                                    $eachLead['date_of_birth'],
+                                ],
+                            ])
+
+                            ->get();
                         if ($lead->count() > 1) {
 
                             //means multiple records found now need to query more for specific, so we find our row address in the coming leads
