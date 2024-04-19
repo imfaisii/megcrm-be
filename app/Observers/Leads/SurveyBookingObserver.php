@@ -6,7 +6,6 @@ use App\Enums\Events\SurveyBookedEnum;
 use App\Models\CalenderEvent;
 use App\Models\SurveyBooking;
 use App\Notifications\Sms\SurveyBookedNotification;
-use App\Services\TwilioService;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Facades\Log;

@@ -13,6 +13,7 @@ use App\Models\LeadGenerator;
 use App\Models\LeadSource;
 use App\Models\LeadStatus;
 use App\Models\Measure;
+use App\Models\SmsTemplate;
 use App\Models\User;
 
 class GetLeadExtrasAction
@@ -84,6 +85,7 @@ class GetLeadExtrasAction
             'lead_statuses' => LeadStatus::oldest('name')->get(),
             'lead_table_filters' => LeadStatus::whereIn('name', [...$tableStatuses, ...$both])->oldest('name')->get(),
             'lead_jobs_filters' => LeadStatus::whereNotIn('name', $tableStatuses)->orWhere('name', $both)->oldest('name')->get(),
+            'sms_templates' => SmsTemplate::select('id', 'name')->get(),
             'installers' => $intallers,
             'surveyors' => $surveyors,
             'csrs' => $csrs
