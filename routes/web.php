@@ -47,7 +47,7 @@ if (app()->isLocal()) {
     Route::get('test-lead-track', function (Request $request) {
 
         $time = now()->addDays(AppEnum::LEAD_TRACKNG_DAYS_ALLOWED);
-        $lead = Lead::findOrFail(3943);
+        $lead = Lead::findOrFail(12);
         $encryptedID = meg_encrypt($lead->id);
         $encryptedModel = meg_encrypt('Lead');
         $route = URL::temporarySignedRoute('customer.lead-status', $time, ['lead' => $encryptedID]);

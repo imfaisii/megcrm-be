@@ -72,6 +72,8 @@ class Lead extends BaseModel implements HasMedia
 
     ];
 
+    protected array $allowedAppends    = ['status_details', 'phone_number_formatted'];
+
     protected $appends = ['full_name', 'status_details', 'phone_number_formatted'];
 
     protected $casts = [
