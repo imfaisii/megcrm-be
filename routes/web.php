@@ -36,6 +36,8 @@ use function App\Helpers\meg_encrypt;
 
 if (app()->isLocal()) {
     Route::get('test', function (Request $request) {
+
+
         $userId = request()->get('user_id', 1);
         $user = User::find($userId);
 
@@ -44,10 +46,14 @@ if (app()->isLocal()) {
         dd("done");
     });
 
+
     Route::get('test-lead-track', function (Request $request) {
 
         $time = now()->addDays(AppEnum::LEAD_TRACKNG_DAYS_ALLOWED);
-        $lead = Lead::findOrFail(12);
+        $lead = Lead::where('email', 'haamzaaay@gmail.com')->first();
+        if (blank($lead)) {
+            return null;
+        }
         $encryptedID = meg_encrypt($lead->id);
         $encryptedModel = meg_encrypt('Lead');
         $route = URL::temporarySignedRoute('customer.lead-status', $time, ['lead' => $encryptedID]);
@@ -60,7 +66,7 @@ if (app()->isLocal()) {
         $requestForSupport = Request::create(URL::temporarySignedRoute('customer.support-email', $time, ['ID' => $encryptedID]));
 
         $requestForFiles = Request::create($route);
-        try{
+        try {
             $lead->notify((new CustomerLeadTrackingMail([
                 ...$request->query(),
                 'lead' => $encryptedID,
@@ -71,7 +77,7 @@ if (app()->isLocal()) {
                 'SignatureForSupport' => $requestForSupport->query('signature'),
 
             ])));
-        }catch(Exception $e){
+        } catch (Exception $e) {
             dd($e->getMessage());
         }
 
