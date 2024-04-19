@@ -21,7 +21,9 @@ class LeadCustomerAdditionalDetail extends BaseModel
         'datamatch_progress_date',
         'lead_id',
         'urn',
-        'data_match_sent_date'
+        'data_match_sent_date',
+        'result_first_name',
+        'result_last_name',
     ];
 
     protected $casts = [
