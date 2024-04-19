@@ -18,9 +18,8 @@ class AbstractUpdateAction
      */
     public function update(mixed $model, array $data): mixed
     {
-        $model =  tap($model, function (BaseModel|Role|Permission $model) use ($data) {
+        return tap($model, function (BaseModel|Role|Permission $model) use ($data) {
             $model->update($data);
         });
-      
     }
 }
