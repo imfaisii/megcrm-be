@@ -10,5 +10,7 @@ final class MediaCollectionEnum extends Enum
 {
     const DOCUMENTS = 'documents';
 
-    const INSTALLER_DOCUMENTS = 'installer-documents';
+    const COMPANY_DOCUMENTS = 'company-documents';
+
+    const SUBMISSION_DOCUMENTS = 'submission_documents';
 }

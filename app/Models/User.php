@@ -6,54 +6,56 @@ namespace App\Models;
 
 use AjCastro\EagerLoadPivotRelations\EagerLoadPivotTrait;
 use App\Actions\Common\BaseModel;
-use App\Classes\LeadResponseClass;
 use App\Filters\Users\FilterByGivenRole;
 use App\Filters\Users\FilterByRole;
-use App\Imports\Leads\LeadsImport;
 use App\Includes\Users\UserNotificationsInclude;
 use App\Traits\Common\HasCalenderEvent;
 use Carbon\Carbon;
 use Illuminate\Auth\Authenticatable;
+use Illuminate\Auth\Passwords\CanResetPassword;
 use Illuminate\Contracts\Auth\Access\Authorizable as AccessAuthorizable;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
+use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Notifications\Notifiable;
-use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\Access\Authorizable;
-use Spatie\Permission\Traits\HasRoles;
-use Illuminate\Support\Str;
+use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
 use Jenssegers\Agent\Agent;
+use Laravel\Sanctum\HasApiTokens;
 use LaravelAndVueJS\Traits\LaravelPermissionToVueJS;
 use Rappasoft\LaravelAuthenticationLog\Traits\AuthenticationLoggable;
 use Spatie\Activitylog\Traits\CausesActivity;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\Permission\Traits\HasPermissions;
+use Spatie\Permission\Traits\HasRoles;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\AllowedInclude;
 
 use function App\Helpers\is_append_present;
 use function App\Helpers\split_name;
 
-class User extends BaseModel implements AuthenticatableContract, HasMedia, AccessAuthorizable
+class User extends BaseModel implements AccessAuthorizable, AuthenticatableContract, CanResetPasswordContract, HasMedia
 {
     use Authenticatable,
         AuthenticationLoggable,
+        Authorizable,
+        CanResetPassword,
         CausesActivity,
+        EagerLoadPivotTrait,
         HasApiTokens,
         HasCalenderEvent,
         HasFactory,
-        HasRoles,
         HasPermissions,
+        HasRoles,
         InteractsWithMedia,
-        Authorizable,
         LaravelPermissionToVueJS,
         Notifiable;
-    use EagerLoadPivotTrait;        // the table second table we are  in many-to-many relationships has this trait, like if we are geting user with roles then roles would have this trait
+
     protected $guard_name = 'sanctum';
 
     protected $fillable = [
@@ -62,6 +64,8 @@ class User extends BaseModel implements AuthenticatableContract, HasMedia, Acces
         'password',
         'air_caller_id',
         'is_active',
+        'company_id',
+        'is_associated_with_company',
         'phone_number_aircall',
         'aircall_email_address',
         'created_by_id',
@@ -82,6 +86,7 @@ class User extends BaseModel implements AuthenticatableContract, HasMedia, Acces
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
         'is_active' => 'boolean',
+        'is_associated_with_company' => 'boolean',
     ];
 
     protected array $allowedIncludes = [
@@ -89,7 +94,7 @@ class User extends BaseModel implements AuthenticatableContract, HasMedia, Acces
         'leadGeneratorAssignments',
         'notifications',
         'authentications',
-        'installerCompany',
+        'company',
         'additional.bank',
     ];
     protected function routeNotificationForTwilio()
@@ -197,9 +202,9 @@ class User extends BaseModel implements AuthenticatableContract, HasMedia, Acces
             ->withTimestamps();
     }
 
-    public function installerCompany()
+    public function company()
     {
-        return $this->hasOne(InstallerCompany::class);
+        return $this->belongsTo(Company::class);
     }
 
     public function installationTypes()

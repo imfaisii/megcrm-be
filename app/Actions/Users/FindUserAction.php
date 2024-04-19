@@ -18,10 +18,10 @@ class FindUserAction extends AbstractFindAction
     public function findOrFail($primaryKey, array $columns = ['*']): BaseModel
     {
         $user = $this->getQuery()->findOrFail($primaryKey, $columns)->makeVisible(['air_caller_id', 'aircall_email_address']);
-
         $user->load('installationTypes');
+        $user->installationTypes = $user?->installationTypes?->pluck('id')?->all() ?? [];
         $user['documents'] = $user->getMedia(MediaCollectionEnum::DOCUMENTS);
-        $user['installer_documents'] = $user->getMedia(MediaCollectionEnum::INSTALLER_DOCUMENTS)->toArray();
+        $user['company_documents'] = $user->getMedia(MediaCollectionEnum::COMPANY_DOCUMENTS)->toArray();
 
         try {
             $response = Http::asForm()->post($this->dropboxRefreshTokenUrl, [
@@ -35,7 +35,6 @@ class FindUserAction extends AbstractFindAction
                 'status' => true,
                 'data' => $response->json()['access_token'],
             ];
-
         } catch (Exception $e) {
             $user['dropbox'] = [
                 'status' => false,

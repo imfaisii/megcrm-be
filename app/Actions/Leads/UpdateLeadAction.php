@@ -55,6 +55,10 @@ class UpdateLeadAction extends AbstractUpdateAction
             $this->updateLeadMeasures($lead, $data);
         }
 
+        if (Arr::has($data, 'submission')) {
+            $lead->submission()->updateOrCreate(['lead_id' => $lead->id], $data['submission']);
+        }
+
         if ($data['has_second_receipent'] && Arr::has($data, 'second_receipent')) {
             $lead->secondReceipent()->updateOrCreate(['lead_id' => $lead->id], $data['second_receipent']);
         }

@@ -6,7 +6,7 @@ use App\Enums\DataMatch\DataMatchEnum;
 use App\Models\Lead;
 use Carbon\Carbon;
 use Illuminate\Contracts\Support\Responsable;
-use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
@@ -14,17 +14,18 @@ use Maatwebsite\Excel\Concerns\WithColumnWidths;
 use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
+use Maatwebsite\Excel\Concerns\WithStyles;
 use Maatwebsite\Excel\Events\AfterSheet;
 use Maatwebsite\Excel\Excel;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
-use Maatwebsite\Excel\Concerns\WithStyles;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 use function App\Helpers\formatPostCodeWithSpace;
+use function App\Helpers\generateARandomNumberNotInGivenArray;
 use function App\Helpers\removeStringFromString;
 use function App\Helpers\removetillFirstNuermicSpcae;
 
-class DatamatchExport implements FromCollection, WithHeadings, WithMapping, Responsable, WithStyles, WithEvents, WithColumnWidths, ShouldAutoSize
+class DatamatchExport implements FromCollection, Responsable, ShouldAutoSize, WithColumnWidths, WithEvents, WithHeadings, WithMapping, WithStyles
 {
     use Exportable;
 
@@ -70,10 +71,7 @@ class DatamatchExport implements FromCollection, WithHeadings, WithMapping, Resp
             // Style the first row as bold text.
             1 => ['font' => ['bold' => false, 'size' => 22]],
 
-            3 => ['font' => ['bold' => true,]],
-
-
-
+            3 => ['font' => ['bold' => true]],
 
         ];
     }
@@ -100,12 +98,10 @@ class DatamatchExport implements FromCollection, WithHeadings, WithMapping, Resp
                 'Address Line 3',
                 'Town',
                 'County',
-                'Postcode'
-            ]
+                'Postcode',
+            ],
         ];
     }
-
-
 
     /**
      * @param  Lead  $lead
@@ -115,8 +111,8 @@ class DatamatchExport implements FromCollection, WithHeadings, WithMapping, Resp
         return [
             '', // for empty column
             '', // surname
-            $lead->first_name,
             $lead->last_name,
+            $lead->first_name,
             Carbon::parse($lead->dob)->format('d/m/Y'),
             /* the beneath line first check if the sub building then that else building_number else buildingname else fir plain address s exact first number
             // $lead->sub_building ?: ($lead->building_number ?: (array_key_exists('buildingname', $lead->raw_api_response) ? $lead->raw_api_response['buildingname'] : extractFirstNumericNumber(getOnlyNumersFromString($lead->plain_address)))),
@@ -137,37 +133,37 @@ class DatamatchExport implements FromCollection, WithHeadings, WithMapping, Resp
      */
     public function collection()
     {
-        // if there is no new data match required then download the old result
-        $query = Lead::withWhereHas('leadCustomerAdditionalDetail', function ($query) {
+        // leads with seond recipient must be included twice as it becomes another lead
+
+        $leads = Lead::withWhereHas('leadCustomerAdditionalDetail', function ($query) {
             $query->where('is_datamatch_required', true);
-        })->get();
-        if (blank($query) && Cache::store('file')->has('datamatch-download')) {
-            return Cache::store('file')->get('datamatch-download');
-        } else {
-            $lead = Lead::withWhereHas('leadCustomerAdditionalDetail', function ($query) {
-                $query->where('is_datamatch_required', true);
-            })->get()->each(function ($lead) {
-                $lead->leadCustomerAdditionalDetail->update([
-                    'datamatch_progress' => DataMatchEnum::StatusSent,
-                    'is_datamatch_required' => false,
-                    'data_match_sent_date' => now()
-                ]);
-            });
-            Cache::store('file')->put('datamatch-download', $lead);
-            return $lead;
-        }
+        })->with('secondReceipent')->get()->each(function ($lead) {
+            $lead->leadCustomerAdditionalDetail->update([
+                'datamatch_progress' => DataMatchEnum::StatusSent,
+                'is_datamatch_required' => false,
+                'data_match_sent_date' => now(),
+            ]);
+        });
+        $secondReceipetsLeads = $leads?->whereNotNull('secondReceipent')?->map(function ($lead) use ($leads) {
+            $clonedLead = unserialize(serialize($lead)); // Deep copy of the lead object
+            $clonedLead->id = generateARandomNumberNotInGivenArray($leads?->pluck('id')->all());
+            $clonedLead->first_name = $lead?->secondReceipent?->first_name;
+            $clonedLead->last_name = $lead?->secondReceipent?->last_name;
+            $clonedLead->dob = $lead?->secondReceipent?->dob;
 
+            return $clonedLead;
+        });
+        $mergedLeads = $leads?->merge($secondReceipetsLeads);
 
-
+        return filled($mergedLeads) ? $mergedLeads : collect([]);
 
     }
-    /**
-     * @return array
-     */
+
     public function registerEvents(): array
     {
         return [
             AfterSheet::class => function (AfterSheet $event) {
+                Log::channel('data_match_slack')->info('the user '.auth()->user()->email.' has downloaded the file ');
                 // Style the first row as bold text.
                 // $event->sheet->getStyle('A1')->getFont()->setBold(true);
 
@@ -188,13 +184,10 @@ class DatamatchExport implements FromCollection, WithHeadings, WithMapping, Resp
                 //     ]);
                 // });
 
-
-
                 // Styling the third row with a light gray background.
                 $event->sheet->getStyle('B3:L3')->getFill()->setFillType(Fill::FILL_SOLID);
                 $event->sheet->getStyle('B3:L3')->getFill()->getStartColor()->setARGB('FFDDDDDD');
             },
         ];
     }
-
 }

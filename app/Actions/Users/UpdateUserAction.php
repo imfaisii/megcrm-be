@@ -12,12 +12,6 @@ class UpdateUserAction extends AbstractUpdateAction
 
     public function update(mixed $user, array $data): mixed
     {
-        /** @var User $user */
-        $data = array_filter($data, function ($value) {
-            // Remove null values and empty strings
-            return $value !== null && $value !== '';
-        });
-
         $user = parent::update($user, $data);
 
         $oldRoles = $user->roles()->pluck('name');

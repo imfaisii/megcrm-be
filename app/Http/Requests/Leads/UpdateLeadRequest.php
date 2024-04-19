@@ -65,11 +65,14 @@ class UpdateLeadRequest extends BaseFormRequest
             'lead_customer_additional_detail.datamatch_progress_date' => ['nullable', 'date'],
             'lead_customer_additional_detail.lead_id' => ['required', 'exists:leads,id'],
             'survey_booking' => ['required', 'array'],
+            'submission' => ['required', 'array'],
             'lead_additional' => ['required', 'array'],
             'lead_additional.datamatch_confirmed' => ['nullable', 'boolean'],
             'lead_additional.land_registry_confirmed' => ['nullable', 'boolean'],
             'lead_additional.proof_of_address_confirmed' => ['nullable', 'boolean'],
             'lead_additional.epr_report_confirmed' => ['nullable', 'boolean'],
+            'lead_additional.is_pre_checking_confirmed' => ['nullable', 'boolean'],
+            'lead_additional.gas_connection_before_april_2022' => ['nullable', 'boolean'],
             'installation_bookings' => ['nullable', 'array'],
         ];
     }

@@ -22,7 +22,6 @@ class AirCallController extends Controller
 
     public function makeCall(AirCallRequest $request, MakeAirCallAction $action)
     {
-        dd($request->validated());
 
         return $action->make($request->validated());
     }

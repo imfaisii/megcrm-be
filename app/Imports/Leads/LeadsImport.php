@@ -13,6 +13,7 @@ use App\Models\BenefitType;
 use App\Models\Lead;
 use App\Models\LeadGenerator;
 use App\Models\LeadStatus;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
@@ -56,6 +57,15 @@ class LeadsImport implements ToCollection, WithHeadingRow
                         $address = Arr::get($row, 'address', null);
                         $benefits = Arr::get($row, 'benefits', []);
                         $benefits = explode("\n", $benefits);
+                        try {
+                            $DataOfBirth = is_null($dob)
+                            ? now()->format('Y-m-d') : (is_int($dob)
+                                ? \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($dob)->format('Y-m-d')
+                                : (Carbon::parse($dob) ? Carbon::parse($dob)->format('Y-m-d') : null));
+                        } catch (Exception $e) {
+                            $DataOfBirth = null;
+                            Log::channel('slack_exceptions')->info("Address not Valid for Lead : $email with postcode $postCode");
+                        }
 
                         foreach ($benefits as $key => $benefit) {
                             $benefitTypes[] = BenefitType::firstOrCreate([
@@ -64,7 +74,6 @@ class LeadsImport implements ToCollection, WithHeadingRow
                         }
 
                         [$postCode, $address, $plainAddress, $city, $county, $country, $buildingNumber, $subBuilding, $RawApiResponse, $actualPostCode] = $apiClass->adressionApi($postCode ?? '', $address);
-
                         $name = split_name($row['name'] ?? '');
                         $lead = Lead::firstOrCreate([
                             'post_code' => $postCode,
@@ -75,10 +84,7 @@ class LeadsImport implements ToCollection, WithHeadingRow
                             'middle_name' => $name['middle_name'] ?? '',
                             'last_name' => $name['last_name'] ?? '',
                             'email' => $email,
-                            'dob' => is_null($dob)
-                                ? now()->format('Y-m-d') : (is_int($dob)
-                                    ? \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($dob)->format('Y-m-d')
-                                    : $dob),
+                            'dob' => $DataOfBirth,
                             'phone_no' => $phoneNo ?? '00000',
                             'lead_generator_id' => $leadGenerator->id,
                             'user_id' => auth()->id(),
@@ -95,7 +101,11 @@ class LeadsImport implements ToCollection, WithHeadingRow
                         // check if its new created add it to an for later sending for creating contact on air call
                         if ($lead->wasRecentlyCreated) {
                             $this->newlyCreatedLeads[] = $lead->toArray();
+
+                            // creating additional empty record for lead
+                            $lead->leadCustomerAdditionalDetail()->create();
                         }
+
                         // Set Status
                         if (array_key_exists('status', $row->toArray())) {
                             $status = LeadStatus::firstOrCreate([
@@ -110,22 +120,19 @@ class LeadsImport implements ToCollection, WithHeadingRow
                             $lead->setStatus(LeadStatus::first()->name, 'Created via file upload');
                         }
 
-                        // creating additional empty record for lead
-                        $lead->leadCustomerAdditionalDetail()->create();
-
                         $lead->benefits()->syncWithPivotValues($benefitTypes, [
                             'created_by_id' => auth()->id(),
                         ]);
                     } catch (Exception $exception) {
                         Log::channel('lead_file_read_log')->info(
-                            'Error importing lead address: ' . $row['address'] . '. ' . $exception->getMessage()
+                            'Error importing lead address: '.$row['address'].'. '.$exception->getMessage()
                         );
                     }
                 }
             }
         } catch (Exception $exception) {
             Log::channel('lead_file_read_log')->info(
-                'Exception importing lead address:: ' . $row['address'] . ' message:: ' . $exception->getMessage()
+                'Exception importing lead address:: '.$row['address'].' message:: '.$exception->getMessage()
             );
 
             $this->classResponse->failedLeads[] = $row['address'];

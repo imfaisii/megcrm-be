@@ -3,32 +3,42 @@
 namespace App\Models;
 
 use App\Actions\Common\BaseModel;
+use App\Enums\AppEnum;
 use App\Enums\Permissions\RoleEnum;
 use App\Filters\Leads\FilterByBookedBy;
 use App\Filters\Leads\FilterByName;
 use App\Filters\Leads\FilterByPostcode;
 use App\Filters\Leads\FilterByStatus;
 use App\Filters\Leads\FilterBySurveyor;
+use App\Notifications\Customer\CustomerLeadTrackingMail;
 use App\Traits\Common\HasCalenderEvent;
 use App\Traits\Common\HasRecordCreator;
 use App\Traits\HasTeamTrait;
 use BeyondCode\Comments\Traits\HasComments;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Http\Request;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\URL;
 use Imfaisii\ModelStatus\HasStatuses;
 use Spatie\Activitylog\Models\Activity;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\QueryBuilder\AllowedFilter;
 
-class Lead extends BaseModel
+use function App\Helpers\meg_encrypt;
+
+class Lead extends BaseModel implements HasMedia
 {
-    use HasCalenderEvent, HasComments, HasFactory, HasRecordCreator, HasStatuses, Notifiable;
+    use HasCalenderEvent,
+        HasComments,
+        HasFactory,
+        HasRecordCreator,
+        HasStatuses,
+        HasTeamTrait,
+        InteractsWithMedia,
+        Notifiable;
 
-    use HasTeamTrait;
-
-
-    public $ScopeColumn = 'surveyor_id';    // the coloumn on which whereIn condition will be used for teams
-
-
+    public $ScopeColumn = 'surveyor_id';
 
     protected $fillable = [
         'title',
@@ -58,9 +68,11 @@ class Lead extends BaseModel
         'sub_building',
         'building_number',
         'reference_number',
-        'raw_api_response'
+        'raw_api_response',
 
     ];
+
+    protected array $allowedAppends    = ['status_details', 'phone_number_formatted'];
 
     protected $appends = ['full_name', 'status_details', 'phone_number_formatted'];
 
@@ -85,7 +97,9 @@ class Lead extends BaseModel
         'comments.commentator',
         'leadAdditional',
         'notifications',
-        'secondReceipent'
+        'secondReceipent',
+        'submission',
+        'mobileAssetSyncs',
     ];
 
     protected array $discardedFieldsInFilter = [
@@ -124,10 +138,9 @@ class Lead extends BaseModel
         return '+44' . substr($this->phone_no, -10);
     }
 
-
     protected function getFullNameAttribute()
     {
-        return str_replace("  ", " ", $this->first_name . ' ' . $this->middle_name . ' ' . $this->last_name);
+        return str_replace('  ', ' ', $this->first_name . ' ' . $this->middle_name . ' ' . $this->last_name);
     }
 
     protected function getStatusesAttribute()
@@ -151,6 +164,7 @@ class Lead extends BaseModel
         }
 
         $latest['survey_booked'] = $this->latestStatus('Survey Booked');
+
         return $latest;
     }
 
@@ -234,6 +248,11 @@ class Lead extends BaseModel
         return $this->hasOne(SecondReceipent::class);
     }
 
+    public function submission()
+    {
+        return $this->hasOne(Submission::class);
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class);
@@ -259,6 +278,11 @@ class Lead extends BaseModel
         return $this->hasMany(CallCenter::class);
     }
 
+    public function mobileAssetSyncs()
+    {
+        return $this->hasMany(MobileAssetSync::class);
+    }
+
     public function benefits()
     {
         return $this->belongsToMany(BenefitType::class, LeadHasBenefit::class)
@@ -271,5 +295,36 @@ class Lead extends BaseModel
         return $this->belongsToMany(Measure::class, LeadHasMeasure::class)
             ->withPivot('created_by_id')
             ->withTimestamps();
+    }
+
+
+    public function sendStatusEmailToCustomer()
+    {
+        $time = now()->addDays(AppEnum::LEAD_TRACKNG_DAYS_ALLOWED);
+        $lead = $this;
+        $encryptedID = meg_encrypt($lead->id);
+        $encryptedModel = meg_encrypt('Lead');
+        $route = URL::temporarySignedRoute('customer.lead-status', $time, ['lead' => $encryptedID]);
+        $request = Request::create($route);
+        $routeForFiles = URL::temporarySignedRoute('file_upload', $time, ['ID' => $encryptedID, 'Model' => $encryptedModel]);
+        $requestForFilesUpload = Request::create($routeForFiles);
+        $requestForFilesDelete = Request::create(URL::temporarySignedRoute('file_delete', $time, ['ID' => $encryptedID, 'Model' => $encryptedModel]));
+
+        $requestForFilesData = Request::create(URL::temporarySignedRoute('file_data', $time, ['ID' => $encryptedID, 'Model' => $encryptedModel]));
+        $requestForSupport = Request::create(URL::temporarySignedRoute('customer.support-email', $time, ['ID' => $encryptedID]));
+
+        $requestForFiles = Request::create($route);
+
+        $lead->notify((new CustomerLeadTrackingMail([
+            ...$request->query(),
+            'lead' => $encryptedID,
+            'model' => $encryptedModel,
+            'SignatureForUpload' => $requestForFilesUpload->query('signature'),
+            'SignatureForDelete' => $requestForFilesDelete->query('signature'),
+            'SignatureForData' => $requestForFilesData->query('signature'),
+            'SignatureForSupport' => $requestForSupport->query('signature'),
+
+        ])));
+        return $this;
     }
 }

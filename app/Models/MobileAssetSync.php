@@ -6,20 +6,17 @@ use App\Actions\Common\BaseModel;
 use App\Traits\Common\HasRecordCreator;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class InstallerCompany extends BaseModel
+class MobileAssetSync extends BaseModel
 {
     use HasFactory, HasRecordCreator;
 
     protected $fillable = [
-        'name',
-        'address',
-        'company_number',
-        'vat_number',
-        'user_id',
+        'asset_id',
+        'lead_id',
     ];
 
-    public function user()
+    public function lead()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(Lead::class);
     }
 }
