@@ -31,7 +31,7 @@ class AirCall
             'Authorization' => "Basic {$token}",
             'Accept' => 'application/json',
             'Content-Type' => 'application/json',
-        ])->timeout(120)->retry(3, 60000);
+        ])->timeout(120)->retry(2, 60000);
     }
 
     public function pingServer()
