@@ -85,7 +85,7 @@ class GetLeadExtrasAction
             'lead_statuses' => LeadStatus::oldest('name')->get(),
             'lead_table_filters' => LeadStatus::whereIn('name', [...$tableStatuses, ...$both])->oldest('name')->get(),
             'lead_jobs_filters' => LeadStatus::whereNotIn('name', $tableStatuses)->orWhere('name', $both)->oldest('name')->get(),
-            'sms_templates' => SmsTemplate::select('id', 'name')->get(),
+            'sms_templates' => SmsTemplate::select('id', 'name', 'body', 'properties')->get(),
             'installers' => $intallers,
             'surveyors' => $surveyors,
             'csrs' => $csrs
