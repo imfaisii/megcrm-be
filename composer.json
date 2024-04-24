@@ -16,6 +16,7 @@
         "bensampo/laravel-enum": "^6.8",
         "beyondcode/laravel-comments": "^1.4",
         "binarcode/laravel-mailator": "^5.2",
+        "coconutcraig/laravel-postmark": "^3.2",
         "fabpot/goutte": "^4.0",
         "guzzlehttp/guzzle": "^7.2",
         "imfaisii/laravel-model-status": "^1.3",

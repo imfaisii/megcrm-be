@@ -9,9 +9,11 @@ use App\Classes\LeadResponseClass;
 use Aloha\Twilio\Twilio;
 use App\Enums\AppEnum;
 use App\Imports\Leads\LeadsImport;
+use App\Mail\TestEmail;
 use App\Models\Lead;
 use App\Notifications\Customer\CustomerLeadTrackingMail;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\URL;
 
@@ -33,6 +35,12 @@ use function App\Helpers\meg_encrypt;
 | contains the "web" middleware group. Now create something great!
 |
 */
+
+Route::get('test-email', function (Request $request) {
+    Mail::to("cfaisal009@gmail.com")->send(new TestEmail());
+
+    dd("done");
+});
 
 Route::get('test-notifications', function (Request $request) {
     $userId = request()->get('user_id', 1);
