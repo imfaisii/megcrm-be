@@ -30,21 +30,29 @@ class UpdateLeadAction extends AbstractUpdateAction
     public function updateLeadRelations(Lead $lead, array $data)
     {
         // updating relation
-        $lead->leadCustomerAdditionalDetail->update($data['lead_customer_additional_detail']);
+        if (isset($data['lead_customer_additional_detail'])) {
+            $lead->leadCustomerAdditionalDetail->update($data['lead_customer_additional_detail']);
+        }
 
-        $lead->leadAdditional()->updateOrCreate([
-            'lead_id' => $lead->id,
-        ], $data['lead_additional']);
-
-        $lead->surveyBooking()->updateOrCreate([
-            'lead_id' => $lead->id,
-        ], $data['survey_booking']);
-
-        foreach ($data['installation_bookings'] as $key => $installation) {
-            $lead->installationBookings()->updateOrCreate([
+        if (isset($data['lead_additional'])) {
+            $lead->leadAdditional()->updateOrCreate([
                 'lead_id' => $lead->id,
-                'measure_id' => $installation['measure_id'],
-            ], $installation);
+            ], $data['lead_additional']);
+        }
+
+        if (isset($data['survey_booking'])) {
+            $lead->surveyBooking()->updateOrCreate([
+                'lead_id' => $lead->id,
+            ], $data['survey_booking']);
+        }
+
+        if (isset($data['installation_bookings'])) {
+            foreach ($data['installation_bookings'] as $key => $installation) {
+                $lead->installationBookings()->updateOrCreate([
+                    'lead_id' => $lead->id,
+                    'measure_id' => $installation['measure_id'],
+                ], $installation);
+            }
         }
 
         if (Arr::has($data, 'benefits')) {
