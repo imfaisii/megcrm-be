@@ -34,6 +34,15 @@ use function App\Helpers\meg_encrypt;
 |
 */
 
+Route::get('test-notifications', function (Request $request) {
+    $userId = request()->get('user_id', 1);
+    $user = User::find($userId);
+
+    $user->notify(new TextExponentNotification());
+
+    dd("done");
+});
+
 if (app()->isLocal()) {
     Route::get('test', function (Request $request) {
 
@@ -80,15 +89,11 @@ if (app()->isLocal()) {
         } catch (Exception $e) {
             dd($e->getMessage());
         }
-
-
-
     });
-
 }
 
-Route::get('/', fn() => ['Laravel' => app()->version()]);
-Route::get('/dropbox/redirect', fn() => response()->json(response()->all()));
+Route::get('/', fn () => ['Laravel' => app()->version()]);
+Route::get('/dropbox/redirect', fn () => response()->json(response()->all()));
 
 Route::get('/dropbox', function () {
     $redirect = 'http://localhost:8000/dropbox/redirect';
