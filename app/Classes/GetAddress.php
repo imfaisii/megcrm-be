@@ -94,12 +94,12 @@ class GetAddress
                 /* the beneath code is first matching the exact pose code to the result and modifying the addrees plus code for later use
                  and next thing is that if no exact address is found against our provided address then we are just using the first address */
 
-
                 $Firstresult = $request?->collect()?->transform(function ($eachResult) {
                     return [
                         ...$eachResult,
                         'address' => str_replace("\n", ' ', str_replace('  ', ' ', preg_replace('/[^a-zA-Z0-9\s]/', ' ', implode(" ", $eachResult['address'])))),
                         'postcode' => Str::upper(str_replace(' ', '', preg_replace('/[^a-zA-Z0-9\s]/', ' ', $eachResult['postcode']))),
+                        'actual_post_code'=>$eachResult['postcode'],
                     ];
                 });
                 $Firstresult = $Firstresult->filter(function ($eachResult) use ($postCode) {
@@ -138,7 +138,7 @@ class GetAddress
                     $address['buildingnumber'] ?? $address['buildingname'] ?? null,
                     $address['subbuilding'] ?? null,
                     $address,
-                    $address['postcode'],
+                    $address['actual_post_code'],
 
 
                 ];
