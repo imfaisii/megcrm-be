@@ -8,19 +8,28 @@ use Illuminate\Support\Arr;
 use App\Classes\LeadResponseClass;
 use Aloha\Twilio\Twilio;
 use App\Enums\AppEnum;
+use App\Http\Requests\TestRequest;
 use App\Imports\Leads\LeadsImport;
+use App\Imports\testImport;
 use App\Models\Lead;
 use App\Notifications\Customer\CustomerLeadTrackingMail;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
+use Maatwebsite\Excel\Facades\Excel;
+use PhpOffice\PhpSpreadsheet\Shared\Date;
 
 use function App\Helpers\removeStringFromString;
 use function App\Helpers\extractFirstNumericNumber;
 use function App\Helpers\removeSpace;
 use function App\Helpers\replaceFirst;
 use function App\Helpers\getOnlyNumersFromString;
+use Illuminate\Support\Str;
 use function App\Helpers\meg_encrypt;
+
+use PhpOffice\PhpSpreadsheet\IOFactory;
 
 
 /*
@@ -36,6 +45,19 @@ use function App\Helpers\meg_encrypt;
 
 if (app()->isLocal()) {
     Route::get('test', function (Request $request) {
+        // Compare cell formats (optional)
+// Note: Cell formats comparison can be complex and may not be necessary for basic structure comparison
+                                                $path = storage_path('app/ESTDWPReferralImportTemplateTypeD.xlsx')   ;
+                                                // $spreadsheet = IOFactory::load($path);
+        dd(Storage::exists('ESTDWPReferralImportTemplateTypeD.xlsx'));
+        echo "Structure comparison completed.";
+        dd();
+        $dob = "2024-01-13";
+        return Str::before(Date::PHPToExcel(DateTime::createFromFormat('d/m/Y', Carbon::parse($dob)->format('d/m/Y'))->getTimestamp()), '.');
+
+        return (is_int($dob)
+            ? \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($dob)->format('Y-m-d')
+            : (Carbon::parse($dob) ? Carbon::parse($dob)->format('Y-m-d') : null));
         $userId = request()->get('user_id', 1);
         $user = User::find($userId);
 
@@ -44,6 +66,17 @@ if (app()->isLocal()) {
         dd("done");
     });
 
+
+    Route::post('test-file-upload', function (TestRequest $request) {
+        $path = storage_path("app/ESTDWPReferralImportTemplateTypeD.xlsx");
+        Excel::import(new UsersImport, 'users.xlsx');
+        Excel::import($path, function ($file) {
+            dd($file);
+            // modify stuff
+
+        })->export('$file');
+        Excel::import(new testImport, $request->file('file'));
+    });
     Route::get('test-lead-track', function (Request $request) {
 
         $time = now()->addDays(AppEnum::LEAD_TRACKNG_DAYS_ALLOWED);
@@ -60,7 +93,7 @@ if (app()->isLocal()) {
         $requestForSupport = Request::create(URL::temporarySignedRoute('customer.support-email', $time, ['ID' => $encryptedID]));
 
         $requestForFiles = Request::create($route);
-        try{
+        try {
             $lead->notify((new CustomerLeadTrackingMail([
                 ...$request->query(),
                 'lead' => $encryptedID,
@@ -71,7 +104,7 @@ if (app()->isLocal()) {
                 'SignatureForSupport' => $requestForSupport->query('signature'),
 
             ])));
-        }catch(Exception $e){
+        } catch (Exception $e) {
             dd($e->getMessage());
         }
 

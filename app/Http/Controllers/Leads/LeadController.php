@@ -151,12 +151,13 @@ class LeadController extends Controller
         $Model->id = (string) Str::uuid();
 
         $fileName = 'data_match_file_' . now()->format('YmdHis') . '.xlsx';
+        $fileNameActual = 'data_match_file_template' . now()->format('YmdHis') . '.xlsx';
         // Store on default disk
-        $result = Excel::store(new DatamatchExport(), "DataMatch/{$Model->id}/{$fileName}", 'local');
+        $result = Excel::store(new DatamatchExport("DataMatch/{$Model->id}/{$fileNameActual}"), "DataMatch/{$Model->id}/{$fileName}", 'local');
         if ($result) {
 
-            $Model->file_name = $fileName;
-            $Model->file_path = asset("storage/DataMatch/{$Model->id}/{$fileName}");
+            $Model->file_name = $fileNameActual;
+            $Model->file_path = asset("storage/DataMatch/{$Model->id}/{$fileNameActual}");
             $Model->created_by_id = auth()->user()->id;
             $Model->save();
             $Model->file_path = URL::temporarySignedRoute(

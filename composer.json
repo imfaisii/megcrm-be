@@ -28,6 +28,7 @@
         "laravel/tinker": "^2.8",
         "maatwebsite/excel": "^3.1",
         "opcodesio/log-viewer": "^3.4",
+        "phpoffice/phpspreadsheet": "*",
         "rappasoft/laravel-authentication-log": "^3.0",
         "spatie/laravel-activitylog": "^4.7",
         "spatie/laravel-backup": "^8.6",
