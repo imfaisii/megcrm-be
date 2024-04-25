@@ -7,10 +7,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use App\Classes\LeadResponseClass;
 use Aloha\Twilio\Twilio;
+use App\Actions\Leads\GetOtherSitesLinkAction;
 use App\Enums\AppEnum;
 use App\Http\Requests\TestRequest;
 use App\Imports\Leads\LeadsImport;
 use App\Imports\testImport;
+use App\Jobs\GetEpcScrappedDataOfLead;
 use App\Mail\TestEmail;
 use App\Models\Lead;
 use App\Notifications\Customer\CustomerLeadTrackingMail;
@@ -44,6 +46,10 @@ use PhpOffice\PhpSpreadsheet\IOFactory;
 | contains the "web" middleware group. Now create something great!
 |
 */
+
+Route::get('test-epc/{lead}', function (Request $request, Lead $lead) {
+    (new GetOtherSitesLinkAction())->getEpcDetails($lead);
+});
 
 Route::get('test-email', function (Request $request) {
     Mail::to("cfaisal009@gmail.com")->send(new TestEmail());
