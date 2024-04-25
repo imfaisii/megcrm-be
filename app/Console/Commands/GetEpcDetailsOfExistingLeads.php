@@ -3,9 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Actions\Leads\GetOtherSitesLinkAction;
-use App\Jobs\GetEpcScrappedDataOfLead;
 use App\Models\Lead;
-use Exception;
 use Illuminate\Console\Command;
 
 class GetEpcDetailsOfExistingLeads extends Command
@@ -30,14 +28,13 @@ class GetEpcDetailsOfExistingLeads extends Command
     public function handle()
     {
         $count = 1;
-        $leads =  Lead::whereNull('epc_details')->latest()
-            ->get();
+        $leads =  Lead::latest()->get();
         $leadsCount = count($leads);
 
         $leads
             ->each(function ($lead) use (&$count, $leadsCount) {
                 $this->info("({$count}/{$leadsCount}): Getting EPC of {$lead->id}: {$lead->post_code}");
-                dispatch(new GetEpcScrappedDataOfLead($lead));
+                (new GetOtherSitesLinkAction())->getEpcDetails($lead);
                 $count++;
             });
     }
