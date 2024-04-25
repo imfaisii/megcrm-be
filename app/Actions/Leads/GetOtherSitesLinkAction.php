@@ -54,6 +54,7 @@ class GetOtherSitesLinkAction
             $data = [];
 
             $client = new Client();
+            $client->setServerParameter('HTTP_USER_AGENT', fake()->userAgent());
             $crawler = $client->request('GET', "{$baseUrl}/find-a-certificate/search-by-postcode?postcode={$lead->post_code}");
             $addressLink = $this->getAddressLink($crawler, is_array($lead['raw_api_response']['address']) ? $lead['raw_api_response']['address'][0] : $lead['raw_api_response']['address']);
 
