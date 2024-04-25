@@ -8,6 +8,7 @@ use App\Models\Lead;
 use Carbon\Carbon;
 use DateTime;
 use Illuminate\Contracts\Support\Responsable;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Concerns\Exportable;
@@ -26,6 +27,7 @@ use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 use function App\Helpers\formatPostCodeWithSpace;
 use function App\Helpers\generateARandomNumberNotInGivenArray;
+use function App\Helpers\meg_encrypt;
 use function App\Helpers\removeStringFromString;
 use function App\Helpers\removetillFirstNuermicSpcae;
 use Illuminate\Support\Str;
@@ -176,9 +178,20 @@ class DatamatchExport implements FromCollection, Responsable, ShouldAutoSize, Wi
             return $clonedLead;
         });
         $mergedLeads = $leads?->merge($secondReceipetsLeads);
+        $mergedLeads = $mergedLeads->filter(function ($lead) {    // filter out those leads that dont have correct date
+            $restult = false;
+            try {
+                Carbon::parse($lead->dob);
+                $restult = true;
+            } catch (\Throwable $e) {
 
-        return filled($mergedLeads) ? $mergedLeads : collect([]);
-
+                $restult = false;
+            }
+            return $restult;
+        });
+        $response = filled($mergedLeads) ? $mergedLeads : collect([]);
+        Cache::put("DataMatchFiles_{$this->destinationFile}", $response, now()->addMinutes(10));
+        return $response;
     }
 
     public function registerEvents(): array
@@ -191,22 +204,22 @@ class DatamatchExport implements FromCollection, Responsable, ShouldAutoSize, Wi
                 }
 
                 $event->sheet->setTitle('EST DWP Datamatch');
-                Storage::copy(AppEnum::TEMPLATE_PATH, $this->destinationFile);
+                Storage::disk('local')->copy(AppEnum::TEMPLATE_PATH, $this->destinationFile);
                 $spreadsheet = IOFactory::load(storage_path("app/$this->destinationFile"));
 
                 // Select the specific sheet where you want to write the data
                 $worksheet = $spreadsheet->getActiveSheet();
 
                 // Get the data from the Maatwebsite export class
-                $data = $this->collection();
+                $data = Cache::get("DataMatchFiles_{$this->destinationFile}");
 
                 // Write the data to the selected sheet starting from row 4
                 $row = 4;
                 foreach ($data as $lead) {
-                    $worksheet->setCellValue('B' . $row, $lead->id);
+                    $worksheet->setCellValue('B' . $row, meg_encrypt($lead->id));
                     $worksheet->setCellValue('C' . $row, $lead->last_name);
                     $worksheet->setCellValue('D' . $row, $lead->first_name);
-                    $worksheet->setCellValue('E' . $row, Carbon::parse($lead->dob)->format('d/m/Y'));
+                    $worksheet->setCellValue('E' . $row, Str::before(Date::PHPToExcel(DateTime::createFromFormat('d/m/Y', Carbon::parse($lead->dob)->format('d/m/Y'))->getTimestamp()), '.'));
                     $worksheet->setCellValue('F' . $row, $lead->sub_building ?: ($lead->building_number ?: (array_key_exists('buildingname', $lead->raw_api_response ?? []) ? $lead->raw_api_response['buildingname'] : removetillFirstNuermicSpcae($lead->plain_address))));
                     $worksheet->setCellValue('G' . $row, $lead->sub_building ? removeStringFromString($lead->sub_building, $lead->plain_address) : ($lead->building_number ? removeStringFromString($lead->building_number, $lead->plain_address) : (array_key_exists('buildingname', $lead->raw_api_response ?? []) ? removeStringFromString($lead->raw_api_response['buildingname'], $lead->plain_address) : removeStringFromString(removetillFirstNuermicSpcae($lead->plain_address), $lead->plain_address))));
                     $worksheet->setCellValue('H' . $row, '');
@@ -216,11 +229,19 @@ class DatamatchExport implements FromCollection, Responsable, ShouldAutoSize, Wi
                     $worksheet->setCellValue('L' . $row, $lead->actual_post_code ?? formatPostCodeWithSpace($lead->post_code));
                     $row++;
                 }
-
+                // Set date formatting for column E
+                $worksheet->getStyle('E4')->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_DATE_DDMMYYYY);
                 // Save the changes to the existing file
                 $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
-                $writer->save(storage_path( $this->destinationFile));
+                $writer->save(storage_path("app/$this->destinationFile"));
 
+                $fileToDel = removeStringFromString('template', $this->destinationFile, '');
+                dispatch(function () use ($fileToDel) {
+                    /* del the created after some time  */
+                    Storage::disk('local')->delete($fileToDel);
+
+
+                })->afterCommit()->delay(now()->addMinutes(20));
 
                 // Styling the third row with a light gray background.
                 $event->sheet->getStyle('B3:L3')->getFill()->setFillType(Fill::FILL_SOLID);
