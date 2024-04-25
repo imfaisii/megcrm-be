@@ -108,7 +108,7 @@ class GetOtherSitesLinkAction
                         $data['rating_potential'] = $ratingPotentialNode->text();
                     }
                 } catch (Exception $e) {
-                    Log::error("Potential Current error at line " . $e->getLine() . ": " . $e->getMessage());
+                    Log::error("Potential Current error at line " . $e->getLine() . ": " . $e->getMessage() . "Page title: " . $crawler->filter('title')->text());
                 }
 
                 // change can make ( improvements )
@@ -126,10 +126,10 @@ class GetOtherSitesLinkAction
 
                 Log::info("Done {$lead->post_code} {$lead->plain_address}.");
             } else {
-                Log::error("Skipping {$lead->post_code} {$lead->plain_address} as no address link is found.");
+                Log::error("Skipping {$lead->post_code} {$lead->plain_address} as no address link is found. Page title: " . $crawler->filter('title')->text());
             }
         } catch (Exception $e) {
-            Log::error("Parent EPC scrap error at line " . $e->getLine() . ": " . $e->getMessage());
+            Log::error("Parent EPC scrap error at line " . $e->getLine() . ": " . $e->getMessage() . "Page title: " . $crawler->filter('title')->text());
         }
     }
 }
