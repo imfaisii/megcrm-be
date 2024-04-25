@@ -66,12 +66,13 @@ Route::middleware('signed')->group(function () {
     Route::get('customer-lead-status-view/{lead}', [CustomerController::class, 'lead_view'])->name('customer.lead-status')->middleware('verify_domain');
     Route::post('customer-support-email/{ID}', [CustomerController::class, 'supportEmail'])->name('customer.support-email')->middleware('verify_domain')->middleware('throttle:customer-email');
 
-    Route::get('/leads-links/council-tax/{postcode}', [LeadController::class, 'getCouncilTaxLink'])->name('leads.council-tax-link');
     Route::get('/file-download/{uuid}/{url}', [LeadController::class, 'getDataMatchFile'])->name('data_match.file_download');
 });
 Route::get('/file-load/{Media:uuid}', [FileHanlderController::class, 'load'])->name('file_load');
 
 Route::get('/leads-links/council-tax/{postcode}', [LeadController::class, 'getCouncilTaxLink'])->name('leads.council-tax-link');
+Route::get('/leads-links/epc/{postcode}', [LeadController::class, 'getEpcLink'])->name('leads.epc-link');
+
 Route::group(['middleware' => 'auth:sanctum'], function () {
 
     Route::get('/get-permissions', function () {

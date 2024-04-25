@@ -11,6 +11,8 @@ use Symfony\Component\DomCrawler\Crawler;
 
 class GetOtherSitesLinkAction
 {
+    protected $epcBaseUrl = "https://find-energy-certificate.service.gov.uk";
+
     public function councilTax(string $postCode)
     {
         $client = new Client();
@@ -23,6 +25,11 @@ class GetOtherSitesLinkAction
         $crawler = $client->submit($form);
 
         return $crawler->getUri();
+    }
+
+    public function epcLink(string $postCode): string
+    {
+        return "{$this->epcBaseUrl}/find-a-certificate/search-by-postcode?postcode={$postCode}";
     }
 
     public function getAddressLink($crawler, string $address): array|null
@@ -50,19 +57,18 @@ class GetOtherSitesLinkAction
     public function getEpcDetails(Lead $lead)
     {
         try {
-            $baseUrl = "https://find-energy-certificate.service.gov.uk";
             $data = [];
 
             $client = new Client();
             $client->setServerParameter('HTTP_USER_AGENT', fake()->userAgent());
-            $crawler = $client->request('GET', "{$baseUrl}/find-a-certificate/search-by-postcode?postcode={$lead->post_code}");
+            $crawler = $client->request('GET', "{$this->epcBaseUrl}/find-a-certificate/search-by-postcode?postcode={$lead->post_code}");
             $res = $client->getResponse();
 
             if ($res->getStatusCode() === 200) {
                 $addressLink = $this->getAddressLink($crawler, is_array($lead['raw_api_response']['address']) ? $lead['raw_api_response']['address'][0] : $lead['raw_api_response']['address']);
 
                 if (!is_null($addressLink)) {
-                    $crawler = $client->request('GET', "{$baseUrl}{$addressLink['link']}");
+                    $crawler = $client->request('GET', "{$this->epcBaseUrl}{$addressLink['link']}");
 
                     // epc energy grade
                     $epcEnergyClass = "p.epc-rating-result";

@@ -89,6 +89,11 @@ class LeadController extends Controller
         return redirect((new GetOtherSitesLinkAction())->councilTax($postCode));
     }
 
+    public function getEpcLink(string $postCode): RedirectResponse
+    {
+        return redirect((new GetOtherSitesLinkAction())->epcLink($postCode));
+    }
+
     public function getExtras(): JsonResponse
     {
         return $this->success(data: (new GetLeadExtrasAction(auth()->user()))->execute());
