@@ -124,6 +124,8 @@ class GetOtherSitesLinkAction
                 $lead->update([
                     'epc_details' => $data
                 ]);
+            } else {
+                Log::error("Skipping {$lead->post_code} as no address link is found.");
             }
         } catch (Exception $e) {
             Log::error("Parent EPC scrap error at line " . $e->getLine() . ": " . $e->getMessage());
