@@ -135,6 +135,35 @@ class AirCall
         }
     }
 
+
+    /* Numbers */
+
+    public function getNumbers(array $queryParams = ['order' => 'asc', 'per_page' => 50]): JsonResponse
+    {
+        try {
+            $isNextPage = true;
+            $Url = "{$this->BaseUrl}{$this->version}/numbers";
+            while (!empty($isNextPage)) {
+                $response = $this->HttpClient->get($Url, $queryParams);
+                if ($response->successful()) {
+                    $Url = data_get($response->json(), 'meta.next_page_link', null);
+                    $isNextPage = filled($Url);
+                    $result = data_get($response->json(), 'numbers', []);
+                    $ResponseData = filled($result) ? (Arr::get($result, '0', null) ? $result : [$result]) : [];
+                    foreach ($ResponseData as $eachcall) {
+                        $this->data->push($eachcall);
+                    }
+                } else {
+                    $isNextPage = null;
+                }
+            }
+
+            return $response->successful() ? $this->success(data: $this->data) : $this->error();
+        } catch (Exception $e) {
+            return $this->exception($e);
+        }
+    }
+
     /**
      * set the dial number on the app for user
      */

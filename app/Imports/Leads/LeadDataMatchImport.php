@@ -104,7 +104,7 @@ class LeadDataMatchImport extends DefaultValueBinder implements ToCollection, Wi
                                 'datamatch_progress' => $eachLead['eco_4_verification_status'],
                                 'urn' => $eachLead['urn'],
                                 'data_match_sent_date' => $eachLead['date_uploaded'],
-                                'date_processed_by_dwp' => $eachLead['date_processed_by_dwp'],
+                                'datamatch_progress_date' => $eachLead['date_processed_by_dwp'],
                                 'result_first_name' => $eachLead['forename'],
                                 'result_last_name' => $eachLead['surname'],
 
@@ -129,7 +129,7 @@ class LeadDataMatchImport extends DefaultValueBinder implements ToCollection, Wi
                                 'datamatch_progress' => $eachLead['eco_4_verification_status'],
                                 'urn' => $eachLead['urn'],
                                 'data_match_sent_date' => $eachLead['date_uploaded'],
-                                'date_processed_by_dwp' => $eachLead['date_processed_by_dwp'],
+                                'datamatch_progress_date' => $eachLead['date_processed_by_dwp'],
                                 'result_first_name' => $eachLead['forename'],
                                 'result_last_name' => $eachLead['surname'],
 
