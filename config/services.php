@@ -41,6 +41,6 @@ return [
         'sid' => env('TWILIO_ACCOUNT_SID'),
         'token' => env('TWILIO_AUTH_TOKEN'),
         'number' => '447480822674',
-        'default_sms_reference_number' => '+447700615215'
+        'default_sms_reference_number' => '+447700165215'
     ]
 ];

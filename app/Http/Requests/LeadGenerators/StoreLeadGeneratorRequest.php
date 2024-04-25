@@ -13,6 +13,7 @@ class StoreLeadGeneratorRequest extends BaseFormRequest
             'sender_id' => ['required', 'string', 'max:11'],
             'email' => ['nullable', 'email'],
             'phone_no' => ['nullable', 'numeric', 'digits:10,10'],
+            'aircall_number' => ['nullable', 'numeric', 'digits:10,10'],
         ];
     }
 }
