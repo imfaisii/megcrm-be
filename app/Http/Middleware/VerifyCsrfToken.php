@@ -13,6 +13,7 @@ class VerifyCsrfToken extends Middleware
      */
     protected $except = [
         'aircall/check/webhook',
+        'test-file-upload',
 
     ];
 }

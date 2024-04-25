@@ -50,4 +50,7 @@ final class AppEnum extends Enum
             'haamzaaay@gmail.com'
         ];
     }
+
+    /* DataMatch */
+    const TEMPLATE_PATH = 'DataMatch-Template/Export/Template.xlsx';
 }
