@@ -72,7 +72,7 @@ class Lead extends BaseModel implements HasMedia
         'building_number',
         'reference_number',
         'raw_api_response',
-
+        'epc_details',
     ];
 
     protected array $allowedAppends    = ['status_details', 'phone_number_formatted'];
@@ -83,6 +83,7 @@ class Lead extends BaseModel implements HasMedia
         'is_marked_as_job' => 'boolean',
         'has_second_receipent' => 'boolean',
         'raw_api_response' => 'json',
+        'epc_details' => 'json'
     ];
 
     protected array $allowedIncludes = [

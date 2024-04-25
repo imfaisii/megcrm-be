@@ -2,6 +2,7 @@
 
 namespace App\Observers;
 
+use App\Jobs\GetEpcScrappedDataOfLead;
 use App\Models\Lead;
 
 use function App\Helpers\generateUniqueRandomString;
@@ -16,5 +17,10 @@ class LeadObserver
         $lead->address = $lead->address ? trim($lead->address) : null;
         $lead->building_number = $lead->building_number ? trim($lead->building_number) : null;
         $lead->sub_building = $lead->sub_building ? trim($lead->sub_building) : null;
+    }
+
+    public function created(Lead $lead): void
+    {
+        dispatch(new GetEpcScrappedDataOfLead($lead));
     }
 }
