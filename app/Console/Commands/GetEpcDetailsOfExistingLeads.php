@@ -36,7 +36,7 @@ class GetEpcDetailsOfExistingLeads extends Command
 
         $leads
             ->each(function ($lead) use (&$count, $leadsCount) {
-                $this->info("Getting EPC of {$lead->post_code} {$count}/{$leadsCount}");
+                $this->info("Getting EPC of {$lead->post_code} {$count}/{$leadsCount} ID: {$lead->id}");
                 (new GetOtherSitesLinkAction())->getEpcDetails($lead);
                 $count++;
             });
