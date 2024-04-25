@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Actions\Leads\GetOtherSitesLinkAction;
 use App\Jobs\GetEpcScrappedDataOfLead;
 use App\Models\Lead;
 use Exception;
@@ -28,19 +29,16 @@ class GetEpcDetailsOfExistingLeads extends Command
      */
     public function handle()
     {
-        try {
-            $this->info("Running Command...");
+        $count = 1;
+        $leads =  Lead::whereNull('epc_details')->latest()
+            ->get();
+        $leadsCount = count($leads);
 
-            Lead::whereNull('epc_details')->lazyById(1000, $column = 'id')
-                ->each(function ($lead) {
-                    dispatch(new GetEpcScrappedDataOfLead($lead));
-                });
-
-            $this->info("Success.");
-            return 0;
-        } catch (Exception $e) {
-            $this->error($e->getMessage());
-            return 1;
-        }
+        $leads
+            ->each(function ($lead) use (&$count, $leadsCount) {
+                $this->info("Getting EPC of {$lead->post_code} {$count}/{$leadsCount}");
+                (new GetOtherSitesLinkAction())->getEpcDetails($lead);
+                $count++;
+            });
     }
 }
