@@ -34,9 +34,9 @@ class GetOtherSitesLinkAction
             $link = $node->attr('href');
             $text = $node->text();
 
-            $textAddress = str_replace("  ", " ", str_replace(",", " ", $text));
+            $textAddress = Str::replace("  ", " ", Str::replace(",", " ", $text));
 
-            if (str_contains($textAddress, $address)) {
+            if (Str::contains($textAddress, $address, true)) {
                 $result = [
                     'link' => $link,
                     'text' => $text
@@ -58,7 +58,7 @@ class GetOtherSitesLinkAction
 
             $addressLink = $this->getAddressLink($crawler, $lead['raw_api_response']['address'][0]);
 
-            if ($addressLink) {
+            if (!is_null($addressLink)) {
                 $crawler = $client->request('GET', "{$baseUrl}{$addressLink['link']}");
 
                 // epc energy grade
