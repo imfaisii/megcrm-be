@@ -107,7 +107,7 @@ class GetOtherSitesLinkAction
                     $data['rating_potential'] = $ratingPotentialNode->text();
                 }
             } catch (Exception $e) {
-                Log::error("Potential Current error: " . $e->getMessage());
+                Log::error("Potential Current error at line " . $e->getLine() . ": " . $e->getMessage());
             }
 
             // change can make ( improvements )
@@ -123,7 +123,7 @@ class GetOtherSitesLinkAction
                 'epc_details' => $data
             ]);
         } catch (Exception $e) {
-            Log::error("Parent EPC scrap error: " . $e->getMessage());
+            Log::error("Parent EPC scrap error at line " . $e->getLine() . ": " . $e->getMessage());
         }
     }
 }
