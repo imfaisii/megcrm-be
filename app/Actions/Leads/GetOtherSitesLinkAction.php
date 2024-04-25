@@ -5,6 +5,7 @@ namespace App\Actions\Leads;
 use App\Models\Lead;
 use Exception;
 use Goutte\Client;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Symfony\Component\DomCrawler\Crawler;
 
@@ -80,13 +81,15 @@ class GetOtherSitesLinkAction
             // find the table element
             $data['features'] = [];
             $tableNode = $crawler->filter('table.govuk-table');
-            $tableNode->filter('tbody.govuk-table__body tr')->each(function ($row) use (&$data) {
-                $data['features'][] = [
-                    'feature' => $row->filter('th.govuk-table__cell')->eq(0)->text(),
-                    'description' => $row->filter('td.govuk-table__cell')->eq(0)->text(),
-                    'rating' => $row->filter('td.govuk-table__cell')->eq(1)->text()
-                ];
-            });
+            if ($epcEnergyNode->count() > 0) {
+                $tableNode->filter('tbody.govuk-table__body tr')->each(function ($row) use (&$data) {
+                    $data['features'][] = [
+                        'feature' => $row->filter('th.govuk-table__cell')->eq(0)->text(),
+                        'description' => $row->filter('td.govuk-table__cell')->eq(0)->text(),
+                        'rating' => $row->filter('td.govuk-table__cell')->eq(1)->text()
+                    ];
+                });
+            }
 
             // rating current and potential
             $data['rating_current'] = null;
@@ -104,32 +107,23 @@ class GetOtherSitesLinkAction
                     $data['rating_potential'] = $ratingPotentialNode->text();
                 }
             } catch (Exception $e) {
-                // Handle any exceptions
+                Log::error("Potential Current error: " . $e->getMessage());
             }
-
-            // find the table element
-            $data['features'] = [];
-            $tableNode = $crawler->filter('table.govuk-table');
-            $tableNode->filter('tbody.govuk-table__body tr')->each(function ($row) use (&$data) {
-                $data['features'][] = [
-                    'feature' => $row->filter('th.govuk-table__cell')->eq(0)->text(),
-                    'description' => $row->filter('td.govuk-table__cell')->eq(0)->text(),
-                    'rating' => $row->filter('td.govuk-table__cell')->eq(1)->text()
-                ];
-            });
 
             // change can make ( improvements )
             $data['improvements'] = [];
             $improvements = $crawler->filter('.epb-recommended-improvements');
-            $improvements->filter('h3')->each(function ($h3) use (&$data) {
-                $data['improvements'][] = $h3->text();
-            });
+            if ($improvements->count() > 0) {
+                $improvements->filter('h3')->each(function ($h3) use (&$data) {
+                    $data['improvements'][] = $h3->text();
+                });
+            }
 
             $lead->update([
                 'epc_details' => $data
             ]);
         } catch (Exception $e) {
-            //
+            Log::error("Parent EPC scrap error: " . $e->getMessage());
         }
     }
 }
