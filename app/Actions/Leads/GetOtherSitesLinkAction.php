@@ -124,6 +124,8 @@ class GetOtherSitesLinkAction
                 $lead->update([
                     'epc_details' => $data
                 ]);
+
+                Log::info("Done {$lead->post_code} {$lead->plain_address}.");
             } else {
                 Log::error("Skipping {$lead->post_code} {$lead->plain_address} as no address link is found.");
             }
