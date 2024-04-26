@@ -37,7 +37,8 @@ class GetOtherSitesLinkAction
         $result = null;
         $links = $crawler->filter('a.govuk-link');
 
-        $links->each(function (Crawler $node, $i) use (&$result, $address) {
+        foreach ($links as $node) {
+            $node = new Crawler($node);
             $link = $node->attr('href');
             $text = $node->text();
 
@@ -48,8 +49,9 @@ class GetOtherSitesLinkAction
                     'link' => $link,
                     'text' => $text
                 ];
+                break;
             }
-        });
+        }
 
         return $result;
     }
@@ -66,6 +68,7 @@ class GetOtherSitesLinkAction
 
             if ($res->getStatusCode() === 200) {
                 $addressLink = $this->getAddressLink($crawler, is_array($lead['raw_api_response']['address']) ? $lead['raw_api_response']['address'][0] : $lead['raw_api_response']['address']);
+                $data['link'] = "{$this->epcBaseUrl}{$addressLink['link']}";
 
                 if (!is_null($addressLink)) {
                     $crawler = $client->request('GET', "{$this->epcBaseUrl}{$addressLink['link']}");
