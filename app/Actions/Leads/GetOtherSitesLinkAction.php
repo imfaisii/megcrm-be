@@ -145,6 +145,10 @@ class GetOtherSitesLinkAction
                         'epc_assessment_at' => $epcAssessmentAt
                     ]);
 
+                    if (is_null($epcAssessmentAt)) {
+                        Log::info("No assessment date found: {$lead->post_code} {$lead->plain_address} {$data['link']}.");
+                    }
+
                     Log::info("Done {$lead->post_code} {$lead->plain_address}.");
                 } else {
                     Log::error("Skipping {$lead->post_code} {$lead->plain_address} as no address link is found. Page title: " . $crawler->filter('title')->text());
