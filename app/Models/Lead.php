@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Actions\Common\BaseModel;
 use App\Enums\AppEnum;
 use App\Enums\Permissions\RoleEnum;
+use App\Filters\Common\FilterByTimestamp;
 use App\Filters\Leads\FilterByBookedBy;
 use App\Filters\Leads\FilterByName;
 use App\Filters\Leads\FilterByPostcode;
@@ -109,6 +110,7 @@ class Lead extends BaseModel implements HasMedia
 
     protected array $discardedFieldsInFilter = [
         'post_code',
+        'epc_assessment_at'
     ];
 
     protected function routeNotificationForTwilio()
@@ -181,6 +183,7 @@ class Lead extends BaseModel implements HasMedia
             AllowedFilter::custom('statuses', new FilterByStatus()),
             AllowedFilter::custom('surveyor_id', new FilterBySurveyor()),
             AllowedFilter::custom('survey_booked_by', new FilterByBookedBy()),
+            AllowedFilter::custom('epc_assessment_at', new FilterByTimestamp()),
         ];
     }
 

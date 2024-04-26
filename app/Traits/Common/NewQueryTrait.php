@@ -57,7 +57,7 @@ trait NewQueryTrait
     public function getQuery(): SpatieQueryBuilder|Builder
     {
         $query = $this->query ?? $this->newQuery();
-        if (! $this->queryBuilderEnabled || $query instanceof QueryBuilder) {
+        if (!$this->queryBuilderEnabled || $query instanceof QueryBuilder) {
             return $query;
         }
 
