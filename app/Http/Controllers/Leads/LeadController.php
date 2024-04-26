@@ -11,6 +11,7 @@ use App\Actions\Leads\ListLeadAction;
 use App\Actions\Leads\StoreLeadAction;
 use App\Actions\Leads\UpdateLeadAction;
 use App\Actions\Leads\UploadLeadsFileAction;
+use App\Enums\AppEnum;
 use App\Exports\Leads\DatamatchExport;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\DataMatch\UploadDataMatchRequest;
@@ -156,8 +157,9 @@ class LeadController extends Controller
         if ($result) {
 
             $Model->file_name = $fileNameActual;
-            $Model->file_path = asset("storage/DataMatch/{$Model->id}/{$fileNameActual}");
+            $Model->file_path = "DataMatch/{$Model->id}/{$fileNameActual}";
             $Model->created_by_id = auth()->user()->id;
+            $Model->type = AppEnum::FILE_TYPE_DATA_MATCH_DOWNLOAD;
             $Model->save();
             $Model->file_path = URL::temporarySignedRoute(
                 'data_match.file_download',
@@ -192,7 +194,6 @@ class LeadController extends Controller
                 [
                     'uuid' => $file->id,
                     'url' => $file->file_name,
-
                 ]
             );
 
@@ -205,9 +206,12 @@ class LeadController extends Controller
     public function getDataMatchFile(Request $request, string $uuid, string $url)
     {
         try {
-            if (File::exists(storage_path("/app/DataMatch/{$uuid}/{$url}"))) {
-                return response()->download(storage_path("/app/DataMatch/{$uuid}/{$url}"));
+            $model = DataMatchFile::findorFail($uuid);
+            if (File::exists(storage_path("/app/{$model->file_path}"))) {
+                return response()->download(storage_path("/app/{$model->file_path}"));
             } else {
+            dd($model);
+
                 return $this->error(message: 'File not found');
             }
         } catch (Exception $e) {

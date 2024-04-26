@@ -153,7 +153,6 @@ class LeadDataMatchImport extends DefaultValueBinder implements ToCollection, Wi
                             $this->classResponse->failedLeads[] = $eachLead->toArray();
                         }
                     } catch (Exception $e) {
-                        dd($e->getMessage());
                         $this->classResponse->failedLeads[] = $eachLead->toArray();
                     }
                 });
