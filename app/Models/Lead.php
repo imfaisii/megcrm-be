@@ -7,6 +7,8 @@ use App\Enums\AppEnum;
 use App\Enums\Permissions\RoleEnum;
 use App\Filters\Common\FilterByTimestamp;
 use App\Filters\Leads\FilterByBookedBy;
+use App\Filters\Leads\FilterByFeatures;
+use App\Filters\Leads\FilterByImprovements;
 use App\Filters\Leads\FilterByName;
 use App\Filters\Leads\FilterByPostcode;
 use App\Filters\Leads\FilterByStatus;
@@ -184,6 +186,8 @@ class Lead extends BaseModel implements HasMedia
             AllowedFilter::custom('surveyor_id', new FilterBySurveyor()),
             AllowedFilter::custom('survey_booked_by', new FilterByBookedBy()),
             AllowedFilter::custom('epc_assessment_at', new FilterByTimestamp()),
+            AllowedFilter::custom('improvements', new FilterByImprovements()),
+            AllowedFilter::custom('features', new FilterByFeatures()),
         ];
     }
 
