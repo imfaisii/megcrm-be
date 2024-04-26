@@ -3,6 +3,7 @@
 namespace App\Actions\Leads;
 
 use App\Models\Lead;
+use Carbon\Carbon;
 use Exception;
 use Goutte\Client;
 use Illuminate\Support\Facades\Log;
@@ -60,6 +61,7 @@ class GetOtherSitesLinkAction
     {
         try {
             $data = [];
+            $epcAssessmentAt = null;
 
             $client = new Client();
             $client->setServerParameter('HTTP_USER_AGENT', fake()->userAgent());
@@ -84,12 +86,17 @@ class GetOtherSitesLinkAction
                     }
 
                     // find all elements with class "govuk-summary-list__row"
-                    $crawler->filter('.govuk-summary-list__row')->each(function ($row) use (&$data) {
+                    $crawler->filter('.govuk-summary-list__row')->each(function ($row) use (&$data, &$epcAssessmentAt) {
                         $key = $row->filter('.govuk-summary-list__key')->text();
                         $value = trim($row->filter('.govuk-summary-list__value')->text());
+                        $arrayKey = Str::snake(Str::replace("’", "", $key));
+
+                        if (Str::contains($arrayKey, 'date', true) && Str::contains($arrayKey, 'assessment', true)) {
+                            $epcAssessmentAt = Carbon::parse($value)->format('Y-m-d');
+                        }
 
                         // Add the key-value pair to the results array
-                        $data[Str::snake(Str::replace("’", "", $key))] = $value;
+                        $data[$arrayKey] = $value;
                     });
 
                     // find the table element
@@ -134,7 +141,8 @@ class GetOtherSitesLinkAction
                     }
 
                     $lead->update([
-                        'epc_details' => $data
+                        'epc_details' => $data,
+                        'epc_assessment_at' => $epcAssessmentAt
                     ]);
 
                     Log::info("Done {$lead->post_code} {$lead->plain_address}.");

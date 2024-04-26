@@ -72,6 +72,7 @@ class Lead extends BaseModel implements HasMedia
         'building_number',
         'reference_number',
         'raw_api_response',
+        'epc_assessment_at',
         'epc_details',
     ];
 
