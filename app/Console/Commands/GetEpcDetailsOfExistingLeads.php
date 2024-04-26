@@ -28,7 +28,7 @@ class GetEpcDetailsOfExistingLeads extends Command
     public function handle()
     {
         $count = 1;
-        $leads =  Lead::latest()->get();
+        $leads =  Lead::whereNull('epc_details')->latest()->get();
         $leadsCount = count($leads);
 
         $leads
