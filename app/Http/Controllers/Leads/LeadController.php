@@ -210,8 +210,6 @@ class LeadController extends Controller
             if (File::exists(storage_path("/app/{$model->file_path}"))) {
                 return response()->download(storage_path("/app/{$model->file_path}"));
             } else {
-            dd($model);
-
                 return $this->error(message: 'File not found');
             }
         } catch (Exception $e) {
