@@ -68,9 +68,9 @@ class GetOtherSitesLinkAction
 
             if ($res->getStatusCode() === 200) {
                 $addressLink = $this->getAddressLink($crawler, is_array($lead['raw_api_response']['address']) ? $lead['raw_api_response']['address'][0] : $lead['raw_api_response']['address']);
-                $data['link'] = "{$this->epcBaseUrl}{$addressLink['link']}";
 
                 if (!is_null($addressLink)) {
+                    $data['link'] = "{$this->epcBaseUrl}{$addressLink['link']}";
                     $crawler = $client->request('GET', "{$this->epcBaseUrl}{$addressLink['link']}");
 
                     // epc energy grade
