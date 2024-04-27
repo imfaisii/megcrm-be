@@ -14,4 +14,5 @@ class LeadStatus extends BaseModel
         'name',
         'color',
     ];
+    
 }
