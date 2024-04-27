@@ -53,4 +53,18 @@ final class AppEnum extends Enum
 
     /* DataMatch */
     const TEMPLATE_PATH = 'DataMatch-Template/Export/Template.xlsx';
+    const FILE_TYPE_DATA_MATCH_DOWNLOAD = 'data-match-download-from-crm';
+    const FILE_TYPE_DATA_MATCH_UPLOAD = 'data-match-upload-for-crm';
+
+    const FILE_TYPE_DATA_MATCH_FAILED_LEADS = 'data-match-failed-leads-crm';
+
+    public static function allowedFileTypes(): array{
+        return [
+            self::FILE_TYPE_DATA_MATCH_DOWNLOAD,
+            self::FILE_TYPE_DATA_MATCH_UPLOAD,
+            self::FILE_TYPE_DATA_MATCH_FAILED_LEADS,
+        ];
+    }
+
+
 }

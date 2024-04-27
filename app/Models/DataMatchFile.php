@@ -29,6 +29,7 @@ class DataMatchFile extends BaseModel
         'file_name',
         'file_path',
         'created_by_id',
+        'type'
     ];
 
     protected function getExtraFilters(): array
