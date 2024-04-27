@@ -97,6 +97,7 @@ class LeadDataMatchImport extends DefaultValueBinder implements ToCollection, Wi
                             $response = $lead->filter(function ($item) use ($eachLead) {
                                 return stripos($item?->plain_address, $eachLead['address_line_1']) !== false;
                             })?->first();
+                            /* if that lead is already updated in this upload and that result was matched then don't do anything */
                             if (in_array($response?->id, $this->leadsUpdatedIds) && $response->leadCustomerAdditionalDetail->datamatch_progress == 'Matched')
                                 return true;  // skip that entry
 

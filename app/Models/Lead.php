@@ -124,7 +124,7 @@ class Lead extends BaseModel implements HasMedia
     public function scopeByRole($query, string $role, ?User $user = null)
     {
         $user ??= auth()->user();
-
+        /* if he is surveyor then assigned lead gens or survey booked by him */
         if ($user->hasRole($role) && $role === RoleEnum::SURVEYOR) {
             $assignedLeadGenerators = $user->leadGeneratorAssignments()->pluck('lead_generator_id');
             $query->where(function ($query) use ($assignedLeadGenerators, $user) {
