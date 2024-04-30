@@ -27,10 +27,18 @@ class Handler extends ExceptionHandler
         $this->reportable(function (Throwable $e) {
             if (!app()->environment('local')) {
                 Log::driver('slack_exceptions')->error(json_encode([
-                    'message' => $e->getMessage(),
-                    'host' => request()->getHttpHost(),
-                    'ip' => request()->ip(),
-                ]));
+    'message' => $e->getMessage(),
+    'file' => $e->getFile(),
+    'line' => $e->getLine(),
+    'host' => request()->getHttpHost(),
+    'ip' => request()->ip(),
+    'url' => request()->fullUrl(),
+    'method' => request()->method(),
+    'user_id' => auth()->check() ? auth()->id() : null,
+    'headers' => request()->headers->all(),
+    'payload' => request()->all(),
+    'stack_trace' => $e->getTraceAsString(),
+]));
             }
         });
     }
