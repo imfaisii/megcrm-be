@@ -55,7 +55,6 @@ class LeadDataMatchImport extends DefaultValueBinder implements ToCollection, Wi
                 $rows->each(function ($eachLead) {
                     try {
                         $lead = Lead::query()
-                            ->with('leadCustomerAdditionalDetail')
                             ->where([
                                 ['last_name', '=', $eachLead['surname']],
                                 ['first_name', '=', $eachLead['forename']],
@@ -90,7 +89,8 @@ class LeadDataMatchImport extends DefaultValueBinder implements ToCollection, Wi
                                                 $eachLead['date_of_birth'],
                                             ],
                                         ]);
-                            })->get();
+                            })
+                            ->with('leadCustomerAdditionalDetail')->get();
                         if ($lead->count() > 1) {
 
                             //means multiple records found now need to query more for specific, so we find our row address in the coming leads
@@ -98,8 +98,13 @@ class LeadDataMatchImport extends DefaultValueBinder implements ToCollection, Wi
                                 return stripos($item?->plain_address, $eachLead['address_line_1']) !== false;
                             })?->first();
                             /* if that lead is already updated in this upload and that result was matched then don't do anything */
-                            if (in_array($response?->id, $this->leadsUpdatedIds) && $response->leadCustomerAdditionalDetail->datamatch_progress == 'Matched')
+                            if (in_array($response?->id, $this->leadsUpdatedIds) && $response->leadCustomerAdditionalDetail->datamatch_progress == 'Matched') {
+                                array_push($this->leadsUpdatedIds, $response->id);
+                                Log::channel('data_match_result_file_read_log')->info('Data Match updated for ' . json_encode($response->toArray()) . ' against ' . json_encode($eachLead->toArray()));
+                                $this->classResponse->totalUploadedRows++;
+
                                 return true;  // skip that entry
+                            }
 
                             $result = $response?->leadCustomerAdditionalDetail?->update([
                                 'datamatch_progress' => $eachLead['eco_4_verification_status'],
@@ -123,8 +128,13 @@ class LeadDataMatchImport extends DefaultValueBinder implements ToCollection, Wi
                         } elseif ($lead->count() == 1) {
                             $lead = $lead?->first();
 
-                            if (in_array($lead?->id, $this->leadsUpdatedIds) && $lead->leadCustomerAdditionalDetail->datamatch_progress == 'Matched')
+                            if (in_array($lead?->id, $this->leadsUpdatedIds) && $lead->leadCustomerAdditionalDetail->datamatch_progress == 'Matched') {
+                                array_push($this->leadsUpdatedIds, $lead->id);
+
+                                Log::channel('data_match_result_file_read_log')->info('Data Match updated for ' . json_encode($lead->toArray()) . ' against ' . json_encode($eachLead->toArray()));
+                                $this->classResponse->totalUploadedRows++;
                                 return true;
+                            }
 
                             $result = $lead?->leadCustomerAdditionalDetail?->update([
                                 'datamatch_progress' => $eachLead['eco_4_verification_status'],

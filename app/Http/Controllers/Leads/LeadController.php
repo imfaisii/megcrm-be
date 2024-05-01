@@ -155,14 +155,14 @@ class LeadController extends Controller
         $Model = DataMatchFile::make();
         $Model->id = (string) Str::uuid();
 
-        $fileName = 'data_match_file_' . now()->format('YmdHis') . '.xlsx';
-        $fileNameActual = 'data_match_file_template' . now()->format('YmdHis') . '.xlsx';
+        $fileName = 'Data_Match_File_' . now()->format('YmdHis') . '.xlsx';
+        $fileNameActual = 'Data_Match_File_Template' . now()->format('YmdHis') . '.xlsx';
         // Store on default disk
         $result = Excel::store(new DatamatchExport("DataMatch/{$Model->id}/{$fileNameActual}"), "DataMatch/{$Model->id}/{$fileName}", 'local');
         if ($result) {
 
             $Model->file_name = $fileNameActual;
-            $Model->file_path = "DataMatch/{$Model->id}/{$fileNameActual}";
+            $Model->file_path = "DataMatch/". now()->format('Ymd')."/{$Model->id}/{$fileNameActual}";
             $Model->created_by_id = auth()->user()->id;
             $Model->type = AppEnum::FILE_TYPE_DATA_MATCH_DOWNLOAD;
             $Model->save();
