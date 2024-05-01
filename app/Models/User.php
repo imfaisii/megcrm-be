@@ -79,14 +79,14 @@ class User extends BaseModel implements AccessAuthorizable, AuthenticatableContr
         'aircall_email_address',
     ];
 
-    protected $with = ['additional'];
-
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
         'is_active' => 'boolean',
         'is_associated_with_company' => 'boolean',
     ];
+
+    protected $with = ['additional'];
 
     protected array $allowedIncludes = [
         'createdBy',
