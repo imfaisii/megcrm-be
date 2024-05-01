@@ -36,6 +36,7 @@ class DatabaseSeeder extends Seeder
                 //! Always after adminseeder
             LeadStatusSeeder::class,
             TeamRolesSeeder::class,
+            MeasureSeeder::class,
         ]);
 
         if ($local) {
