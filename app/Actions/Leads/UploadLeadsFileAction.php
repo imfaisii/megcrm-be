@@ -86,13 +86,13 @@ class UploadLeadsFileAction
             $Model->id = (string) Str::uuid();
             $fileName = "DataMatchUploaded_{$Model->id}.csv";
             $Model->file_name = $fileName;
-            $Model->file_path = "DataMatchUploaded/". now()->format('Ymd')."/{$Model->id}/{$fileName}";
+            $Model->file_path = "DataMatchUploaded/" . now()->format('Ymd') . "/{$Model->id}/{$fileName}";
             $Model->created_by_id = auth()->user()->id;
             $Model->type = AppEnum::FILE_TYPE_DATA_MATCH_UPLOAD;
             $Model->save();
             // Store on default disk
             $path = $request->file('file')->storeAs(
-                'DataMatchUploaded/' . $Model->id,
+                "DataMatchUploaded/" . now()->format('Ymd') . "/" . $Model->id,
                 $fileName,
                 'local'
             );
@@ -135,11 +135,11 @@ class UploadLeadsFileAction
             $Model = DataMatchFile::make();
             $Model->id = (string) Str::uuid();
             $fileName = 'DataMatchFailedLeads' . now()->format('YmdHis') . '.csv';
-            $result = Excel::store(new CreateFailedLeadsExport($fileEnteries), "DataMatchFailedLeads/{$Model->id}/{$fileName}", 'local');
+            $result = Excel::store(new CreateFailedLeadsExport($fileEnteries), "DataMatchFailedLeads/" . now()->format('Ymd') . "/{$Model->id}/{$fileName}", 'local');
             if ($result) {
 
                 $Model->file_name = $fileName;
-                $Model->file_path = "DataMatchFailedLeads/". now()->format('Ymd')."/{$Model->id}/{$fileName}";
+                $Model->file_path = "DataMatchFailedLeads/" . now()->format('Ymd') . "/{$Model->id}/{$fileName}";
                 $Model->created_by_id = auth()->user()->id;
                 $Model->type = AppEnum::FILE_TYPE_DATA_MATCH_FAILED_LEADS;
                 $Model->save();
