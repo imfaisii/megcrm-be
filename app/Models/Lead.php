@@ -19,6 +19,7 @@ use App\Traits\Common\HasRecordCreator;
 use App\Traits\HasTeamTrait;
 use BeyondCode\Comments\Traits\HasComments;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Http\Request;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\URL;
@@ -123,7 +124,7 @@ class Lead extends BaseModel implements HasMedia
     public function scopeByRole($query, string $role, ?User $user = null)
     {
         $user ??= auth()->user();
-
+        /* if he is surveyor then assigned lead gens or survey booked by him */
         if ($user->hasRole($role) && $role === RoleEnum::SURVEYOR) {
             $assignedLeadGenerators = $user->leadGeneratorAssignments()->pluck('lead_generator_id');
             $query->where(function ($query) use ($assignedLeadGenerators, $user) {
@@ -338,5 +339,10 @@ class Lead extends BaseModel implements HasMedia
 
         ])));
         return $this;
+    }
+
+    public function complaints(): MorphMany  // get the assigned complaints of the lead
+    {
+        return $this->morphMany(Complaints::class, 'complaintable');
     }
 }

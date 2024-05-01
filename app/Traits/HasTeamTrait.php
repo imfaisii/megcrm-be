@@ -37,7 +37,7 @@ trait HasTeamTrait
             // $query->whereIn($this->ScopeColumn ?? 'user_id', Arr::get($this->getTeams(), 'members', []));
         } else {
             $query->where(function ($query) {
-                // if its a single member then check also its lead generators
+                // if its a single member then check also its lead generators plus surevery booked for him  if he is sureveryor else only survey id is for this user */
 
                 if (
                     !auth()->user()->hasRole(RoleEnum::SUPER_ADMIN)
