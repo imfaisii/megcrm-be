@@ -117,6 +117,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::post('/leads-datamatch-upload', [LeadController::class, 'uploadDatamatch'])->name('leads.upload-datamatch');
     Route::get('/lead-jobs', [LeadJobController::class, 'index'])->name('lead-jobs.index');
     Route::post('/send-sms/{lead}', [SmsController::class, 'sendSmsToLead'])->name('leads.send-sms-to-lead');
+    Route::get('/send-sms/{lead}/tracking-link', [SmsController::class, 'sendTrackingLinkToLead'])->name('leads.send-tracking-sms-to-lead');
     Route::get('/send-sms/{lead}/{smsTemplate}', [SmsController::class, 'sendSmsWithTemplate'])->name('leads.send-sms-to-lead-with-template');
     Route::apiResource('/lead-statuses', StatusController::class);
     Route::apiResource('/lead-generator-assignments', LeadGeneratorAssignmentController::class);

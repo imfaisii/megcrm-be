@@ -78,6 +78,7 @@ class Lead extends BaseModel implements HasMedia
         'raw_api_response',
         'epc_assessment_at',
         'epc_details',
+        'tracking_link'
     ];
 
     protected array $allowedAppends    = ['status_details', 'phone_number_formatted'];
@@ -334,6 +335,24 @@ class Lead extends BaseModel implements HasMedia
 
         ])));
         return $this;
+    }
+
+    public function getEmailTrackingLink()
+    {
+        $lead = $this;
+        $time = now()->addDays(AppEnum::LEAD_TRACKNG_DAYS_ALLOWED);
+        $encryptedID = meg_encrypt($lead->id);
+        $encryptedModel = meg_encrypt('Lead');
+        $route = URL::temporarySignedRoute('customer.lead-status', $time, ['lead' => $encryptedID]);
+        $request = Request::create($route);
+        $routeForFiles = URL::temporarySignedRoute('file_upload', $time, ['ID' => $encryptedID, 'Model' => $encryptedModel]);
+        $requestForFilesUpload = Request::create($routeForFiles);
+        $requestForFilesDelete = Request::create(URL::temporarySignedRoute('file_delete', $time, ['ID' => $encryptedID, 'Model' => $encryptedModel]));
+
+        $requestForFilesData = Request::create(URL::temporarySignedRoute('file_data', $time, ['ID' => $encryptedID, 'Model' => $encryptedModel]));
+        $requestForSupport = Request::create(URL::temporarySignedRoute('customer.support-email', $time, ['ID' => $encryptedID]));
+
+        return url(config('app.CUSTOMER_URL') . "/tracking/{$encryptedID}/{$request->signature}" . '?expires=' . $request->expires . "&SignatureForDelete={$requestForFilesDelete->query('signature')}&SignatureForUpload={$requestForFilesUpload->query('signature')}&SignatureForData={$requestForFilesData->query('signature')}&SignatureForSupport={$requestForSupport->query('signature')}&Model={$encryptedModel}");
     }
 
     public function complaints(): MorphMany  // get the assigned complaints of the lead
