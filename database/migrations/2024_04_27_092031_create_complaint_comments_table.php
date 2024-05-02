@@ -14,7 +14,7 @@ return new class extends Migration {
         Schema::create('complaint_comments', function (Blueprint $table) {
             $table->id();
             $table->text('comment');
-            $table->foreignIdFor(Complaints::class,'complaint_id');
+            $table->foreignIdFor(Complaints::class, 'complaint_id');
             $table->timestamps();
         });
     }

@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\ComplaintMeasures;
+use App\Models\Measure;
 use App\Models\User;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -17,7 +18,7 @@ return new class extends Migration {
             $table->date('propsed_date');
             $table->enum('status', ['open', 'closed'])->default('open');
             $table->enum('priority', ['low', 'high', 'medium'])->default('low');
-            $table->foreignIdFor(ComplaintMeasures::class, 'measure_id');
+            $table->foreignIdFor(Measure::class, 'measure_id');
             $table->foreignIdFor(User::class, 'created_by_id');
             $table->morphs('complaintable');
             $table->timestamps();

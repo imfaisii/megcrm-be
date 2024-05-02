@@ -23,6 +23,11 @@ class Complaints extends BaseModel
         'complaintable_id',
     ];
 
+    protected array $allowedIncludes = [
+        'complaintable',
+        'comments'
+    ];
+
 
     public function complaintable(): MorphTo
     {
@@ -46,6 +51,6 @@ class Complaints extends BaseModel
      */
     public function measure(): BelongsTo
     {
-        return $this->belongsTo(ComplaintMeasures::class, 'measure_id');
+        return $this->belongsTo(Measure::class, 'measure_id');
     }
 }

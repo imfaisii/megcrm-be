@@ -8,6 +8,7 @@ use App\Http\Controllers\CalenderEventsController;
 use App\Http\Controllers\CallCenterController;
 use App\Http\Controllers\CallCenterStatusesController;
 use App\Http\Controllers\CompanyController;
+use App\Http\Controllers\ComplaintsController;
 use App\Http\Controllers\Customer\CustomerController;
 use App\Http\Controllers\File\FileHanlderController;
 use App\Http\Controllers\FuelTypeController;
@@ -103,6 +104,8 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::post('/users/{media}/expiry/update', [UserController::class, 'updateDocumentExpiry'])->name('users.update-document-expiry');
     Route::apiResource('/permissions', PermissionController::class);
     Route::apiResource('/roles', RoleController::class);
+    Route::apiResource('/complaints', ComplaintsController::class);
+
     Route::apiResource('/users', UserController::class);
     Route::apiResource('/companies', CompanyController::class);
     Route::post('/companies/{company}/collections/docs/upload', [CompanyController::class, 'uploadDocumentToCollection'])->name('companies.documents-to-collections');
