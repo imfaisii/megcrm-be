@@ -7,6 +7,8 @@ use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Notification;
+use NotificationChannels\ExpoPushNotifications\ExpoChannel;
+use NotificationChannels\ExpoPushNotifications\ExpoMessage;
 use NotificationChannels\Twilio\TwilioChannel;
 use NotificationChannels\Twilio\TwilioSmsMessage;
 
@@ -24,7 +26,19 @@ class SurveyBookedNotification extends Notification implements ShouldQueue
 
     public function via(object $notifiable): array
     {
-        return [TwilioChannel::class, 'database'];
+        return [TwilioChannel::class, ExpoChannel::class, 'database'];
+    }
+
+    public function toExpoPush($notifiable)
+    {
+        $lead = $notifiable->load(['surveyBooking', 'leadGenerator']);
+        $surveyAt = Carbon::parse($lead->surveyBooking->survey_at)->format('l jS \of F Y h:i A');
+
+        return ExpoMessage::create()
+            ->badge(1)
+            ->enableSound()
+            ->title("Survey Booked")
+            ->body("{$lead['full_name']}'s ({$lead['post_code']}) survey is booked at: {$surveyAt}.");
     }
 
     public function toTwilio(object $notifiable)
