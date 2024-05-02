@@ -22,7 +22,7 @@ class SmsController extends Controller
     {
         $link = $lead->getEmailTrackingLink($lead);
         $lead->update(['tracking_link' => $link]);
-        $body = "Hi {$lead['first_name']},\n\nPlease click the link below to upload required documents: {$link}.\n\nRegards,";
+        $body = "Hi {$lead['first_name']},\n\nPlease click the link below to upload required documents:\n\n{$link}.\n\nRegards,";
         $lead->notify(new TwilioMessageNotification($body));
 
         return $this->success(data: [
