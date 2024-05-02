@@ -18,6 +18,18 @@ class SmsController extends Controller
         return $this->success();
     }
 
+    public function sendTrackingLinkToLead(Request $request, Lead $lead)
+    {
+        $link = $lead->getEmailTrackingLink($lead);
+        $lead->update(['tracking_link' => $link]);
+        $body = "Hi {$lead['first_name']},\n\nPlease click the link below to upload required documents: {$link}.\n\nRegards,";
+        $lead->notify(new TwilioMessageNotification($body));
+
+        return $this->success(data: [
+            'link' => $link
+        ]);
+    }
+
     public function sendSmsWithTemplate(Request $request, Lead $lead, SmsTemplate $smsTemplate)
     {
         try {
