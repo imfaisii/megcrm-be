@@ -18,7 +18,7 @@ return [
 
     'name' => env('APP_NAME', 'MEG'),
 
-    'CUSTOMER_URL' => env('CUSTOMER_URL','https://ecograntdocuments.co.uk'),
+    'CUSTOMER_URL' => env('CUSTOMER_URL', 'https://ecograntdocuments.co.uk'),
 
 
     /*
@@ -77,7 +77,7 @@ return [
     |
     */
 
-    'timezone' => 'UTC+1',
+    'timezone' => 'UTC',
 
     /*
     |--------------------------------------------------------------------------
