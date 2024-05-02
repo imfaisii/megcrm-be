@@ -48,6 +48,10 @@ use PhpOffice\PhpSpreadsheet\IOFactory;
 |
 */
 
+Route::get('test-x', function (Request $request) {
+    dd(Carbon::now());
+});
+
 Route::get('test-epc/{lead}', function (Request $request, Lead $lead) {
     (new GetOtherSitesLinkAction())->getEpcDetails($lead);
 });
