@@ -14,14 +14,18 @@ use App\Filters\Leads\FilterByPostcode;
 use App\Filters\Leads\FilterByStatus;
 use App\Filters\Leads\FilterBySurveyor;
 use App\Notifications\Customer\CustomerLeadTrackingMail;
+use Illuminate\Support\Str;
 use App\Traits\Common\HasCalenderEvent;
 use App\Traits\Common\HasRecordCreator;
 use App\Traits\HasTeamTrait;
+use AshAllenDesign\ShortURL\Classes\Builder;
 use BeyondCode\Comments\Traits\HasComments;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Http\Request;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\URL;
 use Imfaisii\ModelStatus\HasStatuses;
 use Spatie\Activitylog\Models\Activity;
@@ -29,6 +33,7 @@ use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\QueryBuilder\AllowedFilter;
 
+use function App\Helpers\generateShortUrl;
 use function App\Helpers\meg_encrypt;
 
 class Lead extends BaseModel implements HasMedia
@@ -81,7 +86,7 @@ class Lead extends BaseModel implements HasMedia
         'tracking_link'
     ];
 
-    protected array $allowedAppends    = ['status_details', 'phone_number_formatted'];
+    protected array $allowedAppends = ['status_details', 'phone_number_formatted'];
 
     protected $appends = ['full_name', 'status_details', 'phone_number_formatted'];
 
@@ -306,9 +311,16 @@ class Lead extends BaseModel implements HasMedia
             ->withTimestamps();
     }
 
-
-    public function sendStatusEmailToCustomer()
+    /**
+     * Send status email to customer if the param is true plus it genereates a url to be shared. a new one incase of a brand new lead or the time of expiration is less than 10 minutes or has passed away and gives the old one incase the expiry is still alive.
+     *
+     * @param bool $isSendEmail - A boolean value indicating whether to send the email. Default is true.
+     *
+     * @return \Illuminate\Database\Eloquent\Model
+     */
+    public function sendStatusEmailToCustomer(bool $isSendEmail = true)
     {
+        $shortURL = null; // the url to send for the email
         $time = now()->addDays(AppEnum::LEAD_TRACKNG_DAYS_ALLOWED);
         $lead = $this;
         $encryptedID = meg_encrypt($lead->id);
@@ -323,8 +335,7 @@ class Lead extends BaseModel implements HasMedia
         $requestForSupport = Request::create(URL::temporarySignedRoute('customer.support-email', $time, ['ID' => $encryptedID]));
 
         $requestForFiles = Request::create($route);
-
-        $lead->notify((new CustomerLeadTrackingMail([
+        $paramsArray = [
             ...$request->query(),
             'lead' => $encryptedID,
             'model' => $encryptedModel,
@@ -333,9 +344,52 @@ class Lead extends BaseModel implements HasMedia
             'SignatureForData' => $requestForFilesData->query('signature'),
             'SignatureForSupport' => $requestForSupport->query('signature'),
 
-        ])));
+        ];
+        $destinationUrl = url(config('app.CUSTOMER_URL') . "/tracking/{$paramsArray['lead']}/{$paramsArray['signature']}" . '?expires=' . $paramsArray['expires'] . "&SignatureForDelete={$paramsArray['SignatureForDelete']}&SignatureForUpload={$paramsArray['SignatureForUpload']}&SignatureForData={$paramsArray['SignatureForData']}&SignatureForSupport={$paramsArray['SignatureForSupport']}&Model={$paramsArray['model']}");
+
+        /* here first we need to check that if there is old link to the same lead then use the old link .*/
+        $oldLink = DB::table('short_urls')->where('destination_url', 'like', '%&Model=' . $encryptedModel . '%') // Find records containing the specified model
+            ->where('destination_url', 'like', '%/tracking/' . $encryptedID . '%') // Match the tracking parameter
+            ->latest() // Get the latest record
+            ->first(); // Retrieve the first resul
+        if ($oldLink) {  // if there is a old link present for the same model then use that
+            $expiresValue = Str::betweenFirst($oldLink->destination_url, 'expires=', '&');
+            $now = Carbon::parse()->timestamp;
+
+            $carbonTimestamp1 = Carbon::createFromTimestamp($expiresValue);
+            $carbonTimestamp2 = Carbon::createFromTimestamp($now);
+            // dd($carbonTimestamp1,$carbonTimestamp2);
+            // Calculate the difference in minutes
+            $minutesDiff = $carbonTimestamp2->diffInMinutes($carbonTimestamp1, false);
+            if ($minutesDiff < 10) {
+                // dd("kam time");
+
+                // if the the link is expiring in less than 5 minites then generate a new one
+                $shortURL = generateShortUrl($destinationUrl);
+
+                $this->update([
+                    'tracking_link' => $shortURL
+                ]);
+            } else {
+                $shortURL = $oldLink->destination_url;
+            }
+        } else {
+
+            $shortURL = generateShortUrl($destinationUrl);
+
+            $this->update([
+                'tracking_link' => $shortURL
+            ]);
+        }
+
+        if ($isSendEmail) {
+            $lead->notify((new CustomerLeadTrackingMail($shortURL)));
+        }
+
         return $this;
     }
+
+
 
     public function getEmailTrackingLink()
     {

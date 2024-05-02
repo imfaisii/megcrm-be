@@ -20,13 +20,12 @@ class SmsController extends Controller
 
     public function sendTrackingLinkToLead(Request $request, Lead $lead)
     {
-        $link = $lead->getEmailTrackingLink($lead);
-        $lead->update(['tracking_link' => $link]);
-        $body = "Hi {$lead['first_name']},\n\nPlease click the link below to upload required documents:\n\n{$link}.\n\nRegards,";
+        $lead->sendStatusEmailToCustomer(isSendEmail: false);
+        $body = "Hi {$lead['first_name']},\n\nPlease click the link below to upload required documents:\n\n{$lead->tracking_link}.\n\nRegards,";
         $lead->notify(new TwilioMessageNotification($body));
 
         return $this->success(data: [
-            'link' => $link
+            'link' => $lead->tracking_link
         ]);
     }
 
@@ -39,7 +38,7 @@ class SmsController extends Controller
             $fields = $smsTemplate->properties;
             $data = [
                 'name' => $lead->first_name ?? 'name',
-                'email' =>  $lead->leadGenerator->email ?? 'email',
+                'email' => $lead->leadGenerator->email ?? 'email',
                 'whatsapp' => $lead->leadGenerator->phone_no ?? 'phone',
                 'address' => $lead->address ?? 'address',
                 'company_name' => $lead->leadGenerator->name ?? 'company_name',

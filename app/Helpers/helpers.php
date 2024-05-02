@@ -3,6 +3,7 @@
 namespace App\Helpers;
 
 use App\Actions\Common\BaseJsonResource;
+use AshAllenDesign\ShortURL\Classes\Builder;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Route;
@@ -21,7 +22,7 @@ function get_permissions_by_routes(): array
 
     foreach ($routeCollection as $item) {
         $name = $item->action;
-        if (! empty($name['as'])) {
+        if (!empty($name['as'])) {
             $permission = $name['as'];
             $permission = trim(strtolower($permission));
             $ignoreRoutesStartingWith = 'sanctum|livewire|ignition|notifications|log-viewer|debugbar';
@@ -50,11 +51,11 @@ function get_modules_array_from_permissions(array $permissions): array
         $module = $parts[0];
         $submodule = implode('.', array_slice($parts, 1));
 
-        if (! isset($modules[$module])) {
+        if (!isset($modules[$module])) {
             $modules[$module] = [];
         }
 
-        if (! in_array($submodule, $modules[$module])) {
+        if (!in_array($submodule, $modules[$module])) {
             array_push($modules[$module], ['name' => $submodule, 'method' => $item['method']]);
         }
     }
@@ -83,7 +84,7 @@ function get_all_includes_in_camel_case(): array
     return collect(get_all_includes())
         ->map(function (string $includes) {
             return collect(explode('.', $includes))
-                ->map(fn (string $include) => Str::camel($include))
+                ->map(fn(string $include) => Str::camel($include))
                 ->join('.');
         })
         ->toArray();
@@ -120,7 +121,7 @@ function get_permissions_as_modules_array(mixed $permissions): array
     foreach ($modulesThroughSubmodules as $key => $submodule) {
         try {
             $moduleName = explode('.', $submodule)[0];
-            if (! in_array($moduleName, $modules)) {
+            if (!in_array($moduleName, $modules)) {
                 $modules[] = $moduleName;
             }
         } catch (\Exception $e) {
@@ -166,7 +167,7 @@ function shouldAppend(string $append): bool
         $appends = explode(',', request()->get('append'));
     }
 
-    if (! in_array($append, $appends)) {
+    if (!in_array($append, $appends)) {
         return false;
     }
 
@@ -208,7 +209,7 @@ function removeStringFromString(?string $needle, string $string, string $replace
  */
 function getOnlyNumersFromString(?string $string): string
 {
-    if (! $string) {
+    if (!$string) {
         $string = '';
     }
     $cleanedString = preg_replace('/[^0-9.,\/-]/', ' ', $string);
@@ -219,7 +220,7 @@ function getOnlyNumersFromString(?string $string): string
 
 function replaceFirst(string $search, string $replace, string $subject): string
 {
-    return preg_replace('/'.preg_quote($search, '/').'/', $replace, $subject, 1);
+    return preg_replace('/' . preg_quote($search, '/') . '/', $replace, $subject, 1);
 }
 
 function fixNumberForAirCall(string $number): string
@@ -295,7 +296,7 @@ function meg_decrypts($data)
 function CopyFilefromSourceToDestination($source, $destination, $disk = 'public')
 {
     /* based on your disk , set path ,if its local add public in the string , and if its public don't add . so bascically based on your disk, it starting path starts */
-    if (! Storage::disk($disk)->exists($source)) {
+    if (!Storage::disk($disk)->exists($source)) {
         return [
             'success' => false,
             'message' => 'File not found',
@@ -306,7 +307,7 @@ function CopyFilefromSourceToDestination($source, $destination, $disk = 'public'
 
         return [
             'success' => $response,
-            'message' => 'File operation was '.$response ? ' successful' : 'unsuccessful',
+            'message' => 'File operation was ' . $response ? ' successful' : 'unsuccessful',
         ];
     }
 }
@@ -318,17 +319,17 @@ function CopyFilefromSourceToDestination($source, $destination, $disk = 'public'
  */
 function removetillFirstNuermicSpcae(?string $string)
 {
-    if (! $string) {
+    if (!$string) {
         $string = '';
     }
-    if (! Str::endsWith($string, ' ')) {  // add a space at end if not present just to handle a case where number could be last in the string
+    if (!Str::endsWith($string, ' ')) {  // add a space at end if not present just to handle a case where number could be last in the string
         $string .= ' ';
     }
     $resultingString = '';
     $isNumericFound = '';
     for ($i = 0; $i < strlen($string); $i++) {
         $stringChar = substr($string, $i, 1);
-        if (! $isNumericFound) {
+        if (!$isNumericFound) {
             $isNumericFound = is_numeric($stringChar);
         }   // only check if its not found yet
         if ($isNumericFound && $stringChar === ' ') {
@@ -370,7 +371,7 @@ function split_name($name)
         $name = trim($name);
         $string = preg_replace('#.*\s([\w-]*)$#', '$1', $name);
         $parts[] = $string;
-        $name = trim(preg_replace('#'.preg_quote($string, '#').'#', '', $name));
+        $name = trim(preg_replace('#' . preg_quote($string, '#') . '#', '', $name));
     }
 
     if (empty($parts)) {
@@ -396,4 +397,12 @@ function generateARandomNumberNotInGivenArray($array = []): int
 
     return $randomNumber;
 
+}
+
+
+
+function generateShortUrl(string $destinationUrl): string
+{
+    $shortURLObject = app(Builder::class)->destinationUrl($destinationUrl)->make();
+    return $shortURL = $shortURLObject->default_short_url;
 }

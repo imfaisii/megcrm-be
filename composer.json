@@ -13,6 +13,7 @@
         "ajcastro/eager-load-pivot-relations": "^0.3.0",
         "aloha/twilio": "^5.0",
         "alymosul/laravel-exponent-push-notifications": "^4.0",
+        "ashallendesign/short-url": "^8.0",
         "bensampo/laravel-enum": "^6.8",
         "beyondcode/laravel-comments": "^1.4",
         "binarcode/laravel-mailator": "^5.2",

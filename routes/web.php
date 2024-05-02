@@ -31,6 +31,8 @@ use function App\Helpers\extractFirstNumericNumber;
 use function App\Helpers\removeSpace;
 use function App\Helpers\replaceFirst;
 use function App\Helpers\getOnlyNumersFromString;
+use AshAllenDesign\ShortURL\Classes\Builder;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use function App\Helpers\meg_encrypt;
 
@@ -104,25 +106,30 @@ if (app()->isLocal()) {
         $requestForSupport = Request::create(URL::temporarySignedRoute('customer.support-email', $time, ['ID' => $encryptedID]));
 
         $requestForFiles = Request::create($route);
-        try {
-            $lead->notify((new CustomerLeadTrackingMail([
-                ...$request->query(),
-                'lead' => $encryptedID,
-                'model' => $encryptedModel,
-                'SignatureForUpload' => $requestForFilesUpload->query('signature'),
-                'SignatureForDelete' => $requestForFilesDelete->query('signature'),
-                'SignatureForData' => $requestForFilesData->query('signature'),
-                'SignatureForSupport' => $requestForSupport->query('signature'),
+        $paramsArray = [
+            ...$request->query(),
+            'lead' => $encryptedID,
+            'model' => $encryptedModel,
+            'SignatureForUpload' => $requestForFilesUpload->query('signature'),
+            'SignatureForDelete' => $requestForFilesDelete->query('signature'),
+            'SignatureForData' => $requestForFilesData->query('signature'),
+            'SignatureForSupport' => $requestForSupport->query('signature'),
 
-            ])));
+        ];
+        $destinationUrl = url(config('app.CUSTOMER_URL') . "/tracking/{$paramsArray['lead']}/{$paramsArray['signature']}" . '?expires=' . $paramsArray['expires'] . "&SignatureForDelete={$paramsArray['SignatureForDelete']}&SignatureForUpload={$paramsArray['SignatureForUpload']}&SignatureForData={$paramsArray['SignatureForData']}&SignatureForSupport={$paramsArray['SignatureForSupport']}&Model={$paramsArray['model']}");
+
+        $shortURLObject = app(Builder::class)->destinationUrl($destinationUrl)->make();
+        $shortURL = $shortURLObject->default_short_url;
+        try {
+            $lead->notify((new CustomerLeadTrackingMail($shortURL)));
         } catch (Exception $e) {
             dd($e->getMessage());
         }
     });
 }
 
-Route::get('/', fn () => ['Laravel' => app()->version()]);
-Route::get('/dropbox/redirect', fn () => response()->json(response()->all()));
+Route::get('/', fn() => ['Laravel' => app()->version()]);
+Route::get('/dropbox/redirect', fn() => response()->json(response()->all()));
 
 Route::get('/dropbox', function () {
     $redirect = 'http://localhost:8000/dropbox/redirect';
