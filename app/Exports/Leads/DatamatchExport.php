@@ -130,9 +130,12 @@ class DatamatchExport implements FromCollection, Responsable, ShouldAutoSize, Wi
      */
     public function map($lead): array
     {
+
         return [
             '', // for empty column
-            $lead->id,
+            filled($lead->isSecondReceipent) ? cache()->remember('secondRecipientKey', 600, function () {
+                return meg_encrypt("SecondRecipient");
+            }) : meg_encrypt($lead->id),
             $lead->last_name,
             $lead->first_name,
             Str::before(Date::PHPToExcel(DateTime::createFromFormat('d/m/Y', Carbon::parse($lead->dob)->format('d/m/Y'))->getTimestamp()), '.'),
@@ -164,7 +167,7 @@ class DatamatchExport implements FromCollection, Responsable, ShouldAutoSize, Wi
         })->with('secondReceipent')->get()->each(function ($lead) {
             $lead->leadCustomerAdditionalDetail->update([
                 'datamatch_progress' => DataMatchEnum::StatusSent,
-                'is_datamatch_required' => false,
+                // 'is_datamatch_required' => false,
                 'data_match_sent_date' => now(),
             ]);
         });
@@ -174,6 +177,7 @@ class DatamatchExport implements FromCollection, Responsable, ShouldAutoSize, Wi
             $clonedLead->first_name = $lead?->secondReceipent?->first_name;
             $clonedLead->last_name = $lead?->secondReceipent?->last_name;
             $clonedLead->dob = $lead?->secondReceipent?->dob;
+            $clonedLead->isSecondReceipent = true;
 
             return $clonedLead;
         });
@@ -216,7 +220,9 @@ class DatamatchExport implements FromCollection, Responsable, ShouldAutoSize, Wi
                 // Write the data to the selected sheet starting from row 4
                 $row = 4;
                 foreach ($data as $lead) {
-                    $worksheet->setCellValue('B' . $row, meg_encrypt($lead->id));
+                    $worksheet->setCellValue('B' . $row, filled($lead->isSecondReceipent) ? cache()->remember('secondRecipientKey', 600, function () {
+                        return meg_encrypt("SecondRecipient");
+                    }) : meg_encrypt($lead->id));
                     $worksheet->setCellValue('C' . $row, $lead->last_name);
                     $worksheet->setCellValue('D' . $row, $lead->first_name);
                     $worksheet->setCellValue('E' . $row, Str::before(Date::PHPToExcel(DateTime::createFromFormat('d/m/Y', Carbon::parse($lead->dob)->format('d/m/Y'))->getTimestamp()), '.'));
