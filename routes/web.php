@@ -94,37 +94,7 @@ if (app()->isLocal()) {
         if (blank($lead)) {
             return null;
         }
-        $encryptedID = meg_encrypt($lead->id);
-        $encryptedModel = meg_encrypt('Lead');
-        $route = URL::temporarySignedRoute('customer.lead-status', $time, ['lead' => $encryptedID]);
-        $request = Request::create($route);
-        $routeForFiles = URL::temporarySignedRoute('file_upload', $time, ['ID' => $encryptedID, 'Model' => $encryptedModel]);
-        $requestForFilesUpload = Request::create($routeForFiles);
-        $requestForFilesDelete = Request::create(URL::temporarySignedRoute('file_delete', $time, ['ID' => $encryptedID, 'Model' => $encryptedModel]));
-
-        $requestForFilesData = Request::create(URL::temporarySignedRoute('file_data', $time, ['ID' => $encryptedID, 'Model' => $encryptedModel]));
-        $requestForSupport = Request::create(URL::temporarySignedRoute('customer.support-email', $time, ['ID' => $encryptedID]));
-
-        $requestForFiles = Request::create($route);
-        $paramsArray = [
-            ...$request->query(),
-            'lead' => $encryptedID,
-            'model' => $encryptedModel,
-            'SignatureForUpload' => $requestForFilesUpload->query('signature'),
-            'SignatureForDelete' => $requestForFilesDelete->query('signature'),
-            'SignatureForData' => $requestForFilesData->query('signature'),
-            'SignatureForSupport' => $requestForSupport->query('signature'),
-
-        ];
-        $destinationUrl = url(config('app.CUSTOMER_URL') . "/tracking/{$paramsArray['lead']}/{$paramsArray['signature']}" . '?expires=' . $paramsArray['expires'] . "&SignatureForDelete={$paramsArray['SignatureForDelete']}&SignatureForUpload={$paramsArray['SignatureForUpload']}&SignatureForData={$paramsArray['SignatureForData']}&SignatureForSupport={$paramsArray['SignatureForSupport']}&Model={$paramsArray['model']}");
-
-        $shortURLObject = app(Builder::class)->destinationUrl($destinationUrl)->make();
-        $shortURL = $shortURLObject->default_short_url;
-        try {
-            $lead->notify((new CustomerLeadTrackingMail($shortURL)));
-        } catch (Exception $e) {
-            dd($e->getMessage());
-        }
+        $lead->sendStatusEmailToCustomer(true);
     });
 }
 

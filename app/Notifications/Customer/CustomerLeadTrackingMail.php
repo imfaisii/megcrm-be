@@ -59,7 +59,7 @@ class CustomerLeadTrackingMail extends Notification implements ShouldQueue
      */
     public function toMail(object $notifiable): MailMessage
     {
-        // $route = url(co  nfig('app.CUSTOMER_URL') . "/tracking/{$this->params['lead']}/{$this->params['signature']}" . '?expires=' . $this->params['expires'] . "&SignatureForDelete={$this->params['SignatureForDelete']}&SignatureForUpload={$this->params['SignatureForUpload']}&SignatureForData={$this->params['SignatureForData']}&SignatureForSupport={$this->params['SignatureForSupport']}&Model={$this->params['model']}");
+        // $route = url(config('app.CUSTOMER_URL') . "/tracking/{$this->params['lead']}/{$this->params['signature']}" . '?expires=' . $this->params['expires'] . "&SignatureForDelete={$this->params['SignatureForDelete']}&SignatureForUpload={$this->params['SignatureForUpload']}&SignatureForData={$this->params['SignatureForData']}&SignatureForSupport={$this->params['SignatureForSupport']}&Model={$this->params['model']}");
 
         return (new MailMessage)
             ->greeting("Hi {$notifiable->title} {$notifiable->first_name} {$notifiable->last_name},")

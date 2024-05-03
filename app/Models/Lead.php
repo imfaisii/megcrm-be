@@ -30,6 +30,7 @@ use Illuminate\Support\Facades\URL;
 use Imfaisii\ModelStatus\HasStatuses;
 use Spatie\Activitylog\Models\Activity;
 use Spatie\MediaLibrary\HasMedia;
+use Illuminate\Notifications\Notification;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\QueryBuilder\AllowedFilter;
 
@@ -121,6 +122,11 @@ class Lead extends BaseModel implements HasMedia
         'post_code',
         'epc_assessment_at'
     ];
+
+    public function routeNotificationForMail(Notification $notification): array|string
+    {
+        return $this->email;
+    }
 
     protected function routeNotificationForTwilio()
     {
@@ -371,7 +377,7 @@ class Lead extends BaseModel implements HasMedia
                     'tracking_link' => $shortURL
                 ]);
             } else {
-                $shortURL = $oldLink->destination_url;
+                $shortURL = $oldLink->default_short_url;
             }
         } else {
 
