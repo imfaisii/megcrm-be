@@ -9,7 +9,7 @@ use App\Http\Requests\DataMatch\UploadDataMatchRequest;
 use App\Imports\Leads\LeadDataMatchImport;
 use App\Imports\Leads\LeadsImport;
 use App\Models\DataMatchFile;
-use App\traits\Jsonify;
+use App\Traits\Jsonify;
 use Exception;
 use GuzzleHttp\Promise\Create;
 use Illuminate\Http\JsonResponse;
@@ -154,7 +154,6 @@ class UploadLeadsFileAction
                 );
             }
             return null;
-
         } catch (Exception $e) {
             Log::channel('LOG_SLACK_EXCEPTIONS_CHANNEL_URL')->info("Error making file from failed leads by user " . auth()->user()->email . " from the function " . __FUNCTION__ . " with exception " . $e->getMessage());
             return null;

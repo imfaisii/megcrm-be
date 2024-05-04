@@ -2,7 +2,7 @@
 
 namespace App\Actions\AirCall;
 
-use App\traits\Jsonify;
+use App\Traits\Jsonify;
 use Exception;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Log;
@@ -15,7 +15,7 @@ class AirCallWebhookAction
     public function LogEvent(array $data): void
     {
         try {
-            Log::driver('slack-meg-crm-webhook')->info('Webhook received of '.Arr::get($data, 'event'), Arr::get($data, 'data'));
+            Log::driver('slack-meg-crm-webhook')->info('Webhook received of ' . Arr::get($data, 'event'), Arr::get($data, 'data'));
         } catch (Exception $e) {
         }
     }

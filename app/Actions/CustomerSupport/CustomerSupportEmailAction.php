@@ -6,7 +6,7 @@ use App\Actions\Common\AbstractCreateAction;
 use App\Enums\AppEnum;
 use App\Models\Lead;
 use App\Notifications\CustomerSupportNotification;
-use App\traits\Jsonify;
+use App\Traits\Jsonify;
 use Exception;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
@@ -39,20 +39,16 @@ class CustomerSupportEmailAction extends AbstractCreateAction
                             'customer_name' => $lead->first_name . ' ' . $lead->last_name,
                             'post_code' => $lead->post_code,
                             'address' => $lead->address,
-                            'lead_id'=>$lead->id
+                            'lead_id' => $lead->id
                         ]));
                 } catch (Exception $e) {
                     Log::channel('slack_exceptions')->info('Exception found in sending mail ' . __FUNCTION__ . ' with message ' . $e->getMessage());
                 }
             }
             return $this->success();
-
-
         } catch (\Throwable $e) {
             # code...
             $this->exception($e);
         }
     }
-
-
 }

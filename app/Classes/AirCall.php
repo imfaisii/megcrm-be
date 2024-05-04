@@ -2,7 +2,7 @@
 
 namespace App\Classes;
 
-use App\traits\Jsonify;
+use App\Traits\Jsonify;
 use Exception;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Http\JsonResponse;
@@ -195,7 +195,6 @@ class AirCall
         $data = Arr::add($data, 'from', now()->subMinutes(180)->timestamp);
         $data = Arr::add($data, 'to', now()->timestamp);
         $data = Arr::add($data, 'per_page', 50);
-
     }
 
     /**
@@ -236,7 +235,6 @@ class AirCall
         $queryParams = Arr::add($queryParams, 'to', now()->timestamp);
         $queryParams = Arr::add($queryParams, 'fetch_contact', true);
         $queryParams = Arr::add($queryParams, 'per_page', 50);
-
     }
 
     /**

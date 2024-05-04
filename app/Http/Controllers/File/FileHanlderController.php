@@ -7,7 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\File\FileDeleteRequest;
 use App\Http\Requests\File\FileUploadRequest;
 use App\Http\Requests\File\GetFilesRequest;
-use App\traits\Jsonify;
+use App\Traits\Jsonify;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -48,7 +48,6 @@ class FileHanlderController extends Controller
             return $response->uuid ?: '';
         } catch (Exception $e) {
             return $this->exception($e);
-
         }
     }
 
@@ -72,7 +71,6 @@ class FileHanlderController extends Controller
             }
         } catch (Exception $e) {
             return $this->exception($e);
-
         }
     }
 
@@ -105,7 +103,6 @@ class FileHanlderController extends Controller
             }
         } catch (Exception $e) {
             return $this->exception($e);
-
         }
     }
 
@@ -120,7 +117,6 @@ class FileHanlderController extends Controller
             $mediaObjects = $mediaObjects->map(function (Media $Media) use ($type) {
                 if ($type === 'files') {
                     return $Media->getUrl();
-
                 } else {
                     return $Media->uuid;
                 }
@@ -129,7 +125,6 @@ class FileHanlderController extends Controller
             return $this->success(data: $mediaObjects);
         } catch (Exception $e) {
             return $this->exception($e);
-
         }
     }
 }

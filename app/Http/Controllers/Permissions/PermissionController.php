@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Permissions;
 
 use App\Actions\Permissions\ListPermissionsAction;
 use App\Http\Controllers\Controller;
-use App\traits\Jsonify;
+use App\Traits\Jsonify;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 
