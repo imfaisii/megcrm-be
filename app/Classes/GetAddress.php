@@ -2,7 +2,7 @@
 
 namespace App\Classes;
 
-use App\traits\Jsonify;
+use App\Traits\Jsonify;
 use Exception;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Http;
@@ -99,7 +99,7 @@ class GetAddress
                         ...$eachResult,
                         'address' => str_replace("\n", ' ', str_replace('  ', ' ', preg_replace('/[^a-zA-Z0-9\s]/', ' ', implode(" ", $eachResult['address'])))),
                         'postcode' => Str::upper(str_replace(' ', '', preg_replace('/[^a-zA-Z0-9\s]/', ' ', $eachResult['postcode']))),
-                        'actual_post_code'=>$eachResult['postcode'],
+                        'actual_post_code' => $eachResult['postcode'],
                     ];
                 });
                 $Firstresult = $Firstresult->filter(function ($eachResult) use ($postCode) {

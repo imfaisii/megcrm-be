@@ -34,7 +34,6 @@ jobs:
             php artisan migrate --force
             php artisan optimize:clear
             php artisan config:cache
-            php artisan route:cache
             supervisorctl restart all
       - name: Send Success Notification
         if: success()
