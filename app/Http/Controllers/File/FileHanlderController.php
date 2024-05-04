@@ -30,13 +30,13 @@ class FileHanlderController extends Controller
             $modelObject = resolve("App\Models\\$Model")->findOrFail($decryptedId);
             $mediaObjects = $modelObject->getMedia($request->get('collection_name', AppEnum::Default_MediaType));
             if ($request->collection_name == AppEnum::CUSTOMER_LEAD_IMAGES && $mediaObjects->count() > AppEnum::DEFAULT_LIMIT_FOR_MEDIA_FILE_CUSTOMER) {
-                return $this->error('You cannot upload more than'.AppEnum::DEFAULT_LIMIT_FOR_MEDIA_FILE_CUSTOMER.' images.');
+                return $this->error('You cannot upload more than' . AppEnum::DEFAULT_LIMIT_FOR_MEDIA_FILE_CUSTOMER . ' images.');
             } elseif ($request->collection_name == AppEnum::CUSTOMER_LEAD_DOCUMENTS && $mediaObjects->count() > AppEnum::DEFAULT_LIMIT_FOR_SUPPORTING_DOCUMENTS_FILE_CUSTOMER) {
-                return $this->error('You cannot upload more than'.AppEnum::DEFAULT_LIMIT_FOR_SUPPORTING_DOCUMENTS_FILE_CUSTOMER.' docuements.');
+                return $this->error('You cannot upload more than' . AppEnum::DEFAULT_LIMIT_FOR_SUPPORTING_DOCUMENTS_FILE_CUSTOMER . ' docuements.');
             }
 
             $response = $modelObject->addMediaFromRequest('image')
-                ->usingFileName(generateUniqueRandomStringWithTimeStamp().$request->file('image')->getClientOriginalName())
+                ->usingFileName(generateUniqueRandomStringWithTimeStamp() . $request->file('image')->getClientOriginalName())
                 ->withCustomProperties([
                     'ip' => $request->ip(),
                     'agent' => $request->header('User-Agent'),
@@ -62,7 +62,7 @@ class FileHanlderController extends Controller
             $toDelMedia = $mediaObjects->firstOrFail(function ($object, int $key) use ($request) {
                 return $object->uuid === $request->get('image');
             });
-            $copyResponse = CopyFilefromSourceToDestination(Str::after($toDelMedia->getUrl(), 'storage/'), AppEnum::DEFAULT_MEDIA_DELETED_LOCATION."/{$Model}/{$decryptedId}/".$toDelMedia->file_name);
+            $copyResponse = CopyFilefromSourceToDestination(Str::after($toDelMedia->getUrl(), 'storage/'), AppEnum::DEFAULT_MEDIA_DELETED_LOCATION . "/{$Model}/{$decryptedId}/" . $toDelMedia->file_name);
             if ($copyResponse['success']) {
                 $toDelMedia->delete(); // all associated files will be preserved
 
@@ -87,10 +87,16 @@ class FileHanlderController extends Controller
                 // Get the file's MIME type
                 $imagePath = Str::after($Media->getUrl(), 'storage/');
                 $mimeType = Storage::disk('public')->mimeType($imagePath);
+                if ($request->query('download', false) === 'true') {
+                    // Return the file as a response with appropriate headers to force download
+                    return response()->download(public_path('storage/' . $imagePath), basename($imagePath), [
+                        'Content-Type' => $mimeType,
+                    ]);
+                }
 
                 // Return the file as a response with appropriate headers
-                return response()->file(public_path('storage/'.$imagePath), [
-                    'Content-Disposition' => 'inline; filename="'.basename($imagePath).'"',
+                return response()->file(public_path('storage/' . $imagePath), [
+                    'Content-Disposition' => 'inline; filename="' . basename($imagePath) . '"',
 
                     'Content-Type' => $mimeType,
                 ]);
