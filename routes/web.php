@@ -98,12 +98,12 @@ if (app()->isLocal()) {
     });
 }
 
-Route::get('/', fn() => ['Laravel' => app()->version()]);
-Route::get('/dropbox/redirect', fn() => response()->json(response()->all()));
+Route::get('/', fn () => ['Laravel' => app()->version()]);
+Route::get('/dropbox/redirect', fn () => response()->json(request()->all()));
 
 Route::get('/dropbox', function () {
     $redirect = 'http://localhost:8000/dropbox/redirect';
-    $url = "https://www.dropbox.com/oauth2/authorize?client_id=8vda4d31bbpfvxm&response_type=code&redirect_uri=$redirect&token_access_type=offline";
+    $url = "https://www.dropbox.com/oauth2/authorize?client_id=s4otvomcy6a37lu&response_type=code&token_access_type=offline";
 
     return redirect($url);
 });
