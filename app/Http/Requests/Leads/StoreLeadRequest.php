@@ -68,4 +68,13 @@ class StoreLeadRequest extends BaseFormRequest
             'second_receipent.dob' => 'second receipent date of birth',
         ];
     }
+
+    public function validated($key = null, $default = null): array
+    {
+        $oldData = parent::validated();
+        if (data_get($oldData, 'lead_customer_additional_detail.is_datamatch_required', null) === 1 && data_get($oldData, 'lead_customer_additional_detail.datamatch_progress', null) !== 'Datamatch Required') {
+            data_set($oldData, 'lead_customer_additional_detail.datamatch_progress', 'Datamatch Required');
+        }
+        return $oldData;
+    }
 }
