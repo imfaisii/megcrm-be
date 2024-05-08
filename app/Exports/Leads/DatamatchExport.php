@@ -133,9 +133,7 @@ class DatamatchExport implements FromCollection, Responsable, ShouldAutoSize, Wi
 
         return [
             '', // for empty column
-            filled($lead->isSecondReceipent) ? cache()->remember('secondRecipientKey', 600, function () {
-                return meg_encrypt("SecondRecipient");
-            }) : meg_encrypt($lead->id),
+            filled($lead->isSecondReceipent) ? meg_encrypt($lead->actualId) : meg_encrypt($lead->id),
             $lead->last_name,
             $lead->first_name,
             Str::before(Date::PHPToExcel(DateTime::createFromFormat('d/m/Y', Carbon::parse($lead->dob)->format('d/m/Y'))->getTimestamp()), '.'),
@@ -167,7 +165,7 @@ class DatamatchExport implements FromCollection, Responsable, ShouldAutoSize, Wi
         })->with('secondReceipent')->get()->each(function ($lead) {
             $lead->leadCustomerAdditionalDetail->update([
                 'datamatch_progress' => DataMatchEnum::StatusSent,
-                // 'is_datamatch_required' => false,
+                'is_datamatch_required' => false,
                 'data_match_sent_date' => now(),
             ]);
         });
@@ -178,6 +176,7 @@ class DatamatchExport implements FromCollection, Responsable, ShouldAutoSize, Wi
             $clonedLead->last_name = $lead?->secondReceipent?->last_name;
             $clonedLead->dob = $lead?->secondReceipent?->dob;
             $clonedLead->isSecondReceipent = true;
+            $clonedLead->actualId = $lead->id ;
 
             return $clonedLead;
         });
@@ -210,8 +209,7 @@ class DatamatchExport implements FromCollection, Responsable, ShouldAutoSize, Wi
                 $event->sheet->setTitle('EST DWP Datamatch');
                 Storage::disk('local')->copy(AppEnum::TEMPLATE_PATH, $this->destinationFile);
                 $spreadsheet = IOFactory::load(storage_path("app/$this->destinationFile"));
-
-                // Select the specific sheet where you want to write the data
+                // Select the specific   sheet where you want to write the data
                 $worksheet = $spreadsheet->getActiveSheet();
 
                 // Get the data from the Maatwebsite export class
@@ -220,9 +218,7 @@ class DatamatchExport implements FromCollection, Responsable, ShouldAutoSize, Wi
                 // Write the data to the selected sheet starting from row 4
                 $row = 4;
                 foreach ($data as $lead) {
-                    $worksheet->setCellValue('B' . $row, filled($lead->isSecondReceipent) ? cache()->remember('secondRecipientKey', 600, function () {
-                        return meg_encrypt("SecondRecipient");
-                    }) : meg_encrypt($lead->id));
+                    $worksheet->setCellValue('B' . $row, filled($lead->isSecondReceipent) ? meg_encrypt($lead->actualId): meg_encrypt($lead->id));
                     $worksheet->setCellValue('C' . $row, $lead->last_name);
                     $worksheet->setCellValue('D' . $row, $lead->first_name);
                     $worksheet->setCellValue('E' . $row, Str::before(Date::PHPToExcel(DateTime::createFromFormat('d/m/Y', Carbon::parse($lead->dob)->format('d/m/Y'))->getTimestamp()), '.'));
@@ -241,7 +237,7 @@ class DatamatchExport implements FromCollection, Responsable, ShouldAutoSize, Wi
                 $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
                 $writer->save(storage_path("app/$this->destinationFile"));
 
-                $fileToDel = removeStringFromString('template', $this->destinationFile, '');
+                $fileToDel = removeStringFromString('Template', $this->destinationFile, '');
                 dispatch(function () use ($fileToDel) {
                     /* del the created after some time  */
                     Storage::disk('local')->delete($fileToDel);

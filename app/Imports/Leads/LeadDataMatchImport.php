@@ -6,6 +6,7 @@ use App\Classes\LeadResponseClass;
 use App\Models\Lead;
 use Carbon\Carbon;
 use Exception;
+use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -13,6 +14,7 @@ use Maatwebsite\Excel\Concerns\ToCollection;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use PhpOffice\PhpSpreadsheet\Cell\DefaultValueBinder;
 
+use function App\Helpers\meg_decrypts;
 use function App\Helpers\removeSpace;
 
 class LeadDataMatchImport extends DefaultValueBinder implements ToCollection, WithHeadingRow
@@ -47,6 +49,8 @@ class LeadDataMatchImport extends DefaultValueBinder implements ToCollection, Wi
                 $eachRow['date_processed_by_dwp'] = (is_int($eachRow['date_processed_by_dwp'])
                 ? \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($eachRow['date_processed_by_dwp'])->format('Y-m-d')
                 : Carbon::createFromFormat('d/m/Y', $eachRow['date_processed_by_dwp']))->format('Y-m-d');
+
+                $eachRow['service_user_id'] = filled($eachRow['service_user_id']) ? meg_decrypts($eachRow['service_user_id']) : null;
                 return $eachRow;
             })->filter(function ($row) {
                 return filled($row['postcode']) && filled($row['date_of_birth']);
@@ -54,43 +58,14 @@ class LeadDataMatchImport extends DefaultValueBinder implements ToCollection, Wi
             DB::transaction(function () use ($rows) {
                 $rows->each(function ($eachLead) {
                     try {
-                        $lead = Lead::query()
-                            ->where([
-                                ['last_name', '=', $eachLead['surname']],
-                                ['first_name', '=', $eachLead['forename']],
-                                ['post_code', '=', strtoupper(removeSpace($eachLead['postcode']))],
-                            ])->orWhere([
-                                    ['last_name', '=', $eachLead['forename']],
-                                    ['first_name', '=', $eachLead['surname']],
-                                    ['post_code', '=', strtoupper(removeSpace($eachLead['postcode']))],
-                                ])->orWhere([
-                                    ['post_code', '=', strtoupper(removeSpace($eachLead['postcode']))],
-                                    [
-                                        'dob',
-                                        '=',
-                                        $eachLead['date_of_birth'],
-                                    ],
-                                ])
-                            ->orWhereHas('secondReceipent', function ($query) use ($eachLead) {
-                                $query->where([
-                                    ['last_name', '=', $eachLead['surname']],
-                                    ['first_name', '=', $eachLead['forename']],
-                                    [
-                                        'dob',
-                                        '=',
-                                        $eachLead['date_of_birth'],
-                                    ],
-                                ])->orWhere([
-                                            ['last_name', '=', $eachLead['forename']],
-                                            ['first_name', '=', $eachLead['surname']],
-                                            [
-                                                'dob',
-                                                '=',
-                                                $eachLead['date_of_birth'],
-                                            ],
-                                        ]);
-                            })
-                            ->with('leadCustomerAdditionalDetail')->get();
+                        $lead = $this->getAssociatedLeadModel($eachLead->toArray());
+                        if (blank($lead)) {
+                            //no associated Lead Found .. just log and add it to failed leads
+                            Log::channel('data_match_result_file_read_log')->error('No match found for record' . json_encode($eachLead->ToArray()));
+                            $this->classResponse->failedLeads[] = $eachLead->toArray();
+                            return true;  // skip that iteration
+
+                        }
                         if ($lead->count() > 1) {
 
                             //means multiple records found now need to query more for specific, so we find our row address in the coming leads
@@ -102,7 +77,6 @@ class LeadDataMatchImport extends DefaultValueBinder implements ToCollection, Wi
                                 array_push($this->leadsUpdatedIds, $response->id);
                                 Log::channel('data_match_result_file_read_log')->info('Data Match updated for ' . json_encode($response->toArray()) . ' against ' . json_encode($eachLead->toArray()));
                                 $this->classResponse->totalUploadedRows++;
-
                                 return true;  // skip that entry
                             }
 
@@ -118,7 +92,6 @@ class LeadDataMatchImport extends DefaultValueBinder implements ToCollection, Wi
                             if ($result) {
                                 array_push($this->leadsUpdatedIds, $response->id);
                                 Log::channel('data_match_result_file_read_log')->info('Data Match updated for ' . json_encode($response->toArray()) . ' against ' . json_encode($eachLead->toArray()));
-
                                 $this->classResponse->totalUploadedRows++;
                             } else {
                                 $this->classResponse->failedLeads[] = $eachLead->toArray();
@@ -177,6 +150,60 @@ class LeadDataMatchImport extends DefaultValueBinder implements ToCollection, Wi
             Log::channel('data_match_result_file_read_log')->info(
                 'Error importing data match result:  ' . $e->getMessage()
             );
+        }
+    }
+
+
+    private function getAssociatedLeadModel(array $eachLead): ?EloquentCollection
+    {
+        try {
+            if ($eachLead['service_user_id'] ?? false) {
+                return Lead::query()->with('leadCustomerAdditionalDetail')->Where('id', $eachLead['service_user_id'])->get();
+            } else {
+                return Lead::query()
+                    ->where(function ($q) use ($eachLead) {
+                        $q->where(function ($query) use ($eachLead) {
+                            return $query
+                                ->where([
+                                    ['last_name', '=', $eachLead['surname']],
+                                    ['first_name', '=', $eachLead['forename']],
+                                    ['post_code', '=', strtoupper(removeSpace($eachLead['postcode']))],
+                                ])->orWhere([
+                                        ['last_name', '=', $eachLead['forename']],
+                                        ['first_name', '=', $eachLead['surname']],
+                                        ['post_code', '=', strtoupper(removeSpace($eachLead['postcode']))],
+                                    ])->orWhere([
+                                        ['post_code', '=', strtoupper(removeSpace($eachLead['postcode']))],
+                                        [
+                                            'dob',
+                                            '=',
+                                            $eachLead['date_of_birth'],
+                                        ],
+                                    ]);
+                        })->orWhereHas('secondReceipent', function ($query) use ($eachLead) {
+                            $query->where([
+                                ['last_name', '=', $eachLead['surname']],
+                                ['first_name', '=', $eachLead['forename']],
+                                [
+                                    'dob',
+                                    '=',
+                                    $eachLead['date_of_birth'],
+                                ],
+                            ])->orWhere([
+                                        ['last_name', '=', $eachLead['forename']],
+                                        ['first_name', '=', $eachLead['surname']],
+                                        [
+                                            'dob',
+                                            '=',
+                                            $eachLead['date_of_birth'],
+                                        ],
+                                    ]);
+                        });
+                    })
+                    ->with('leadCustomerAdditionalDetail')->get();
+            }
+        } catch (Exception $e) {
+            return null;
         }
     }
 }
