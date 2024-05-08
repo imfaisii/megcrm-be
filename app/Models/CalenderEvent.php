@@ -40,6 +40,7 @@ class CalenderEvent extends BaseModel
 
     protected array $allowedIncludes = [
         'calendar',
+        'eventable.lead',
         'createdBy',
     ];
 
