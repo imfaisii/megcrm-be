@@ -15,6 +15,10 @@ class FilterByPostcode implements Filter
      */
     public function __invoke(Builder $query, $value, string $property): void
     {
-        $query->where(DB::raw("REPLACE(post_code, ' ', '')"), 'like', '%'.str_replace(' ', '', $value).'%');
+        if (is_array($value)) {
+            $value = implode(",", $value);
+        }
+
+        $query->where(DB::raw("REPLACE(post_code, ' ', '')"), 'like', '%' . str_replace(' ', '', $value) . '%');
     }
 }
