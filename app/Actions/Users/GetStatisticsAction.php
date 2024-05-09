@@ -24,19 +24,33 @@ class GetStatisticsAction
 
     private function getLeadStatistics($leads): array
     {
+        $total = $leads->clone()->count();
+        $today = $leads->clone()->ofToday()->count();
+        $yesterday = $leads->clone()->ofYesterday()->count();
+        $change = $today - $yesterday;
+
         return [
-            'count' => $leads->clone()->count(),
-            'created_today' => $leads->clone()->ofToday()->count(),
-            'created_yesterday' => $leads->clone()->ofYesterday()->count(),
+            'count' => $total,
+            'created_today' =>  $today,
+            'created_yesterday' => $yesterday,
+            'change' => $change,
+            'incremental' => $change === 0 ? null : ($change > 0 ? true : false)
         ];
     }
 
     private function getStatusStatistics($leads, $status): array
     {
+        $total = $this->getCountByStatus($leads->clone(), $status);
+        $today = $this->getCountByStatus($leads->clone()->ofToday(), $status);
+        $yesterday = $this->getCountByStatus($leads->clone()->ofYesterday(), $status);
+        $change = $today - $yesterday;
+
         return [
-            'count' => $this->getCountByStatus($leads->clone(), $status),
-            'created_today' => $this->getCountByStatus($leads->clone()->ofToday(), $status),
-            'created_yesterday' => $this->getCountByStatus($leads->clone()->ofYesterday(), $status),
+            'count' => $total,
+            'created_today' =>  $today,
+            'created_yesterday' => $yesterday,
+            'change' => $change,
+            'incremental' => $change === 0 ? null : ($change > 0 ? true : false)
         ];
     }
 
@@ -60,16 +74,23 @@ class GetStatisticsAction
 
     private function getLeadAdditionalDetailStatistics($leads, $field, $value): array
     {
+        $total = $leads->clone()->whereHas('leadCustomerAdditionalDetail', function ($query) use ($field, $value) {
+            $query->where($field, $value);
+        })->count();
+        $today = $leads->clone()->whereHas('leadCustomerAdditionalDetail', function ($query) use ($field, $value) {
+            $query->where($field, $value)->ofToday();
+        })->count();
+        $yesterday = $leads->clone()->whereHas('leadCustomerAdditionalDetail', function ($query) use ($field, $value) {
+            $query->where($field, $value)->ofYesterday();
+        })->count();
+        $change = $today - $yesterday;
+
         return [
-            'count' => $leads->clone()->whereHas('leadCustomerAdditionalDetail', function ($query) use ($field, $value) {
-                $query->where($field, $value);
-            })->count(),
-            'created_today' => $leads->clone()->whereHas('leadCustomerAdditionalDetail', function ($query) use ($field, $value) {
-                $query->where($field, $value)->ofToday();
-            })->count(),
-            'created_yesterday' => $leads->clone()->whereHas('leadCustomerAdditionalDetail', function ($query) use ($field, $value) {
-                $query->where($field, $value)->ofYesterday();
-            })->count(),
+            'count' => $total,
+            'created_today' =>  $today,
+            'created_yesterday' => $yesterday,
+            'change' => $change,
+            'incremental' => $change === 0 ? null : ($change > 0 ? true : false)
         ];
     }
 }
