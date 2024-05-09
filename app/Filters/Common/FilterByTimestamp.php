@@ -9,11 +9,6 @@ use Spatie\QueryBuilder\Filters\Filter;
 
 class FilterByTimestamp implements Filter
 {
-    /**
-     * @phpcs:disable Generic.CodeAnalysis.UnusedFunctionParameter
-     *
-     * @phpcs:disable VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable
-     */
     public function __invoke(Builder $query, $value, string $property): void
     {
         $property = $property == 'timestamp' ? 'created_at' : $property;

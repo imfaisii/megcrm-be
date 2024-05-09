@@ -31,6 +31,7 @@ use Imfaisii\ModelStatus\HasStatuses;
 use Spatie\Activitylog\Models\Activity;
 use Spatie\MediaLibrary\HasMedia;
 use Illuminate\Notifications\Notification;
+use LaracraftTech\LaravelDateScopes\DateScopes;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\QueryBuilder\AllowedFilter;
 
@@ -46,7 +47,8 @@ class Lead extends BaseModel implements HasMedia
         HasStatuses,
         HasTeamTrait,
         InteractsWithMedia,
-        Notifiable;
+        Notifiable,
+        DateScopes;
 
     public $ScopeColumn = 'surveyor_id';
 

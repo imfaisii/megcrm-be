@@ -4,10 +4,11 @@ namespace App\Models;
 
 use App\Actions\Common\BaseModel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use LaracraftTech\LaravelDateScopes\DateScopes;
 
 class LeadCustomerAdditionalDetail extends BaseModel
 {
-    use HasFactory;
+    use HasFactory, DateScopes;
 
     protected $fillable = [
         'contact_method',
