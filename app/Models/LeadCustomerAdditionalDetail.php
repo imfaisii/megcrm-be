@@ -10,6 +10,8 @@ class LeadCustomerAdditionalDetail extends BaseModel
 {
     use HasFactory, DateScopes;
 
+    const CREATED_AT = 'updated_at';
+
     protected $fillable = [
         'contact_method',
         'priority_type',
