@@ -27,7 +27,7 @@ class SurveyBookingObserver
 
             if ($surveyBooking->survey_at && $surveyBooking->surveyor_id) {
                 $surveyBooking->load(['user', 'lead.leadGenerator']);
-                $prefferedTime = ($surveyBooking->preffered_time ? "( {$surveyBooking->preffered_time} )" : '');
+                $prefferedTime = ($surveyBooking->preffered_time ? " ( {$surveyBooking->preffered_time} )" : '');
 
                 $title = SurveyBookedEnum::TITLE . ' with ' . $surveyBooking->lead->full_name . $prefferedTime;
                 $surveyAt = $surveyBooking->survey_at;
