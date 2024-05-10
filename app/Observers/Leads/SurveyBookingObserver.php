@@ -5,6 +5,7 @@ namespace App\Observers\Leads;
 use App\Enums\Events\SurveyBookedEnum;
 use App\Models\CalenderEvent;
 use App\Models\SurveyBooking;
+use App\Notifications\MobileApp\ExpoNotification;
 use App\Notifications\Sms\SurveyBookedNotification;
 use Carbon\Carbon;
 use Exception;
@@ -57,6 +58,14 @@ class SurveyBookingObserver
                     Log::channel('twilio')->error("Failed to send message on: {$surveyBooking->lead->phone_number_formatted}. {$e->getMessage()}");
                 }
 
+                // expo push notification
+                $surveyTime = Carbon::parse($surveyAt)->format('F j, Y, g:i a');
+                $surveyBooking->user->notify(new ExpoNotification(
+                    "New survey assigned ({$surveyBooking->lead->actual_post_code})",
+                    "Survey time: {$surveyTime}\nLocation: {$surveyBooking->lead->plain_address}"
+                ));
+
+                // calendar event
                 CalenderEvent::updateOrCreate(
                     [
                         'user_id' => $surveyBooking->user->id,

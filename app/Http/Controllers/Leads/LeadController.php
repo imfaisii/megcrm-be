@@ -24,6 +24,8 @@ use App\Http\Requests\Leads\UploadLeadFileRequest;
 use App\Http\Requests\Users\UploadDocumentsToCollectionRequest;
 use App\Models\DataMatchFile;
 use App\Models\Lead;
+use App\Notifications\MobileApp\ChatResponseNotification;
+use App\Notifications\MobileApp\ExpoNotification;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -80,6 +82,11 @@ class LeadController extends Controller
 
     public function storeComments(Lead $lead, StoreLeadCommentsRequest $request)
     {
+        if ($lead->surveyBooking?->user && $lead->surveyBooking?->user->id !== auth()->id()) {
+            $loggedUserName = auth()->user()->first_name;
+            $lead->surveyBooking?->user->notify(new ExpoNotification("New Comment", "{$loggedUserName} commented on lead {$lead->actual_post_code}"));
+        }
+
         return $this->success(data: $lead->comment($request->comments));
     }
 
@@ -120,6 +127,15 @@ class LeadController extends Controller
             ]);
         }
 
+        $expo['title'] = "Lead status updated ({$lead->actual_post_code})";
+        $expo['body'] = "Status changed from {$lead->latestStatus()->name} to {$request->status}" . (filled($request->comments) ? "\nComments: {$request->comments}" : "");
+
+        if ($lead->surveyBooking) {
+            $lead->surveyBooking->user->notify(new ExpoNotification($expo['title'], $expo['body']));
+        }
+
+
+        $lead->createdBy->notify(new ExpoNotification($expo['title'], $expo['body']));
         $lead->setStatus($request->status, $request->comments);
 
         return null_resource();

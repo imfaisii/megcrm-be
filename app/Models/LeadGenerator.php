@@ -21,7 +21,13 @@ class LeadGenerator extends BaseModel
 
     protected array $allowedIncludes = [
         'createdBy',
+        'leadGeneratorManagers'
     ];
+
+    public function leadGeneratorManagers()
+    {
+        return $this->hasMany(LeadGeneratorManager::class);
+    }
 
     public function leads()
     {

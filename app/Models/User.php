@@ -215,6 +215,11 @@ class User extends BaseModel implements AccessAuthorizable, AuthenticatableContr
         return data_get(config('logging.channels.slack-crm'), 'url');
     }
 
+    public function leadGeneratorManagers()
+    {
+        return $this->hasMany(LeadGeneratorManager::class);
+    }
+
     /* which team i am part of */
     public function teams(): BelongsToMany
     {
