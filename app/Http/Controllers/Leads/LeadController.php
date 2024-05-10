@@ -80,9 +80,7 @@ class LeadController extends Controller
 
     public function storeComments(Lead $lead, StoreLeadCommentsRequest $request)
     {
-        $lead->comment($request->comments);
-
-        return null_resource();
+        return $this->success(data: $lead->comment($request->comments));
     }
 
     public function getCouncilTaxLink(string $postCode): RedirectResponse
