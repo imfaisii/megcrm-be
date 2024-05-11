@@ -114,12 +114,17 @@ class LeadController extends Controller
             ||
             str_contains(str()->lower($request->status), 'survey done')
         ) {
-            if (str_contains(str()->lower($request->status), 'survey booked')) {
-                $lead->sendStatusEmailToCustomer();
-            }
+
             $lead->update([
                 'is_marked_as_job' => true,
             ]);
+        }
+
+        if (
+            str_contains(str()->lower($request->status), 'survey booked') ||
+            str_contains(str()->lower($request->status), 'waiting for boiler picture')
+        ) {
+            $lead->sendStatusEmailToCustomer();
         }
 
         $lead->setStatus($request->status, $request->comments);
