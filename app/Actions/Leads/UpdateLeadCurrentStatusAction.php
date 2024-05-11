@@ -62,13 +62,20 @@ class UpdateLeadCurrentStatusAction
             ||
             str_contains(str()->lower($data['status']), 'survey done')
         ) {
-            if (str_contains(str()->lower($data['status']), 'survey booked')) {
-                $lead->sendStatusEmailToCustomer();
-            }
+
             $lead->update([
                 'is_marked_as_job' => true,
             ]);
         }
+
+        if (
+            str_contains(str()->lower($data['status']), 'survey booked') ||
+            str_contains(str()->lower($data['status']), 'waiting for boiler picture')
+        ) {
+            $lead->sendStatusEmailToCustomer();
+        }
+
+
 
         $this->handleExpoMembers($lead, $data);
         $lead->setStatus($data['status'], $data['status']);
