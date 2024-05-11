@@ -141,11 +141,9 @@ class Lead extends BaseModel implements HasMedia
         $user ??= auth()->user();
         /* if he is surveyor then assigned lead gens or survey booked by him */
         if ($user->hasRole($role) && $role === RoleEnum::SURVEYOR) {
-            $query->where('created_by_id', $user->id)
-                ->orWhere(function ($query) use ($user) {
-                    $query->join('survey_bookings', 'survey_bookings.lead_id', '=', 'leads.id')
-                        ->where('surveyor_id', $user->id);
-                });
+            $query->join('survey_bookings', 'leads.id', '=', 'survey_bookings.lead_id')
+                ->where('leads.created_by_id', $user->id)
+                ->orWhere('survey_bookings.surveyor_id', $user->id);
         }
 
         return $query;
