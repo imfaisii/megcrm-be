@@ -161,7 +161,11 @@ class LeadDataMatchImport extends DefaultValueBinder implements ToCollection, Wi
     {
         try {
             if ($eachLead['service_user_id'] ?? false) {
-                return Lead::query()->with(['leadCustomerAdditionalDetail', 'leadGenerator', 'DataMatchHistory'])->Where('id', $eachLead['service_user_id'])->get();
+                return Lead::query()->with([
+                    'leadCustomerAdditionalDetail',
+                    'leadGenerator.leadGeneratorManagers',
+                    'DataMatchHistory'
+                ])->Where('id', $eachLead['service_user_id'])->get();
             } else {
                 return Lead::query()
                     ->where(function ($q) use ($eachLead) {
@@ -203,7 +207,11 @@ class LeadDataMatchImport extends DefaultValueBinder implements ToCollection, Wi
                                     ]);
                         });
                     })
-                    ->with('leadCustomerAdditionalDetail')->get();
+                    ->with([
+                        'leadCustomerAdditionalDetail',
+                        'leadGenerator.leadGeneratorManagers',
+                        'DataMatchHistory'
+                    ])->get();
             }
         } catch (Exception $e) {
             return null;
@@ -213,6 +221,8 @@ class LeadDataMatchImport extends DefaultValueBinder implements ToCollection, Wi
     private function LogActivity(Lead $lead, array $activity)
     {
         try {
+            $LeadGenCCEmails = (data_get($lead->leadGenerator->leadGeneratorManagers, '*.email', []));
+
             $datafromLead = [
                 'datamatch_progress' => data_get($activity, 'eco_4_verification_status', null),
                 'datamatch_progress_date' => data_get($activity, 'date_processed_by_dwp', null),
@@ -237,6 +247,7 @@ class LeadDataMatchImport extends DefaultValueBinder implements ToCollection, Wi
                         'leadGen_email' => $lead?->leadGenerator?->email,
                         'leadGen_name' => $lead?->leadGenerator?->name,
                         'leadGen_phone_no' => $lead?->leadGenerator?->phone_no,
+                        'leadGen_cc_emails' => $LeadGenCCEmails,
                     ]);
                     $this->FoundLeads->put($Index, $arraytoPass);
                 } else {
@@ -246,6 +257,7 @@ class LeadDataMatchImport extends DefaultValueBinder implements ToCollection, Wi
                             'leadGen_email' => $lead?->leadGenerator?->email,
                             'leadGen_name' => $lead?->leadGenerator?->name,
                             'leadGen_phone_no' => $lead?->leadGenerator?->phone_no,
+                            'leadGen_cc_emails' => $LeadGenCCEmails,
                         ]
                     ]);
 

@@ -6,6 +6,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use NotificationChannels\Twilio\TwilioChannel;
 use NotificationChannels\Twilio\TwilioSmsMessage;
 
 class SendDataMatchResultsNotification extends Notification implements ShouldQueue
@@ -39,7 +40,7 @@ class SendDataMatchResultsNotification extends Notification implements ShouldQue
             $viaChannel[] = 'email';
         }
         if ($channels['twilio']) {
-            $viaChannel[] = 'twilio';
+            $viaChannel[] = TwilioChannel::class;
         }
 
         return app()->isLocal() ? ['mail'] : $viaChannel;
@@ -53,6 +54,7 @@ class SendDataMatchResultsNotification extends Notification implements ShouldQue
         $object = (new MailMessage)
             ->level("success")
             ->replyTo(config('credentials.DataMatchSupportEmail'))
+            ->cc(data_get($this->data, '0.leadGen_cc_email', []))
             ->subject("MEG DataMatch Results")
             ->greeting("Hi " . data_get($this->data, '0.leadGen_name', 'Our Valuable User') . ",")
             ->line('Meg has received the following Data Match Results against your jobs.');
@@ -66,10 +68,14 @@ class SendDataMatchResultsNotification extends Notification implements ShouldQue
 
     public function toTwilio(object $notifiable)
     {
-        $message = "Hi,";
+        $message = "Hi " . data_get($this->data, '0.leadGen_name', 'Our Valuable User') . ",\n";
         foreach ($this->data as $key => $value) {
-            $message .= "The Data Match Result For {$value['first_name']} {$value['last_name']} with DOB {$value['dob']} for address {$value['address']} {$value['post_code']} got the result as {$value['datamatch_progress']} as processed on {$value['datamatch_progress_date']}. ";
+            $message .= "The Data Match Result For {$value['first_name']} {$value['last_name']} with DOB {$value['dob']} for address {$value['address']} {$value['post_code']} got the result as {$value['datamatch_progress']} as processed on {$value['datamatch_progress_date']}. \n";
         }
+        $message .= "\n";
+        $message .= "Thank you for using our application! \n";
+        $message .= "Regards, \n";
+        $message .= "MEG";
         return (new TwilioSmsMessage())->content($message)->from(
             "MEG"
         );
