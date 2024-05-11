@@ -10,11 +10,6 @@ use function App\Helpers\split_name;
 
 class FilterByName implements Filter
 {
-    /**
-     * @phpcs:disable Generic.CodeAnalysis.UnusedFunctionParameter
-     *
-     * @phpcs:disable VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable
-     */
     public function __invoke(Builder $query, $value, string $property): void
     {
         if (Str::contains($value, ' ')) {

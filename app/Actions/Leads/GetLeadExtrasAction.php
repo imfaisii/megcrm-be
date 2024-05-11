@@ -88,7 +88,10 @@ class GetLeadExtrasAction
             'sms_templates' => SmsTemplate::select('id', 'name', 'body', 'properties')->get(),
             'installers' => $intallers,
             'surveyors' => $surveyors,
-            'csrs' => $csrs
+            'csrs' => $csrs,
+            'lead_generator_managers' => User::select('id', 'name')->whereHas('roles', function ($query) {
+                return $query->where('name', '!=', RoleEnum::SUPER_ADMIN);
+            })->get()
         ];
     }
 }

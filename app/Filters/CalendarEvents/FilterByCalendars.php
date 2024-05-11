@@ -7,11 +7,6 @@ use Spatie\QueryBuilder\Filters\Filter;
 
 class FilterByCalendars implements Filter
 {
-    /**
-     * @phpcs:disable Generic.CodeAnalysis.UnusedFunctionParameter
-     *
-     * @phpcs:disable VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable
-     */
     public function __invoke(Builder $query, $value, string $property): void
     {
         if (! is_array($value)) {

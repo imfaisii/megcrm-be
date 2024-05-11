@@ -4,7 +4,7 @@ namespace App\Traits;
 
 trait Jsonify
 {
-    public function success($message = 'Success', $data = null, $statusCode = 200)
+    public function success($message = 'success', $data = null, $statusCode = 200)
     {
         $response = [
             'success' => true,

@@ -9,6 +9,7 @@ use App\Filters\Common\FilterByTimestamp;
 use App\Filters\Leads\FilterByBookedBy;
 use App\Filters\Leads\FilterByFeatures;
 use App\Filters\Leads\FilterByImprovements;
+use App\Filters\Leads\FilterByLeadsPageButtonOnApp;
 use App\Filters\Leads\FilterByName;
 use App\Filters\Leads\FilterByPostcode;
 use App\Filters\Leads\FilterByStatus;
@@ -18,7 +19,6 @@ use Illuminate\Support\Str;
 use App\Traits\Common\HasCalenderEvent;
 use App\Traits\Common\HasRecordCreator;
 use App\Traits\HasTeamTrait;
-use AshAllenDesign\ShortURL\Classes\Builder;
 use BeyondCode\Comments\Traits\HasComments;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -31,6 +31,7 @@ use Imfaisii\ModelStatus\HasStatuses;
 use Spatie\Activitylog\Models\Activity;
 use Spatie\MediaLibrary\HasMedia;
 use Illuminate\Notifications\Notification;
+use LaracraftTech\LaravelDateScopes\DateScopes;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\QueryBuilder\AllowedFilter;
 
@@ -46,7 +47,8 @@ class Lead extends BaseModel implements HasMedia
         HasStatuses,
         HasTeamTrait,
         InteractsWithMedia,
-        Notifiable;
+        Notifiable,
+        DateScopes;
 
     public $ScopeColumn = 'surveyor_id';
 
@@ -103,7 +105,8 @@ class Lead extends BaseModel implements HasMedia
         'leadStatus',
         'leadGenerator',
         'statuses',
-        'surveyBooking',
+        'createdBy',
+        'surveyBooking.createdBy',
         'installationBookings',
         'leadCustomerAdditionalDetail',
         'benefits',
@@ -197,6 +200,7 @@ class Lead extends BaseModel implements HasMedia
             AllowedFilter::custom('epc_assessment_at', new FilterByTimestamp()),
             AllowedFilter::custom('improvements', new FilterByImprovements()),
             AllowedFilter::custom('features', new FilterByFeatures()),
+            AllowedFilter::custom('app_filter_buttons_surveyor', new FilterByLeadsPageButtonOnApp()),
         ];
     }
 

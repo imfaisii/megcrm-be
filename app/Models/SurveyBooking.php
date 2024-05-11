@@ -25,6 +25,10 @@ class SurveyBooking extends BaseModel
         'is_sms_alert_enabled' => 'boolean'
     ];
 
+    protected array $allowedIncludes = [
+        'createdBy'
+    ];
+
     public function user()
     {
         return $this->belongsTo(User::class, 'surveyor_id', 'id');

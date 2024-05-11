@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Users;
 use App\Actions\Common\BaseJsonResource;
 use App\Actions\Users\DeleteUserAction;
 use App\Actions\Users\FindUserAction;
+use App\Actions\Users\GetStatisticsAction;
 use App\Actions\Users\ListUserAction;
 use App\Actions\Users\StoreUserAction;
 use App\Actions\Users\UpdateUserAction;
@@ -106,5 +107,10 @@ class UserController extends Controller
         $action->update($user, $request->all());
 
         return null_resource();
+    }
+
+    public function getStatistics(GetStatisticsAction $action)
+    {
+        return $this->success(data: $action->handle());
     }
 }

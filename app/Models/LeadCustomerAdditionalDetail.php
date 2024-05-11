@@ -5,10 +5,13 @@ namespace App\Models;
 use App\Actions\Common\BaseModel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Spatie\Activitylog\LogOptions;
+use LaracraftTech\LaravelDateScopes\DateScopes;
 
 class LeadCustomerAdditionalDetail extends BaseModel
 {
-    use HasFactory;
+    use HasFactory, DateScopes;
+
+    const CREATED_AT = 'updated_at';
 
     protected $fillable = [
         'contact_method',

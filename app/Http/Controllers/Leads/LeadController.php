@@ -10,6 +10,7 @@ use App\Actions\Leads\ListDataMatchAction;
 use App\Actions\Leads\ListLeadAction;
 use App\Actions\Leads\StoreLeadAction;
 use App\Actions\Leads\UpdateLeadAction;
+use App\Actions\Leads\UpdateLeadCurrentStatusAction;
 use App\Actions\Leads\UploadLeadsFileAction;
 use App\Enums\AppEnum;
 use App\Exports\Leads\DatamatchExport;
@@ -24,6 +25,8 @@ use App\Http\Requests\Leads\UploadLeadFileRequest;
 use App\Http\Requests\Users\UploadDocumentsToCollectionRequest;
 use App\Models\DataMatchFile;
 use App\Models\Lead;
+use App\Notifications\MobileApp\ChatResponseNotification;
+use App\Notifications\MobileApp\ExpoNotification;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -80,9 +83,12 @@ class LeadController extends Controller
 
     public function storeComments(Lead $lead, StoreLeadCommentsRequest $request)
     {
-        $lead->comment($request->comments);
+        if ($lead->surveyBooking?->user && $lead->surveyBooking?->user->id !== auth()->id()) {
+            $loggedUserName = auth()->user()->first_name;
+            $lead->surveyBooking?->user->notify(new ExpoNotification("New Comment", "{$loggedUserName} commented on lead {$lead->actual_post_code}"));
+        }
 
-        return null_resource();
+        return $this->success(data: $lead->comment($request->comments));
     }
 
     public function getCouncilTaxLink(string $postCode): RedirectResponse
@@ -107,27 +113,9 @@ class LeadController extends Controller
         return $this->success(data: $lead->load('mobileAssetSyncs'));
     }
 
-    public function updateStatus(Lead $lead, UpdateLeadStatusRequest $request)
+    public function updateStatus(Lead $lead, UpdateLeadStatusRequest $request, UpdateLeadCurrentStatusAction $action)
     {
-        if (
-            str_contains(str()->lower($request->status), 'survey booked')
-            ||
-            str_contains(str()->lower($request->status), 'survey done')
-        ) {
-
-            $lead->update([
-                'is_marked_as_job' => true,
-            ]);
-        }
-
-        if (
-            str_contains(str()->lower($request->status), 'survey booked') ||
-            str_contains(str()->lower($request->status), 'waiting for boiler picture')
-        ) {
-            $lead->sendStatusEmailToCustomer();
-        }
-
-        $lead->setStatus($request->status, $request->comments);
+        $action->handle($lead, $request->all());
 
         return null_resource();
     }

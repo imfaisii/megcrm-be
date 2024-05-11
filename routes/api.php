@@ -42,6 +42,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 require __DIR__ . '/auth.php';
+require __DIR__ . '/mobile-app.php';
 
 Route::get('/getSuggestions', function (GetAddressRequest $request) {
     $getAddress = new GetAddress();
@@ -148,4 +149,5 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::get('/lead-extras', [LeadController::class, 'getExtras'])->name('leads.extras');
     Route::post('/lead-status/{lead}', [LeadController::class, 'updateStatus'])->name('leads.set-lead-status');
     Route::apiResource('/team', TeamController::class);
+    Route::get('/stats', [UserController::class, 'getStatistics']);
 });

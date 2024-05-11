@@ -46,7 +46,6 @@ trait HasTeamTrait
                     $query->byRole(RoleEnum::SURVEYOR);
                 }
                 $query->Orwhere($this->ScopeColumn ?? 'user_id', auth()->id());
-
             });
         }
     }

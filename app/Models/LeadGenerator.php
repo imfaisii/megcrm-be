@@ -21,7 +21,15 @@ class LeadGenerator extends BaseModel
 
     protected array $allowedIncludes = [
         'createdBy',
+        'leadGeneratorManagers'
     ];
+
+    public function leadGeneratorManagers()
+    {
+        return $this->belongsToMany(User::class, LeadGeneratorManager::class)
+            ->withPivot('created_by_id')
+            ->withTimestamps();
+    }
 
     public function leads()
     {
