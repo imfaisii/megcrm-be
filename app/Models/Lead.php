@@ -144,7 +144,7 @@ class Lead extends BaseModel implements HasMedia
             $query->where('created_by_id', $user->id)
                 ->orWhere(function ($query) use ($user) {
                     $query->join('survey_bookings', 'survey_bookings.lead_id', '=', 'leads.id')
-                        ->where('survey_bookings.surveyor_id', $user->id);
+                        ->where('surveyor_id', $user->id);
                 });
         }
 
