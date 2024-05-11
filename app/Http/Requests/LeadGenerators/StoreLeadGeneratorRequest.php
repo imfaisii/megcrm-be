@@ -11,10 +11,10 @@ class StoreLeadGeneratorRequest extends BaseFormRequest
         return [
             'name' => ['required', 'string', 'max:255'],
             'sender_id' => ['required', 'string', 'max:11'],
-            'email' => ['nullable', 'email'],
-            'phone_no' => ['nullable', 'numeric', 'digits:10,10'],
+            'email' => ['required', 'email'],
+            'phone_no' => ['required', 'numeric', 'digits:10,10'],
             'aircall_number' => ['nullable', 'numeric', 'digits:10,10'],
-            'lead_generator_managers' => ['nullable', 'array'],
+            'lead_generator_managers' => ['required', 'array'],
         ];
     }
 }
