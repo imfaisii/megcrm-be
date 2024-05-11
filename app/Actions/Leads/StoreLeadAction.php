@@ -31,7 +31,12 @@ class StoreLeadAction extends AbstractCreateAction
             $lead->secondReceipent()->firstOrCreate($data['second_receipent']);
         }
 
-        $lead->setStatus(LeadStatus::first()->name, 'Created');
+        $lead->setStatus('Raw Lead', 'Created');
+
+        (new UpdateLeadCurrentStatusAction())->handle($lead, [
+            'status' => 'Raw Lead',
+            'comments' => 'Created'
+        ]);
 
         // creating additional empty record for lead
         $lead->leadCustomerAdditionalDetail()->create();

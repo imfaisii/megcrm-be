@@ -95,6 +95,7 @@ class User extends BaseModel implements AccessAuthorizable, AuthenticatableContr
         'authentications',
         'company',
         'additional.bank',
+        'leadGeneratorManagers'
     ];
 
     protected $appends = ['rights', 'top_role', 'user_agents', 'first_name', 'last_name'];
@@ -217,7 +218,9 @@ class User extends BaseModel implements AccessAuthorizable, AuthenticatableContr
 
     public function leadGeneratorManagers()
     {
-        return $this->hasMany(LeadGeneratorManager::class);
+        return $this->belongsToMany(LeadGenerator::class, LeadGeneratorManager::class)
+            ->withPivot('created_by_id')
+            ->withTimestamps();
     }
 
     /* which team i am part of */

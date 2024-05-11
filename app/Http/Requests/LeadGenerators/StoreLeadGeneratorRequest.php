@@ -14,7 +14,7 @@ class StoreLeadGeneratorRequest extends BaseFormRequest
             'email' => ['nullable', 'email'],
             'phone_no' => ['nullable', 'numeric', 'digits:10,10'],
             'aircall_number' => ['nullable', 'numeric', 'digits:10,10'],
-            'lead_generator_assignments' => ['required', 'array'],
+            'lead_generator_managers' => ['nullable', 'array'],
         ];
     }
 }

@@ -26,7 +26,9 @@ class LeadGenerator extends BaseModel
 
     public function leadGeneratorManagers()
     {
-        return $this->hasMany(LeadGeneratorManager::class);
+        return $this->belongsToMany(User::class, LeadGeneratorManager::class)
+            ->withPivot('created_by_id')
+            ->withTimestamps();
     }
 
     public function leads()

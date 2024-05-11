@@ -10,6 +10,7 @@ use App\Actions\Leads\ListDataMatchAction;
 use App\Actions\Leads\ListLeadAction;
 use App\Actions\Leads\StoreLeadAction;
 use App\Actions\Leads\UpdateLeadAction;
+use App\Actions\Leads\UpdateLeadCurrentStatusAction;
 use App\Actions\Leads\UploadLeadsFileAction;
 use App\Enums\AppEnum;
 use App\Exports\Leads\DatamatchExport;
@@ -112,31 +113,9 @@ class LeadController extends Controller
         return $this->success(data: $lead->load('mobileAssetSyncs'));
     }
 
-    public function updateStatus(Lead $lead, UpdateLeadStatusRequest $request)
+    public function updateStatus(Lead $lead, UpdateLeadStatusRequest $request, UpdateLeadCurrentStatusAction $action)
     {
-        if (
-            str_contains(str()->lower($request->status), 'survey booked')
-            ||
-            str_contains(str()->lower($request->status), 'survey done')
-        ) {
-            if (str_contains(str()->lower($request->status), 'survey booked')) {
-                $lead->sendStatusEmailToCustomer();
-            }
-            $lead->update([
-                'is_marked_as_job' => true,
-            ]);
-        }
-
-        $expo['title'] = "Lead status updated ({$lead->actual_post_code})";
-        $expo['body'] = "Status changed from {$lead->latestStatus()->name} to {$request->status}" . (filled($request->comments) ? "\nComments: {$request->comments}" : "");
-
-        if ($lead->surveyBooking) {
-            $lead->surveyBooking->user->notify(new ExpoNotification($expo['title'], $expo['body']));
-        }
-
-
-        $lead->createdBy->notify(new ExpoNotification($expo['title'], $expo['body']));
-        $lead->setStatus($request->status, $request->comments);
+        $action->handle($lead, $request->all());
 
         return null_resource();
     }

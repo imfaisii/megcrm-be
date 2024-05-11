@@ -12,10 +12,6 @@ class AbstractUpdateAction
     use HasApiResource;
     use NewQueryTrait;
 
-    /**
-     * @param  BaseModel|Role|Permission  $model
-     * @return BaseModel|Role|Permission
-     */
     public function update(mixed $model, array $data): mixed
     {
         return tap($model, function (BaseModel|Role|Permission $model) use ($data) {
