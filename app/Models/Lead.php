@@ -104,6 +104,7 @@ class Lead extends BaseModel implements HasMedia
         'leadStatus',
         'leadGenerator',
         'statuses',
+        'createdBy',
         'surveyBooking.createdBy',
         'installationBookings',
         'leadCustomerAdditionalDetail',
