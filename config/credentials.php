@@ -18,4 +18,6 @@ return [
 
     'AIRCALL_PHONE_NUMBER' => env('AIRCALL_PHONE_NUMBER', [707436, 720272]),
 
+    'DataMatchSupportEmail'=> env('DATA_MATCH_SUPPORT_EMAIL','haamzaaay@gmail.com'),
+
 ];

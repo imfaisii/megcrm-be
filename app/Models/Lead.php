@@ -101,6 +101,7 @@ class Lead extends BaseModel implements HasMedia
     ];
 
     protected array $allowedIncludes = [
+        'DataMatchHistory',
         'leadStatus',
         'leadGenerator',
         'statuses',
@@ -267,10 +268,16 @@ class Lead extends BaseModel implements HasMedia
         return $this->belongsTo(LeadGenerator::class);
     }
 
+    public function DataMatchHistory()
+    {
+        return $this->hasMany(DataMatchHistory::class, 'lead_id')->latest();
+    }
+
     public function secondReceipent()
     {
         return $this->hasOne(SecondReceipent::class);
     }
+
 
     public function submission()
     {

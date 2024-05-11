@@ -7,6 +7,7 @@ use App\Models\Lead;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -21,7 +22,7 @@ class LeadDataMatchImport extends DefaultValueBinder implements ToCollection, Wi
 {
 
     public array $leadsUpdatedIds = [];
-    public function __construct(public LeadResponseClass $classResponse)
+    public function __construct(public LeadResponseClass $classResponse, public Collection $FoundLeads)
     {
         //
     }
@@ -72,6 +73,8 @@ class LeadDataMatchImport extends DefaultValueBinder implements ToCollection, Wi
                             $response = $lead->filter(function ($item) use ($eachLead) {
                                 return stripos($item?->plain_address, $eachLead['address_line_1']) !== false;
                             })?->first();
+                            $this->LogActivity($response, $eachLead->toArray());
+
                             /* if that lead is already updated in this upload and that result was matched then don't do anything */
                             if (in_array($response?->id, $this->leadsUpdatedIds) && $response->leadCustomerAdditionalDetail->datamatch_progress == 'Matched') {
                                 array_push($this->leadsUpdatedIds, $response->id);
@@ -96,10 +99,10 @@ class LeadDataMatchImport extends DefaultValueBinder implements ToCollection, Wi
                             } else {
                                 $this->classResponse->failedLeads[] = $eachLead->toArray();
                             }
-
                             // $response->leadAdditional()->update([]);
                         } elseif ($lead->count() == 1) {
                             $lead = $lead?->first();
+                            $this->LogActivity($lead, $eachLead->toArray());
 
                             if (in_array($lead?->id, $this->leadsUpdatedIds) && $lead->leadCustomerAdditionalDetail->datamatch_progress == 'Matched') {
                                 array_push($this->leadsUpdatedIds, $lead->id);
@@ -158,7 +161,11 @@ class LeadDataMatchImport extends DefaultValueBinder implements ToCollection, Wi
     {
         try {
             if ($eachLead['service_user_id'] ?? false) {
-                return Lead::query()->with('leadCustomerAdditionalDetail')->Where('id', $eachLead['service_user_id'])->get();
+                return Lead::query()->with([
+                    'leadCustomerAdditionalDetail',
+                    'leadGenerator.leadGeneratorManagers',
+                    'DataMatchHistory'
+                ])->Where('id', $eachLead['service_user_id'])->get();
             } else {
                 return Lead::query()
                     ->where(function ($q) use ($eachLead) {
@@ -200,10 +207,71 @@ class LeadDataMatchImport extends DefaultValueBinder implements ToCollection, Wi
                                     ]);
                         });
                     })
-                    ->with('leadCustomerAdditionalDetail')->get();
+                    ->with([
+                        'leadCustomerAdditionalDetail',
+                        'leadGenerator.leadGeneratorManagers',
+                        'DataMatchHistory'
+                    ])->get();
             }
         } catch (Exception $e) {
             return null;
         }
     }
+
+    private function LogActivity(Lead $lead, array $activity)
+    {
+        try {
+            $LeadGenCCEmails = (data_get($lead->leadGenerator->leadGeneratorManagers, '*.email', []));
+
+            $datafromLead = [
+                'datamatch_progress' => data_get($activity, 'eco_4_verification_status', null),
+                'datamatch_progress_date' => data_get($activity, 'date_processed_by_dwp', null),
+                'dob' => data_get($activity, 'date_of_birth', null),
+                'urn' => data_get($activity, 'urn', null),
+                'address' => data_get($activity, 'address_line_1', null),
+                'post_code' => data_get($activity, 'postcode', null),
+                'data_match_sent_date' => data_get($activity, 'date_uploaded', null),
+                'first_name' => data_get($activity, 'forename', null),
+                'last_name' => data_get($activity, 'surname', null),
+                'middle_name' => $lead?->middle_name,
+            ];
+            $lead->DataMatchHistory()->updateOrCreate(Arr::only($datafromLead, ['datamatch_progress', 'datamatch_progress_date', 'data_match_sent_date', 'first_name', 'last_name', 'dob']), Arr::except($datafromLead, ['datamatch_progress', 'datamatch_progress_date', 'data_match_sent_date', 'first_name', 'last_name', 'dob']));
+            if (filled($lead?->leadGenerator?->email) || filled($lead?->leadGenerator?->phone_no)) {
+                /* this datamatch can be shared over the email or any thing else    */
+                $Index = "{$lead?->leadGenerator?->email},|,{$lead?->leadGenerator?->phone_no}";
+                if ($this->FoundLeads->has($Index)) {
+                    // means this index exists and we could add the data in this
+                    $arraytoPass = $this->FoundLeads->get($Index);
+                    array_push($arraytoPass, [
+                        ...$datafromLead,
+                        'leadGen_email' => $lead?->leadGenerator?->email,
+                        'leadGen_name' => $lead?->leadGenerator?->name,
+                        'leadGen_phone_no' => $lead?->leadGenerator?->phone_no,
+                        'leadGen_cc_emails' => $LeadGenCCEmails,
+                    ]);
+                    $this->FoundLeads->put($Index, $arraytoPass);
+                } else {
+                    $this->FoundLeads->put($Index, [
+                        [
+                            ...$datafromLead,
+                            'leadGen_email' => $lead?->leadGenerator?->email,
+                            'leadGen_name' => $lead?->leadGenerator?->name,
+                            'leadGen_phone_no' => $lead?->leadGenerator?->phone_no,
+                            'leadGen_cc_emails' => $LeadGenCCEmails,
+                        ]
+                    ]);
+
+                }
+
+            }
+
+        } catch (Exception $e) {
+            Log::channel('slack_exceptions')->error(
+                'Error Logging the activity :  ' . $e->getMessage()
+            );
+        }
+    }
+
+
+
 }

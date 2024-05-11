@@ -9,12 +9,14 @@ use App\Http\Requests\DataMatch\UploadDataMatchRequest;
 use App\Imports\Leads\LeadDataMatchImport;
 use App\Imports\Leads\LeadsImport;
 use App\Models\DataMatchFile;
+use App\Notifications\SendDataMatchResultsNotification;
 use App\Traits\Jsonify;
 use Exception;
 use GuzzleHttp\Promise\Create;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
 use Maatwebsite\Excel\Facades\Excel;
@@ -58,6 +60,7 @@ class UploadLeadsFileAction
     public function executeLeadsDataMatchResultUpload(UploadDataMatchRequest $request)
     {
         try {
+            $foundLeadEnteries = collect();
             $exampleHeader = [
                 'landlord_surname',
                 'landlord_forename',
@@ -80,7 +83,7 @@ class UploadLeadsFileAction
             ];
 
             $this->CheckFileHeaderErrors($exampleHeader, $request->file('file'), 3);
-            Excel::import(new LeadDataMatchImport($this->leadResponseClass), $request->file('file'));
+            Excel::import(new LeadDataMatchImport($this->leadResponseClass, $foundLeadEnteries), $request->file('file'));
 
             $Model = DataMatchFile::make();
             $Model->id = (string) Str::uuid();
@@ -96,10 +99,24 @@ class UploadLeadsFileAction
                 $fileName,
                 'local'
             );
-
+            $reponse = null;
             if (filled($this->leadResponseClass->failedLeads)) {
                 // some leads got failed  just make a new file for it
                 $reponse = $this->makeFileFromArray($this->leadResponseClass->failedLeads);
+            }
+
+            if (filled($foundLeadEnteries)) {
+                /* send the results to the  lead generator email */
+                foreach ($foundLeadEnteries as $index => $value) {
+                    # code...
+                    $explodedResults = explode(",|,", $index);
+                    $LeadGenEmail = data_get($explodedResults, '0', null);
+                    $LeadGenPhone = $this->getFormattedNumber(data_get($explodedResults, '1', null));
+                    Notification::route('mail', $LeadGenEmail)
+                        ->route('twilio', $LeadGenPhone)
+                        ->notify(new SendDataMatchResultsNotification($value));
+                }
+
             }
 
             return $this->success($reponse, data: $this->leadResponseClass);
@@ -112,6 +129,14 @@ class UploadLeadsFileAction
         }
     }
 
+    protected function getFormattedNumber(?string $phoneNo)
+    {
+
+        if (!$phoneNo || str()->length($phoneNo) < 10) {
+            return null;
+        }
+        return '+44' . substr($phoneNo, -10);
+    }
     private function CheckFileHeaderErrors(array $headersArray, $file, $headingRow = 1)
     {
         $headings = (new HeadingRowImport($headingRow))->toArray($file)[0][0];

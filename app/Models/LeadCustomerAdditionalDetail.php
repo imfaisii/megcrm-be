@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Actions\Common\BaseModel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Spatie\Activitylog\LogOptions;
 use LaracraftTech\LaravelDateScopes\DateScopes;
 
 class LeadCustomerAdditionalDetail extends BaseModel
@@ -38,5 +39,22 @@ class LeadCustomerAdditionalDetail extends BaseModel
     public function lead()
     {
         return $this->belongsTo(Lead::class);
+    }
+
+    /* overriding the default for getting log of each datamatch update */
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->setDescriptionForEvent(fn(string $eventName) => "This record has been {$eventName}")
+            ->logAll()
+            ->logOnly([
+                'datamatch_progress',
+                'urn',
+                'data_match_sent_date',
+                'datamatch_progress_date',
+                'result_first_name',
+                'result_last_name'
+            ])
+            ->dontLogIfAttributesChangedOnly(['updated_at']);
     }
 }

@@ -15,6 +15,7 @@ use App\Models\LeadGenerator;
 use App\Models\LeadStatus;
 use Carbon\Carbon;
 use Exception;
+use Illuminate\Support\Str;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
@@ -59,9 +60,10 @@ class LeadsImport implements ToCollection, WithHeadingRow
                         $benefits = explode("\n", $benefits);
                         try {
                             $DataOfBirth = is_null($dob)
-                            ? now()->format('Y-m-d') : (is_int($dob)
-                                ? \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($dob)->format('Y-m-d')
-                                : (Carbon::parse($dob) ? Carbon::parse($dob)->format('Y-m-d') : null));
+                                ? now()->format('Y-m-d') : (is_int($dob)
+                                    ? \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($dob)->format('Y-m-d')
+                                    : (Carbon::parse($dob) ? Carbon::parse($dob)->format('Y-m-d') : null));
+                            $DataOfBirth = Str::replace('T00:00:00.000Z', '', $DataOfBirth);
                         } catch (Exception $e) {
                             $DataOfBirth = null;
                             Log::channel('slack_exceptions')->info("Address not Valid for Lead : $email with postcode $postCode");
@@ -125,14 +127,14 @@ class LeadsImport implements ToCollection, WithHeadingRow
                         ]);
                     } catch (Exception $exception) {
                         Log::channel('lead_file_read_log')->info(
-                            'Error importing lead address: '.$row['address'].'. '.$exception->getMessage()
+                            'Error importing lead address: ' . $row['address'] . '. ' . $exception->getMessage()
                         );
                     }
                 }
             }
         } catch (Exception $exception) {
             Log::channel('lead_file_read_log')->info(
-                'Exception importing lead address:: '.$row['address'].' message:: '.$exception->getMessage()
+                'Exception importing lead address:: ' . $row['address'] . ' message:: ' . $exception->getMessage()
             );
 
             $this->classResponse->failedLeads[] = $row['address'];

@@ -17,6 +17,7 @@ use App\Mail\TestEmail;
 use App\Models\DataMatchFile;
 use App\Models\Lead;
 use App\Notifications\Customer\CustomerLeadTrackingMail;
+use App\Notifications\SendDataMatchResultsNotification;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
@@ -33,6 +34,7 @@ use function App\Helpers\replaceFirst;
 use function App\Helpers\getOnlyNumersFromString;
 use AshAllenDesign\ShortURL\Classes\Builder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Str;
 use function App\Helpers\meg_encrypt;
 
@@ -51,6 +53,41 @@ use PhpOffice\PhpSpreadsheet\IOFactory;
 */
 
 Route::get('test-x', function (Request $request) {
+
+
+
+
+    $data = [
+        0 => [
+            "datamatch_progress" => "Unverified",
+            "datamatch_progress_date" => "2024-05-08",
+            "dob" => "1996-07-15",
+            "urn" => 6514653951,
+            "address" => "Roxby Gardens",
+            "post_code" => "YO12 4JN",
+            "data_match_sent_date" => "2024-05-08",
+            "first_name" => "Imogen",
+            "last_name" => "Parker",
+            "middle_name" => null,
+            "leadGen_email" => "info@ecoboilergrants.uk",
+            "leadGen_phone_no" => "7443011226",
+            "leadGen_name" => "Saqi",
+
+        ]
+    ];
+    $arr = [];
+    $arr[] = "asf";
+    $arr[] = "asfsaf";
+
+    Notification::route('mail', [
+        'barrett@example.com' => 'Barrett Blair',
+    ])
+        ->route('twilio', '+447443011226')
+        ->notify(new SendDataMatchResultsNotification($data));
+
+    return (new SendDataMatchResultsNotification($data))
+        ->toMail(User::first());
+
     dd(Carbon::now());
 });
 
@@ -98,8 +135,8 @@ if (app()->isLocal()) {
     });
 }
 
-Route::get('/', fn () => ['Laravel' => app()->version()]);
-Route::get('/dropbox/redirect', fn () => response()->json(request()->all()));
+Route::get('/', fn() => ['Laravel' => app()->version()]);
+Route::get('/dropbox/redirect', fn() => response()->json(request()->all()));
 
 Route::get('/dropbox', function () {
     $redirect = 'http://localhost:8000/dropbox/redirect';
