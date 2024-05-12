@@ -74,6 +74,8 @@ class StoreLeadRequest extends BaseFormRequest
         $oldData = parent::validated();
         if (data_get($oldData, 'lead_customer_additional_detail.is_datamatch_required', null) === 1 && data_get($oldData, 'lead_customer_additional_detail.datamatch_progress', null) !== 'Datamatch Required') {
             data_set($oldData, 'lead_customer_additional_detail.datamatch_progress', 'Datamatch Required');
+        } else {
+            data_set($oldData, 'lead_customer_additional_detail.datamatch_progress', 'Not Sent');
         }
         return $oldData;
     }
