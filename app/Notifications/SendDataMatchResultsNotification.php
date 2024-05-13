@@ -37,7 +37,7 @@ class SendDataMatchResultsNotification extends Notification implements ShouldQue
 
         $viaChannel = [];
         if ($channels['mail']) {
-            $viaChannel[] = 'email';
+            $viaChannel[] = 'mail';
         }
         if ($channels['twilio']) {
             $viaChannel[] = TwilioChannel::class;
@@ -76,6 +76,12 @@ class SendDataMatchResultsNotification extends Notification implements ShouldQue
         $message .= "Thank you for using our application! \n";
         $message .= "Regards, \n";
         $message .= "MEG";
+        if (strlen($message) > 1550) {
+            $message = "Hi " . data_get($this->data, '0.leadGen_name', 'Our Valuable User') . ",\n";
+            $message .= "please see your email for data match results ";
+            $message .= "Regards, \n";
+            $message .= "MEG";
+        }
         return (new TwilioSmsMessage())->content($message)->from(
             "MEG"
         );
