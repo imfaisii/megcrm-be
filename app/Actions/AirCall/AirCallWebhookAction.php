@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Log;
 
 class AirCallWebhookAction
 {
+
     /** This class is all responsible for handling the incoming request  of aircalls  **/
     use Jsonify;
 
