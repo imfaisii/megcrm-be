@@ -127,9 +127,11 @@ class Lead extends BaseModel implements HasMedia
         'epc_assessment_at'
     ];
 
-    public function routeNotificationForMail(Notification $notification): array|string
+    public function routeNotificationForMail(Notification $notification): array|string|null
     {
-        return $this->email;
+        if (blank($this->email))
+            return null;
+        return Str::contains($this->email, '@') ? $this->email : null;
     }
 
     protected function routeNotificationForTwilio()

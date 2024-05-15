@@ -40,12 +40,6 @@ final class SurveyBookedEnum extends Enum
             $message .= "please contact us via email at: {$lead['lead_generator']['email']} or ";
         }
 
-        if (isset($lead['lead_generator']['aircall_number']) || isset($lead['lead_generator']['phone_no'])) {
-            $number = isset($lead['lead_generator']['aircall_number']) ? $lead['lead_generator']['aircall_number'] : $lead['lead_generator']['phone_no'];
-            $message .= "Call us at: +44" . substr($number, -10);
-        } else {
-            $message .= "Call us at: " . config('services.twilio.default_sms_reference_number');
-        }
 
         $message .= "\n\nRegards,\n{$from}";
 
